@@ -84,7 +84,7 @@ class SE3:
         if xi.size != 6:
             raise ValueError("xi must have size 6")
 
-        return cls(xi[0:3], SO3.exp(xi[3:6]))
+        return cls(SO3.exp(xi[3:6]), xi[0:3])
 
     def log(self):
         """Logarithmic map for SE(3)

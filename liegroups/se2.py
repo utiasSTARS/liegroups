@@ -52,7 +52,7 @@ class SE2:
             raise ValueError("xi must have size 3")
 
         return np.vstack(
-            [np.hstack([SO2.wedge(xi[3]),
+            [np.hstack([SO2.wedge(xi[2]),
                         np.reshape(xi[0:2], (2, 1))]),
              [0, 0, 0]]
         )
@@ -84,7 +84,7 @@ class SE2:
         if xi.size != 3:
             raise ValueError("xi must have size 3")
 
-        return cls(xi[0:2], SO2.exp(xi[2]))
+        return cls(SO2.exp(xi[2]), xi[0:2])
 
     def log(self):
         """Logarithmic map for SE(2)
@@ -122,11 +122,11 @@ class SE2:
 
     def adjoint(self):
         """Return the adjoint matrix of the transformation."""
-        rotmat = self.rot.asmatrix()
-        return np.vstack(
-            [np.hstack([rotmat, np.array([[self.trans[1]], [-self.trans[0]]])]),
-             [0, 0, 1]]
-        )
+        rotpart = self.rot.asmatrix()
+        transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
+        return np.vstack([np.hstack([rotpart, transpart]),
+                          [0, 0, 1]]
+                         )
 
     def __mul__(self, other):
         if isinstance(other, SE2):
