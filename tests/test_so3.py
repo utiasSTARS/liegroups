@@ -61,11 +61,16 @@ def test_exp_log():
     assert np.allclose(SO3.exp(SO3.log(C)).mat, C.mat)
 
 
+def test_exp_log_zeros():
+    C = SO3.exp(np.zeros(3))
+    assert np.allclose(SO3.exp(SO3.log(C)).mat, C.mat)
+
+
 def test_normalize():
     C = SO3.exp(np.pi * np.ones(3) / 4)
     C.mat += 0.1
     C.normalize()
-    assert SO3.isvalidmatrix(C.mat)
+    assert SO3.is_valid_matrix(C.mat)
 
 
 def test_inverse():

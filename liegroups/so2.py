@@ -7,21 +7,21 @@ class SO2:
 
     def __init__(self, mat=np.identity(2)):
         """Create a SO2 object from a 2x2 rotation matrix."""
-        if not SO2.isvalidmatrix(mat):
+        if not SO2.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
 
         self.mat = mat
 
     @classmethod
-    def frommatrix(cls, mat):
+    def from_matrix(cls, mat):
         """Create a SO2 object from a 2x2 rotation matrix."""
-        if not SO2.isvalidmatrix(mat):
+        if not SO2.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
 
         return cls(mat)
 
     @classmethod
-    def isvalidmatrix(cls, mat):
+    def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid rotation matrix."""
         return mat.shape == (2, 2) and np.isclose(np.linalg.det(mat), 1.) and \
             np.allclose(mat.T.dot(mat), np.identity(2))
@@ -61,6 +61,34 @@ class SO2:
         return Phi[1, 0]
 
     @classmethod
+    def left_jacobian(cls, phi):
+        """Left SO(2) Jacobian (see Barfoot/Eade).
+        """
+        # Near angle is close to 0, use first order Taylor expansion
+        # TODO: 1st order term
+        if np.isclose(phi, 0.):
+            return np.identity(2)
+
+        s = np.sin(phi)
+        c = np.cos(phi)
+
+        return (1. / phi) * np.array([[s, -(1 - c)],
+                                      [1 - c, s]])
+
+    @classmethod
+    def inv_left_jacobian(cls, phi):
+        """Inverse left SO(2) Jacobian (see Barfoot/Eade).
+        """
+        # Near angle is close to 0, use first order Taylor expansion
+        # TODO: 1st order term
+        if np.isclose(phi, 0.):
+            return np.identity(2)
+
+        A = np.sin(phi) / phi
+        B = (1. - np.cos(phi)) / phi
+        return (1. / (A * A + B * B)) * np.array([[A, B], [-B, A]])
+
+    @classmethod
     def exp(cls, phi):
         """Exponential map for SO(2).
 
@@ -79,7 +107,7 @@ class SO2:
         """
         return np.arctan2(self.mat[1, 0], self.mat[0, 0])
 
-    def asmatrix(self):
+    def as_matrix(self):
         """Return the 2x2 matrix representation of the rotation."""
         return self.mat
 
@@ -111,4 +139,4 @@ class SO2:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "SO(2) Rotation Matrix \n %s" % self.asmatrix()
+        return "SO(2) Rotation Matrix \n %s" % self.as_matrix()

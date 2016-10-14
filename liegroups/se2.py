@@ -23,19 +23,19 @@ class SE2:
         self.trans = trans
 
     @classmethod
-    def frommatrix(cls, mat):
+    def from_matrix(cls, mat):
         """Create a SE2 object from a 3x3 transformation matrix."""
-        if not SE2.isvalidmatrix(mat):
+        if not SE2.is_valid_matrix(mat):
             raise ValueError("Invalid transformation matrix")
 
         return cls(SO2(mat[0:2, 0:2]), mat[0:2, 2])
 
     @classmethod
-    def isvalidmatrix(cls, mat):
+    def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid transformation matrix."""
         return mat.shape == (3, 3) and \
             np.array_equal(mat[2, :], np.array([0, 0, 1])) and \
-            SO2.isvalidmatrix(mat[0:2, 0:2])
+            SO2.is_valid_matrix(mat[0:2, 0:2])
 
     @classmethod
     def identity(cls):
@@ -84,7 +84,9 @@ class SE2:
         if xi.size != 3:
             raise ValueError("xi must have size 3")
 
-        return cls(SO2.exp(xi[2]), xi[0:2])
+        rho = xi[0:2]
+        phi = xi[2]
+        return cls(SO2.exp(phi), SO2.left_jacobian(phi).dot(rho))
 
     def log(self):
         """Logarithmic map for SE(2)
@@ -98,12 +100,14 @@ class SE2:
 
         This is the inverse operation to SE2.exp.
         """
-        return np.hstack([self.trans, SO2.log(self.rot)])
+        phi = SO2.log(self.rot)
+        rho = SO2.inv_left_jacobian(phi).dot(self.trans)
+        return np.hstack([rho, phi])
 
-    def asmatrix(self):
+    def as_matrix(self):
         """Return the 3x3 matrix representation of the
         transformation."""
-        R = self.rot.asmatrix()
+        R = self.rot.as_matrix()
         t = np.reshape(self.trans, (2, 1))
         return np.vstack([np.hstack([R, t]),
                           np.array([0, 0, 1])])
@@ -122,7 +126,7 @@ class SE2:
 
     def adjoint(self):
         """Return the adjoint matrix of the transformation."""
-        rotpart = self.rot.asmatrix()
+        rotpart = self.rot.as_matrix()
         transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
         return np.vstack([np.hstack([rotpart, transpart]),
                           [0, 0, 1]]
@@ -138,7 +142,7 @@ class SE2:
             return self.rot * other + self.trans
         else:
             # Transform one or more 3-vectors or fail
-            return self.asmatrix().dot(other)
+            return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "SE(2) Transformation Matrix \n %s" % self.asmatrix()
+        return "SE(2) Transformation Matrix \n %s" % self.as_matrix()

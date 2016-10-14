@@ -7,21 +7,21 @@ class SO3:
 
     def __init__(self, mat=np.identity(3)):
         """Create a SO3 object from a 3x3 rotation matrix."""
-        if not SO3.isvalidmatrix(mat):
+        if not SO3.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
 
         self.mat = mat
 
     @classmethod
-    def frommatrix(cls, mat):
+    def from_matrix(cls, mat):
         """Create a SO3 object from a 3x3 rotation matrix."""
-        if not SO3.isvalidmatrix(mat):
+        if not SO3.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
 
         return cls(mat)
 
     @classmethod
-    def isvalidmatrix(cls, mat):
+    def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid rotation matrix."""
         return mat.shape == (3, 3) and np.isclose(np.linalg.det(mat), 1.) and \
             np.allclose(mat.T.dot(mat), np.identity(3))
@@ -91,6 +91,50 @@ class SO3:
         return np.array([Phi[2, 1], Phi[0, 2], Phi[1, 0]])
 
     @classmethod
+    def left_jacobian(cls, phi):
+        """Left SO(3) Jacobian (see Barfoot).
+        """
+        if phi.size != 3:
+            raise ValueError("phi must have size 3")
+
+        angle = np.linalg.norm(phi)
+
+        # Near angle is close to 0, use first order Taylor expansion
+        # TODO: 1st order term
+        if np.isclose(angle, 0.):
+            return np.identity(3)
+
+        axis = phi / angle
+        s = np.sin(angle)
+        c = np.cos(angle)
+
+        return (s / angle) * np.identity(3) + \
+            (1 - s / angle) * np.outer(axis, axis) + \
+            ((1 - c) / angle) * SO3.wedge(axis)
+
+    @classmethod
+    def inv_left_jacobian(cls, phi):
+        """Inverse left SO(3) Jacobian (see Barfoot).
+        """
+        if phi.size != 3:
+            raise ValueError("phi must have size 3")
+
+        angle = np.linalg.norm(phi)
+
+        # Near angle is close to 0, use first order Taylor expansion
+        # TODO: 1st order term
+        if np.isclose(angle, 0.):
+            return np.identity(3)
+
+        axis = phi / angle
+        half_angle = 0.5 * angle
+        cot_half_angle = 1. / np.tan(half_angle)
+
+        return half_angle * cot_half_angle * np.identity(3) + \
+            (1 - half_angle * cot_half_angle) * np.outer(axis, axis) - \
+            half_angle * SO3.wedge(axis)
+
+    @classmethod
     def exp(cls, phi):
         """Exponential map for SO(3).
 
@@ -105,7 +149,7 @@ class SO3:
 
         # Near angle is close to 0, use first order Taylor expansion
         if np.isclose(angle, 0.):
-            return np.identity(3) + cls.wedge(phi)
+            return cls(np.identity(3) + cls.wedge(phi))
 
         axis = phi / angle
         s = np.sin(angle)
@@ -143,7 +187,7 @@ class SO3:
         # Otherwise normalize the axis and return the axis-angle vector
         return 0.5 * angle * axis / sin_angle
 
-    def asmatrix(self):
+    def as_matrix(self):
         """Return the 3x3 matrix representation of the rotation."""
         return self.mat
 
@@ -175,4 +219,4 @@ class SO3:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "SO(3) Rotation Matrix \n %s" % self.asmatrix()
+        return "SO(3) Rotation Matrix \n %s" % self.as_matrix()

@@ -9,7 +9,7 @@ def test_mul():
                   [1, 0, 0, -0.5],
                   [0, 0, 0, 1]])
     T2 = T.dot(T)
-    assert np.allclose((SE3.frommatrix(T) * SE3.frommatrix(T)).asmatrix(), T2)
+    assert np.allclose((SE3.from_matrix(T) * SE3.from_matrix(T)).as_matrix(), T2)
 
 
 def test_wedge_vee():
@@ -20,19 +20,19 @@ def test_wedge_vee():
 
 def test_exp_log():
     T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
-    assert np.allclose(SE3.exp(SE3.log(T)).asmatrix(), T.asmatrix())
+    assert np.allclose(SE3.exp(SE3.log(T)).as_matrix(), T.as_matrix())
 
 
 def test_normalize():
     T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
     T.rot.mat += 0.1
     T.normalize()
-    assert SE3.isvalidmatrix(T.asmatrix())
+    assert SE3.is_valid_matrix(T.as_matrix())
 
 
 def test_inverse():
     T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
-    assert np.allclose((T * T.inverse()).asmatrix(), np.identity(4))
+    assert np.allclose((T * T.inverse()).as_matrix(), np.identity(4))
 
 
 def test_adjoint():

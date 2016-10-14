@@ -6,8 +6,8 @@ from liegroups.so3 import SO3
 class SE3:
     """Homogeneous transformation matrix in SE(3)
 
-    T = [[rot trans]
-         [  0     1]]
+    T = [[T.rot T.trans]
+         [    0       1]]
     """
 
     def __init__(self, rot=SO3.identity(), trans=np.zeros(3)):
@@ -23,19 +23,19 @@ class SE3:
         self.trans = trans
 
     @classmethod
-    def frommatrix(cls, mat):
+    def from_matrix(cls, mat):
         """Create a SE3 object from a 4x4 transformation matrix."""
-        if not SE3.isvalidmatrix(mat):
+        if not SE3.is_valid_matrix(mat):
             raise ValueError("Invalid transformation matrix")
 
         return cls(SO3(mat[0:3, 0:3]), mat[0:3, 3])
 
     @classmethod
-    def isvalidmatrix(cls, mat):
+    def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid transformation matrix."""
         return mat.shape == (4, 4) and \
             np.array_equal(mat[3, :], np.array([0, 0, 0, 1])) and \
-            SO3.isvalidmatrix(mat[0:3, 0:3])
+            SO3.is_valid_matrix(mat[0:3, 0:3])
 
     @classmethod
     def identity(cls):
@@ -75,16 +75,14 @@ class SE3:
         Computes a transformation matrix from SE(3)
         tangent vector.
 
-        This isn't quite right because the translational
-        component should be multiplied by the inverse SO(3)
-        Jacobian, but we don't really need this.
-
         This is the inverse operation to SE3.log.
         """
         if xi.size != 6:
             raise ValueError("xi must have size 6")
 
-        return cls(SO3.exp(xi[3:6]), xi[0:3])
+        rho = xi[0:3]
+        phi = xi[3:6]
+        return cls(SO3.exp(phi), SO3.left_jacobian(phi).dot(rho))
 
     def log(self):
         """Logarithmic map for SE(3)
@@ -92,18 +90,16 @@ class SE3:
         Computes a SE(3) tangent vector from a transformation
         matrix.
 
-        This isn't quite right because the translational
-        component should be multiplied by the inverse SO(3)
-        Jacobian, but we don't really need this.
-
         This is the inverse operation to SE3.exp.
         """
-        return np.hstack([self.trans, SO3.log(self.rot)])
+        phi = SO3.log(self.rot)
+        rho = SO3.inv_left_jacobian(phi).dot(self.trans)
+        return np.hstack([rho, phi])
 
-    def asmatrix(self):
+    def as_matrix(self):
         """Return the 4x4 matrix representation of the
         transformation."""
-        R = self.rot.asmatrix()
+        R = self.rot.as_matrix()
         t = np.reshape(self.trans, (3, 1))
         return np.vstack([np.hstack([R, t]),
                           np.array([0, 0, 0, 1])])
@@ -122,7 +118,7 @@ class SE3:
 
     def adjoint(self):
         """Return the adjoint matrix of the transformation."""
-        rotmat = self.rot.asmatrix()
+        rotmat = self.rot.as_matrix()
         return np.vstack(
             [np.hstack([rotmat,
                         SO3.wedge(self.trans).dot(rotmat)]),
@@ -139,7 +135,7 @@ class SE3:
             return self.rot * other + self.trans
         else:
             # Transform one or more 4-vectors or fail
-            return self.asmatrix().dot(other)
+            return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "SE(3) Transformation Matrix \n %s" % self.asmatrix()
+        return "SE(3) Transformation Matrix \n %s" % self.as_matrix()
