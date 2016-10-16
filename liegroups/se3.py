@@ -40,7 +40,7 @@ class SE3:
     @classmethod
     def identity(cls):
         """Return the identity element."""
-        return cls(np.identity(4))
+        return cls.from_matrix(np.identity(4))
 
     @classmethod
     def wedge(cls, xi):
@@ -110,9 +110,9 @@ class SE3:
         """
         self.rot.normalize()
 
-    def inverse(self):
+    def inv(self):
         """Return the inverse transformation."""
-        inv_rot = self.rot.inverse()
+        inv_rot = self.rot.inv()
         inv_trans = -(inv_rot * self.trans)
         return SE3(inv_rot, inv_trans)
 

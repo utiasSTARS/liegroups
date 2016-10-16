@@ -100,9 +100,8 @@ class SO3:
         angle = np.linalg.norm(phi)
 
         # Near angle is close to 0, use first order Taylor expansion
-        # TODO: 1st order term
         if np.isclose(angle, 0.):
-            return np.identity(3)
+            return np.identity(3) + 0.5 * cls.wedge(phi)
 
         axis = phi / angle
         s = np.sin(angle)
@@ -122,9 +121,8 @@ class SO3:
         angle = np.linalg.norm(phi)
 
         # Near angle is close to 0, use first order Taylor expansion
-        # TODO: 1st order term
         if np.isclose(angle, 0.):
-            return np.identity(3)
+            return np.identity(3) - 0.5 * cls.wedge(phi)
 
         axis = phi / angle
         half_angle = 0.5 * angle
@@ -202,7 +200,7 @@ class SO3:
 
         self.mat = U.dot(middle.dot(V.T))
 
-    def inverse(self):
+    def inv(self):
         """Return the inverse rotation."""
         return SO3(self.mat.T)
 

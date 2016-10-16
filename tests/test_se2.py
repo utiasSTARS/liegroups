@@ -29,9 +29,9 @@ def test_normalize():
     assert SE2.is_valid_matrix(T.as_matrix())
 
 
-def test_inverse():
+def test_inv():
     T = SE2.exp(np.array([1, 2, 3]))
-    assert np.allclose((T * T.inverse()).as_matrix(), np.identity(3))
+    assert np.allclose((T * T.inv()).as_matrix(), np.identity(3))
 
 
 def test_adjoint():

@@ -73,9 +73,9 @@ def test_normalize():
     assert SO3.is_valid_matrix(C.mat)
 
 
-def test_inverse():
+def test_inv():
     C = SO3.exp(np.pi * np.ones(3) / 4)
-    assert np.allclose((C * C.inverse()).mat, np.identity(3))
+    assert np.allclose((C * C.inv()).mat, np.identity(3))
 
 
 def test_adjoint():

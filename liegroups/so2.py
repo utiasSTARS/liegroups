@@ -122,7 +122,7 @@ class SO2:
 
         self.mat = U.dot(middle.dot(V.T))
 
-    def inverse(self):
+    def inv(self):
         """Return the inverse rotation."""
         return SO2(self.mat.T)
 
