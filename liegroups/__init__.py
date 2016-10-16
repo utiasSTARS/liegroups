@@ -1,19 +1,10 @@
 """Special Euclidean and Special Orthogonal Lie groups."""
 
-__all__ = []
+from liegroups.so2 import SO2
+from liegroups.se2 import SE2
 
-import inspect
-import pkgutil
-
-for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    module = loader.find_module(name).load_module(name)
-
-    for name, value in inspect.getmembers(module):
-        if name.startswith('__'):
-            continue
-
-        globals()[name] = value
-        __all__.append(name)
+from liegroups.so3 import SO3
+from liegroups.se3 import SE3
 
 __author__ = "Lee Clement"
 __email__ = "lee.clement@robotics.utias.utoronto.ca"

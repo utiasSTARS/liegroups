@@ -1,6 +1,6 @@
 import numpy as np
 
-from liegroups.so2 import SO2
+from liegroups import SO2
 
 
 class SE2:
