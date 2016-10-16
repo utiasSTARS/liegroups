@@ -3,12 +3,18 @@ import numpy as np
 from liegroups import SE2
 
 
+def test_identity():
+    T = SE2.identity()
+    assert isinstance(T, SE2)
+
+
 def test_mul():
     T = np.array([[0, -1, -0.5],
                   [1, 0, 0.5],
                   [0, 0, 1]])
     T2 = T.dot(T)
-    assert np.allclose((SE2.from_matrix(T) * SE2.from_matrix(T)).as_matrix(), T2)
+    assert np.allclose(
+        (SE2.from_matrix(T) * SE2.from_matrix(T)).as_matrix(), T2)
 
 
 def test_wedge_vee():

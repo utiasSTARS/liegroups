@@ -3,6 +3,11 @@ import numpy as np
 from liegroups import SO3
 
 
+def test_identity():
+    T = SO3.identity()
+    assert isinstance(T, SO3)
+
+
 def test_mul():
     C = np.array([[0, 0, -1],
                   [0, 1, 0],
