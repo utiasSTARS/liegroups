@@ -104,6 +104,13 @@ class SE2:
         rho = SO2.inv_left_jacobian(phi).dot(self.trans)
         return np.hstack([rho, phi])
 
+    def perturb(self, xi):
+        """Perturb the transformation on the left
+        by a vector in its local tangent space."""
+        perturbed = SE2.exp(xi) * self
+        self.rot = perturbed.rot
+        self.trans = perturbed.trans
+
     def as_matrix(self):
         """Return the 3x3 matrix representation of the
         transformation."""

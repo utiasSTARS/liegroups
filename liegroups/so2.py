@@ -107,6 +107,12 @@ class SO2:
         """
         return np.arctan2(self.mat[1, 0], self.mat[0, 0])
 
+    def perturb(self, phi):
+        """Perturb the rotation on the left
+        by a vector in its local tangent space."""
+        perturbed = SO2.exp(phi) * self
+        self.mat = perturbed.mat
+
     def as_matrix(self):
         """Return the 2x2 matrix representation of the rotation."""
         return self.mat

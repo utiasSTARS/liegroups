@@ -28,6 +28,14 @@ def test_exp_log():
     assert np.allclose(SE2.exp(SE2.log(T)).as_matrix(), T.as_matrix())
 
 
+def test_perturb():
+    T = SE2.exp(np.array([1, 2, 3]))
+    T_copy = SE2.from_matrix(T.as_matrix())
+    xi = np.array([0.3, 0.2, 0.1])
+    T.perturb(xi)
+    assert np.allclose(T.as_matrix(), (SE2.exp(xi) * T_copy).as_matrix())
+
+
 def test_normalize():
     T = SE2.exp(np.array([1, 2, 3]))
     T.rot.mat += 0.1

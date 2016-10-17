@@ -185,6 +185,12 @@ class SO3:
         # Otherwise normalize the axis and return the axis-angle vector
         return 0.5 * angle * axis / sin_angle
 
+    def perturb(self, phi):
+        """Perturb the rotation on the left
+        by a vector in its local tangent space."""
+        perturbed = SO3.exp(phi) * self
+        self.mat = perturbed.mat
+
     def as_matrix(self):
         """Return the 3x3 matrix representation of the rotation."""
         return self.mat

@@ -37,6 +37,14 @@ def test_exp_log_zeros():
     assert np.allclose(SO2.exp(SO2.log(C)).mat, C.mat)
 
 
+def test_perturb():
+    C = SO2.exp(np.pi / 4)
+    C_copy = SO2.from_matrix(C.as_matrix())
+    phi = 0.1
+    C.perturb(phi)
+    assert np.allclose(C.as_matrix(), (SO2.exp(phi) * C_copy).as_matrix())
+
+
 def test_normalize():
     C = SO2.exp(np.pi / 4)
     C.mat += 0.1

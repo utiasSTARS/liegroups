@@ -71,6 +71,14 @@ def test_exp_log_zeros():
     assert np.allclose(SO3.exp(SO3.log(C)).mat, C.mat)
 
 
+def test_perturb():
+    C = SO3.exp(np.pi * np.ones(3) / 4)
+    C_copy = SO3.from_matrix(C.as_matrix())
+    phi = np.array([0.3, 0.2, 0.1])
+    C.perturb(phi)
+    assert np.allclose(C.as_matrix(), (SO3.exp(phi) * C_copy).as_matrix())
+
+
 def test_normalize():
     C = SO3.exp(np.pi * np.ones(3) / 4)
     C.mat += 0.1
