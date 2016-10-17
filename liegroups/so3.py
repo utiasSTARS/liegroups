@@ -12,7 +12,7 @@ class SO3:
     dim = 3
     dof = 3
 
-    def __init__(self, mat=np.identity(3)):
+    def __init__(self, mat=np.identity(dim)):
         """Create a SO3 object from a 3x3 rotation matrix."""
         if not SO3.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
@@ -30,13 +30,14 @@ class SO3:
     @classmethod
     def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid rotation matrix."""
-        return mat.shape == (3, 3) and np.isclose(np.linalg.det(mat), 1.) and \
-            np.allclose(mat.T.dot(mat), np.identity(3))
+        return mat.shape == (cls.dim, cls.dim) and \
+            np.isclose(np.linalg.det(mat), 1.) and \
+            np.allclose(mat.T.dot(mat), np.identity(cls.dim))
 
     @classmethod
     def identity(cls):
         """Return the identity element."""
-        return cls(np.identity(3))
+        return cls(np.identity(cls.dim))
 
     @classmethod
     def rotx(cls, angle_in_radians):
@@ -79,7 +80,7 @@ class SO3:
 
         This is the inverse operation to SO3.vee.
         """
-        if phi.size != 3:
+        if phi.size != cls.dof:
             raise ValueError("phi must have size 3")
 
         return np.array([[0, -phi[2], phi[1]],
@@ -92,7 +93,7 @@ class SO3:
 
         This is the inverse operation to SO3.wedge.
         """
-        if Phi.shape != (3, 3):
+        if Phi.shape != (cls.dim, cls.dim):
             raise ValueError("Phi must have shape (3,3)")
 
         return np.array([Phi[2, 1], Phi[0, 2], Phi[1, 0]])
@@ -101,20 +102,20 @@ class SO3:
     def left_jacobian(cls, phi):
         """Left SO(3) Jacobian (see Barfoot).
         """
-        if phi.size != 3:
+        if phi.size != cls.dof:
             raise ValueError("phi must have size 3")
 
         angle = np.linalg.norm(phi)
 
         # Near angle is close to 0, use first order Taylor expansion
         if np.isclose(angle, 0.):
-            return np.identity(3) + 0.5 * cls.wedge(phi)
+            return np.identity(cls.dim) + 0.5 * cls.wedge(phi)
 
         axis = phi / angle
         s = np.sin(angle)
         c = np.cos(angle)
 
-        return (s / angle) * np.identity(3) + \
+        return (s / angle) * np.identity(cls.dim) + \
             (1 - s / angle) * np.outer(axis, axis) + \
             ((1 - c) / angle) * SO3.wedge(axis)
 
@@ -122,20 +123,20 @@ class SO3:
     def inv_left_jacobian(cls, phi):
         """Inverse left SO(3) Jacobian (see Barfoot).
         """
-        if phi.size != 3:
+        if phi.size != cls.dof:
             raise ValueError("phi must have size 3")
 
         angle = np.linalg.norm(phi)
 
         # Near angle is close to 0, use first order Taylor expansion
         if np.isclose(angle, 0.):
-            return np.identity(3) - 0.5 * cls.wedge(phi)
+            return np.identity(cls.dim) - 0.5 * cls.wedge(phi)
 
         axis = phi / angle
         half_angle = 0.5 * angle
         cot_half_angle = 1. / np.tan(half_angle)
 
-        return half_angle * cot_half_angle * np.identity(3) + \
+        return half_angle * cot_half_angle * np.identity(cls.dim) + \
             (1 - half_angle * cot_half_angle) * np.outer(axis, axis) - \
             half_angle * SO3.wedge(axis)
 
@@ -147,20 +148,20 @@ class SO3:
 
         This is the inverse operation to SO3.log.
         """
-        if phi.size != 3:
+        if phi.size != cls.dof:
             raise ValueError("phi must have size 3")
 
         angle = np.linalg.norm(phi)
 
         # Near angle is close to 0, use first order Taylor expansion
         if np.isclose(angle, 0.):
-            return cls(np.identity(3) + cls.wedge(phi))
+            return cls(np.identity(cls.dim) + cls.wedge(phi))
 
         axis = phi / angle
         s = np.sin(angle)
         c = np.cos(angle)
 
-        return cls(c * np.identity(3) +
+        return cls(c * np.identity(cls.dim) +
                    (1 - c) * np.outer(axis, axis) +
                    s * cls.wedge(axis))
 
@@ -208,7 +209,7 @@ class SO3:
         """
         U, s, V = np.linalg.svd(self.mat, full_matrices=False)
 
-        middle = np.identity(3)
+        middle = np.identity(self.dim)
         middle[2, 2] = np.linalg.det(V) * np.linalg.det(U)
 
         self.mat = U.dot(middle.dot(V.T))

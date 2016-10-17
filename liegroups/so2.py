@@ -12,7 +12,7 @@ class SO2:
     dim = 2
     dof = 1
 
-    def __init__(self, mat=np.identity(2)):
+    def __init__(self, mat=np.identity(dim)):
         """Create a SO2 object from a 2x2 rotation matrix."""
         if not SO2.is_valid_matrix(mat):
             raise ValueError("Invalid rotation matrix")
@@ -30,13 +30,14 @@ class SO2:
     @classmethod
     def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid rotation matrix."""
-        return mat.shape == (2, 2) and np.isclose(np.linalg.det(mat), 1.) and \
-            np.allclose(mat.T.dot(mat), np.identity(2))
+        return mat.shape == (cls.dim, cls.dim) and \
+            np.isclose(np.linalg.det(mat), 1.) and \
+            np.allclose(mat.T.dot(mat), np.identity(cls.dim))
 
     @classmethod
     def identity(cls):
         """Return the identity element."""
-        return cls(np.identity(2))
+        return cls(np.identity(cls.dim))
 
     @classmethod
     def fromangle(cls, angle_in_radians):
@@ -62,7 +63,7 @@ class SO2:
 
         This is the inverse operation to SO2.wedge.
         """
-        if Phi.shape != (2, 2):
+        if Phi.shape != (cls.dim, cls.dim):
             raise ValueError("Phi must have shape (2,2)")
 
         return Phi[1, 0]
@@ -74,7 +75,7 @@ class SO2:
         # Near angle is close to 0, use first order Taylor expansion
         # TODO: 1st order term
         if np.isclose(phi, 0.):
-            return np.identity(2)
+            return np.identity(cls.dim)
 
         s = np.sin(phi)
         c = np.cos(phi)
@@ -89,7 +90,7 @@ class SO2:
         # Near angle is close to 0, use first order Taylor expansion
         # TODO: 1st order term
         if np.isclose(phi, 0.):
-            return np.identity(2)
+            return np.identity(cls.dim)
 
         A = np.sin(phi) / phi
         B = (1. - np.cos(phi)) / phi
@@ -130,7 +131,7 @@ class SO2:
         """
         U, s, V = np.linalg.svd(self.mat, full_matrices=False)
 
-        middle = np.identity(2)
+        middle = np.identity(self.dim)
         middle[1, 1] = np.linalg.det(V) * np.linalg.det(U)
 
         self.mat = U.dot(middle.dot(V.T))

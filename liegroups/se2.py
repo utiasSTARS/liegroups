@@ -18,13 +18,13 @@ class SE2:
     dim = 3
     dof = 3
 
-    def __init__(self, rot=SO2.identity(), trans=np.zeros(2)):
+    def __init__(self, rot=SO2.identity(), trans=np.zeros(dim - 1)):
         """Create a SE3 object from a translation and a
          rotation."""
         if not isinstance(rot, SO2):
             raise ValueError("rot must be SO2")
 
-        if trans.size != 2:
+        if trans.size != self.dim - 1:
             raise ValueError("trans must have size 2")
 
         self.rot = rot
@@ -41,14 +41,14 @@ class SE2:
     @classmethod
     def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid transformation matrix."""
-        return mat.shape == (3, 3) and \
+        return mat.shape == (cls.dim, cls.dim) and \
             np.array_equal(mat[2, :], np.array([0, 0, 1])) and \
             SO2.is_valid_matrix(mat[0:2, 0:2])
 
     @classmethod
     def identity(cls):
         """Return the identity element."""
-        return cls.from_matrix(np.identity(3))
+        return cls.from_matrix(np.identity(cls.dim))
 
     @classmethod
     def wedge(cls, xi):
@@ -56,7 +56,7 @@ class SE2:
 
         This is the inverse operation to SE2.vee.
         """
-        if xi.size != 3:
+        if xi.size != cls.dof:
             raise ValueError("xi must have size 3")
 
         return np.vstack(
@@ -71,7 +71,7 @@ class SE2:
 
         This is the inverse operation to SE2.wedge.
         """
-        if Xi.shape != (3, 3):
+        if Xi.shape != (cls.dim, cls.dim):
             raise ValueError("Xi must have shape (3,3)")
 
         return np.hstack([Xi[0:2, 2], SO2.vee(Xi[0:2, 0:2])])
@@ -89,7 +89,7 @@ class SE2:
 
         This is the inverse operation to SE2.log.
         """
-        if xi.size != 3:
+        if xi.size != cls.dof:
             raise ValueError("xi must have size 3")
 
         rho = xi[0:2]
@@ -152,7 +152,7 @@ class SE2:
             # Compound with another transformation
             return SE2(self.rot * other.rot,
                        self.rot * other.trans + self.trans)
-        elif other.size == 2:
+        elif other.size == self.dim - 1:
             # Transform a 2-vector
             return self.rot * other + self.trans
         else:

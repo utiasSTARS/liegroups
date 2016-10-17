@@ -18,13 +18,13 @@ class SE3:
     dim = 4
     dof = 6
 
-    def __init__(self, rot=SO3.identity(), trans=np.zeros(3)):
+    def __init__(self, rot=SO3.identity(), trans=np.zeros(dim - 1)):
         """Create a SE3 object from a translation and a
          rotation."""
         if not isinstance(rot, SO3):
             raise ValueError("rot must be SO3")
 
-        if trans.size != 3:
+        if trans.size != self.dim - 1:
             raise ValueError("trans must have size 3")
 
         self.rot = rot
@@ -41,14 +41,14 @@ class SE3:
     @classmethod
     def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid transformation matrix."""
-        return mat.shape == (4, 4) and \
+        return mat.shape == (cls.dim, cls.dim) and \
             np.array_equal(mat[3, :], np.array([0, 0, 0, 1])) and \
             SO3.is_valid_matrix(mat[0:3, 0:3])
 
     @classmethod
     def identity(cls):
         """Return the identity element."""
-        return cls.from_matrix(np.identity(4))
+        return cls.from_matrix(np.identity(cls.dim))
 
     @classmethod
     def wedge(cls, xi):
@@ -56,7 +56,7 @@ class SE3:
 
         This is the inverse operation to SE3.vee.
         """
-        if xi.size != 6:
+        if xi.size != cls.dof:
             raise ValueError("xi must have size 6")
 
         return np.vstack(
@@ -71,7 +71,7 @@ class SE3:
 
         This is the inverse operation to SE3.wedge.
         """
-        if Xi.shape != (4, 4):
+        if Xi.shape != (cls.dim, cls.dim):
             raise ValueError("Xi must have shape (4,4)")
 
         return np.hstack([Xi[0:3, 3], SO3.vee(Xi[0:3, 0:3])])
@@ -85,7 +85,7 @@ class SE3:
 
         This is the inverse operation to SE3.log.
         """
-        if xi.size != 6:
+        if xi.size != cls.dof:
             raise ValueError("xi must have size 6")
 
         rho = xi[0:3]
@@ -145,7 +145,7 @@ class SE3:
             # Compound with another transformation
             return SE3(self.rot * other.rot,
                        self.rot * other.trans + self.trans)
-        elif other.size == 3:
+        elif other.size == self.dim - 1:
             # Transform a 3-vector
             return self.rot * other + self.trans
         else:
