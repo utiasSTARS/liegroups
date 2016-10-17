@@ -3,7 +3,14 @@ import numpy as np
 
 class SO2:
     """ Rotation matrix in SO(2)
+
+    Attributes:
+        dim -- dimension of the rotation matrix
+        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
+        mat -- storage for the rotation matrix
     """
+    dim = 2
+    dof = 1
 
     def __init__(self, mat=np.identity(2)):
         """Create a SO2 object from a 2x2 rotation matrix."""

@@ -3,7 +3,14 @@ import numpy as np
 
 class SO3:
     """ Rotation matrix in SO(3)
+
+    Attributes:
+        dim -- dimension of the rotation matrix
+        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
+        mat -- storage for the rotation matrix
     """
+    dim = 3
+    dof = 3
 
     def __init__(self, mat=np.identity(3)):
         """Create a SO3 object from a 3x3 rotation matrix."""

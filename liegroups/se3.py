@@ -6,9 +6,17 @@ from liegroups import SO3
 class SE3:
     """Homogeneous transformation matrix in SE(3)
 
+    Attributes:
+        dim -- dimension of the transformation matrix
+        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
+        rot -- storage for the rotation matrix
+        trans -- storage for the translation vector
+
     T = [[T.rot T.trans]
          [    0       1]]
     """
+    dim = 4
+    dof = 6
 
     def __init__(self, rot=SO3.identity(), trans=np.zeros(3)):
         """Create a SE3 object from a translation and a
