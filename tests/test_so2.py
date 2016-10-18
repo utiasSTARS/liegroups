@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 
 from liegroups import SO2
@@ -39,7 +41,7 @@ def test_exp_log_zeros():
 
 def test_perturb():
     C = SO2.exp(np.pi / 4)
-    C_copy = SO2.from_matrix(C.as_matrix())
+    C_copy = copy.deepcopy(C)
     phi = 0.1
     C.perturb(phi)
     assert np.allclose(C.as_matrix(), (SO2.exp(phi) * C_copy).as_matrix())

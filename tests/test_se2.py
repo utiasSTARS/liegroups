@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 
 from liegroups import SE2
@@ -30,7 +32,7 @@ def test_exp_log():
 
 def test_perturb():
     T = SE2.exp(np.array([1, 2, 3]))
-    T_copy = SE2.from_matrix(T.as_matrix())
+    T_copy = copy.deepcopy(T)
     xi = np.array([0.3, 0.2, 0.1])
     T.perturb(xi)
     assert np.allclose(T.as_matrix(), (SE2.exp(xi) * T_copy).as_matrix())
