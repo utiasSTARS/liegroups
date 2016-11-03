@@ -4,19 +4,13 @@ from liegroups import SO2
 
 
 class SE2:
-    """Homogeneous transformation matrix in SE(2)
+    """Homogeneous transformation matrix in SE(2)"""
 
-    Attributes:
-        dim -- dimension of the transformation matrix
-        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
-        rot -- storage for the rotation matrix
-        trans -- storage for the translation vector
-
-    T = [[rot trans]
-         [  0     1]]
-    """
     dim = 3
+    """Dimension of the rotation matrix."""
+
     dof = 3
+    """Underlying degrees of freedom (i.e., dim of the tangent space)."""
 
     def __init__(self, rot=SO2.identity(), trans=np.zeros(dim - 1)):
         """Create a SE3 object from a translation and a
@@ -28,7 +22,10 @@ class SE2:
             raise ValueError("trans must have size 2")
 
         self.rot = rot
+        """Storage for the rotation matrix"""
+
         self.trans = trans
+        """Storage for the translation vector"""
 
     @classmethod
     def from_matrix(cls, mat):
@@ -83,10 +80,6 @@ class SE2:
         Computes a transformation matrix from SE(2)
         tangent vector.
 
-        This isn't quite right because the translational
-        component should be multiplied by the inverse SO(2)
-        Jacobian, but we don't really need this.
-
         This is the inverse operation to SE2.log.
         """
         if xi.size != cls.dof:
@@ -101,10 +94,6 @@ class SE2:
 
         Computes a SE(2) tangent vector from a transformation
         matrix.
-
-        This isn't quite right because the translational
-        component should be multiplied by the inverse SO(2)
-        Jacobian, but we don't really need this.
 
         This is the inverse operation to SE2.exp.
         """

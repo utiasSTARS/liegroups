@@ -2,15 +2,13 @@ import numpy as np
 
 
 class SO2:
-    """ Rotation matrix in SO(2)
+    """Rotation matrix in SO(2)"""
 
-    Attributes:
-        dim -- dimension of the rotation matrix
-        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
-        mat -- storage for the rotation matrix
-    """
     dim = 2
+    """Dimension of the rotation matrix."""
+
     dof = 1
+    """Underlying degrees of freedom (i.e., dim of the tangent space)."""
 
     def __init__(self, mat=np.identity(dim)):
         """Create a SO2 object from a 2x2 rotation matrix."""
@@ -18,6 +16,7 @@ class SO2:
             raise ValueError("Invalid rotation matrix")
 
         self.mat = mat
+        """Storage for the rotation matrix"""
 
     @classmethod
     def from_matrix(cls, mat):

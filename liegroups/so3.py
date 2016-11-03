@@ -2,15 +2,13 @@ import numpy as np
 
 
 class SO3:
-    """ Rotation matrix in SO(3)
+    """ Rotation matrix in SO(3)"""
 
-    Attributes:
-        dim -- dimension of the rotation matrix
-        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
-        mat -- storage for the rotation matrix
-    """
     dim = 3
+    """Dimension of the rotation matrix."""
+
     dof = 3
+    """Underlying degrees of freedom (i.e., dim of the tangent space)."""
 
     def __init__(self, mat=np.identity(dim)):
         """Create a SO3 object from a 3x3 rotation matrix."""
@@ -18,6 +16,7 @@ class SO3:
             raise ValueError("Invalid rotation matrix")
 
         self.mat = mat
+        """Storage for the rotation matrix"""
 
     @classmethod
     def from_matrix(cls, mat):

@@ -4,19 +4,13 @@ from liegroups import SO3
 
 
 class SE3:
-    """Homogeneous transformation matrix in SE(3)
+    """Homogeneous transformation matrix in SE(3)"""
 
-    Attributes:
-        dim -- dimension of the transformation matrix
-        dof -- underlying degrees of freedom (i.e., dim of the tangent space)
-        rot -- storage for the rotation matrix
-        trans -- storage for the translation vector
-
-    T = [[T.rot T.trans]
-         [    0       1]]
-    """
     dim = 4
+    """Dimension of the rotation matrix."""
+
     dof = 6
+    """Underlying degrees of freedom (i.e., dim of the tangent space)."""
 
     def __init__(self, rot=SO3.identity(), trans=np.zeros(dim - 1)):
         """Create a SE3 object from a translation and a
@@ -28,7 +22,10 @@ class SE3:
             raise ValueError("trans must have size 3")
 
         self.rot = rot
+        """Storage for the rotation matrix"""
+
         self.trans = trans
+        """Storage for the translation vector"""
 
     @classmethod
     def from_matrix(cls, mat):
