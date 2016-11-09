@@ -152,4 +152,4 @@ class SO2:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "SO(2) Rotation Matrix \n %s" % self.as_matrix()
+        return "%s" % self.as_matrix()

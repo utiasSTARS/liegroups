@@ -150,4 +150,4 @@ class SE3:
             return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "SE(3) Transformation Matrix \n %s" % self.as_matrix()
+        return "%s" % self.as_matrix()
