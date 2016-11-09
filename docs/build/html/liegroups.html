@@ -156,6 +156,12 @@
 <dd><p>Return the 2x2 matrix representation of the rotation.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="liegroups.so2.SO2.bindto">
+<code class="descname">bindto</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.bindto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind this instance to another instance</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="liegroups.so2.SO2.dim">
 <code class="descname">dim</code><em class="property"> = 2</em><a class="headerlink" href="#liegroups.so2.SO2.dim" title="Permalink to this definition">¶</a></dt>
@@ -267,7 +273,7 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se2"></span><h2>liegroups.SE2<a class="headerlink" href="#module-liegroups.se2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se2.SE2">
-<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=SO(2) Rotation Matrix   [[ 1.  0.]  [ 0.  1.]], trans=array([ 0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=[[ 1.  0.]  [ 0.  1.]], trans=array([ 0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homogeneous transformation matrix in SE(2)</p>
 <dl class="method">
 <dt id="liegroups.se2.SE2.adjoint">
@@ -280,6 +286,12 @@ by a vector in its local tangent space.</p>
 <code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.as_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the 3x3 matrix representation of the
 transformation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.se2.SE2.bindto">
+<code class="descname">bindto</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.bindto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind this instance to another instance</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -395,6 +407,12 @@ by a vector in its local tangent space.</p>
 <dt id="liegroups.so3.SO3.as_matrix">
 <code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.as_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the 3x3 matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.so3.SO3.bindto">
+<code class="descname">bindto</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.bindto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind this instance to another instance</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -526,7 +544,7 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se3"></span><h2>liegroups.SE3<a class="headerlink" href="#module-liegroups.se3" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se3.SE3">
-<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=SO(3) Rotation Matrix   [[ 1.  0.  0.]  [ 0.  1.  0.]  [ 0.  0.  1.]], trans=array([ 0.,  0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=[[ 1.  0.  0.]  [ 0.  1.  0.]  [ 0.  0.  1.]], trans=array([ 0.,  0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homogeneous transformation matrix in SE(3)</p>
 <dl class="method">
 <dt id="liegroups.se3.SE3.adjoint">
@@ -539,6 +557,12 @@ by a vector in its local tangent space.</p>
 <code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.as_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the 4x4 matrix representation of the
 transformation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.se3.SE3.bindto">
+<code class="descname">bindto</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.bindto" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bind this instance to another instance</p>
 </dd></dl>
 
 <dl class="attribute">

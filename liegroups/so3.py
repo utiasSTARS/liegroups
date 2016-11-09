@@ -221,6 +221,10 @@ class SO3:
         """Return the adjoint matrix of the rotation."""
         return self.mat
 
+    def bindto(self, other):
+        """Bind this instance to another instance"""
+        self.mat = other.mat
+
     def __mul__(self, other):
         if isinstance(other, SO3):
             # Compound with another rotation

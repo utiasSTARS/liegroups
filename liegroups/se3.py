@@ -137,6 +137,11 @@ class SE3:
              np.hstack([np.zeros((3, 3)), rotmat])]
         )
 
+    def bindto(self, other):
+        """Bind this instance to another instance"""
+        self.rot = other.rot
+        self.trans = other.trans
+
     def __mul__(self, other):
         if isinstance(other, SE3):
             # Compound with another transformation

@@ -4,6 +4,11 @@ import numpy as np
 
 from liegroups import SE2
 
+def test_bindto():
+    T1 = SE2.identity()
+    T2 = SE2.identity()
+    T2.bindto(T1)
+    assert(T1 is not T2 and T1.rot is T2.rot and T1.trans is T2.trans)
 
 def test_identity():
     T = SE2.identity()
