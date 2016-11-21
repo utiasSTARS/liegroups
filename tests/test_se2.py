@@ -4,11 +4,13 @@ import numpy as np
 
 from liegroups import SE2
 
+
 def test_bindto():
     T1 = SE2.identity()
     T2 = SE2.identity()
     T2.bindto(T1)
     assert(T1 is not T2 and T1.rot is T2.rot and T1.trans is T2.trans)
+
 
 def test_identity():
     T = SE2.identity()
@@ -28,6 +30,20 @@ def test_wedge_vee():
     xi = np.array([1, 2, 3])
     Xi = SE2.wedge(xi)
     assert np.array_equal(xi, SE2.vee(Xi))
+
+
+def test_odot():
+    p1 = np.array([1, 2])
+    p2 = np.array([1, 2, 1])
+    p3 = np.array([1, 2, 0])
+
+    odot12 = np.vstack([SE2.odot(p1), np.zeros([1, 3])])
+    odot13 = np.vstack([SE2.odot(p1, directional=True), np.zeros([1, 3])])
+    odot2 = SE2.odot(p2)
+    odot3 = SE2.odot(p3)
+
+    assert np.array_equal(odot12, odot2)
+    assert np.array_equal(odot13, odot3)
 
 
 def test_exp_log():

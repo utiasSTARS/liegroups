@@ -74,6 +74,32 @@ class SE2:
         return np.hstack([Xi[0:2, 2], SO2.vee(Xi[0:2, 0:2])])
 
     @classmethod
+    def odot(cls, p, **kwargs):
+        """SE(2) \odot operator as defined by Barfoot."""
+        if p.size == cls.dim - 1:
+            result = np.zeros([2, 3])
+
+            # Assume scale parameter is 1 unless otherwise p is a direction
+            # vector, in which case the scale is 0
+            scale_is_zero = kwargs.get('directional', False)
+            if not scale_is_zero:
+                result[0:2, 0:2] = np.eye(2)
+
+            result[0:2, 2] = SO2.wedge(1).dot(p)
+
+            return result
+
+        elif p.size == cls.dim:
+            result = np.zeros([3, 3])
+            result[0:2, 0:2] = p[2] * np.eye(2)
+            result[0:2, 2] = SO2.wedge(1).dot(p[0:2])
+
+            return result
+            
+        else:
+            raise ValueError("p must have dimension 2 or 3")
+
+    @classmethod
     def exp(cls, xi):
         """Exponential map for SE(2).
 

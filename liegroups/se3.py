@@ -63,6 +63,32 @@ class SE3:
         )
 
     @classmethod
+    def odot(cls, p, **kwargs):
+        """SE(3) \odot operator as defined by Barfoot."""
+        if p.size == cls.dim - 1:
+            result = np.zeros([3, 6])
+
+            # Assume scale parameter is 1 unless otherwise p is a direction
+            # vector, in which case the scale is 0
+            scale_is_zero = kwargs.get('directional', False)
+            if not scale_is_zero:
+                result[0:3, 0:3] = np.eye(3)
+
+            result[0:3, 3:6] = -SO3.wedge(p)
+
+            return result
+
+        elif p.size == cls.dim:
+            result = np.zeros([4, 6])
+            result[0:3, 0:3] = p[3] * np.eye(3)
+            result[0:3, 3:6] = -SO3.wedge(p[0:3])
+
+            return result
+
+        else:
+            raise ValueError("p must have dimension 3 or 4")
+
+    @classmethod
     def vee(cls, Xi):
         """SE(3) vee operator as defined by Barfoot.
 

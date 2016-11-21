@@ -10,6 +10,7 @@ def test_bindto():
     C2.bindto(C1)
     assert(C1 is not C2 and C1.mat is C2.mat)
 
+
 def test_identity():
     C = SO2.identity()
     assert isinstance(C, SO2)
