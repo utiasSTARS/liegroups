@@ -95,7 +95,7 @@ class SE2:
             result[0:2, 2] = SO2.wedge(1).dot(p[0:2])
 
             return result
-            
+
         else:
             raise ValueError("p must have dimension 2 or 3")
 
@@ -180,4 +180,4 @@ class SE2:
             return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "%s" % self.as_matrix()
+        return "{}".format(self.as_matrix())
