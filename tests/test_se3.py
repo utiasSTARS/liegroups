@@ -5,6 +5,13 @@ import numpy as np
 from liegroups import SE3
 
 
+def test_bindto():
+    T1 = SE3.identity()
+    T2 = SE3.identity()
+    T2.bindto(T1)
+    assert(T1 is not T2 and T1.rot is T2.rot and T1.trans is T2.trans)
+
+
 def test_identity():
     T = SE3.identity()
     assert isinstance(T, SE3)

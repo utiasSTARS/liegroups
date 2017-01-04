@@ -5,6 +5,13 @@ import numpy as np
 from liegroups import SO3
 
 
+def test_bindto():
+    C1 = SO3.identity()
+    C2 = SO3.identity()
+    C2.bindto(C1)
+    assert(C1 is not C2 and C1.mat is C2.mat)
+
+
 def test_identity():
     T = SO3.identity()
     assert isinstance(T, SO3)

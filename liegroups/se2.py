@@ -162,6 +162,11 @@ class SE2:
                           [0, 0, 1]]
                          )
 
+    def bindto(self, other):
+        """Bind this instance to another instance"""
+        self.rot = other.rot
+        self.trans = other.trans
+
     def __mul__(self, other):
         if isinstance(other, SE2):
             # Compound with another transformation
