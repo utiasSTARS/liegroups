@@ -180,4 +180,4 @@ class SE2:
             return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "{}".format(self.as_matrix())
+        return "SE2({})".format(self.as_matrix())

@@ -156,4 +156,4 @@ class SO2:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "{}".format(self.as_matrix())
+        return "SO2({})".format(self.as_matrix())

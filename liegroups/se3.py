@@ -181,4 +181,4 @@ class SE3:
             return self.as_matrix().dot(other)
 
     def __repr__(self):
-        return "{}".format(self.as_matrix())
+        return "SE3({})".format(self.as_matrix())

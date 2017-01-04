@@ -234,4 +234,4 @@ class SO3:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "{}".format(self.as_matrix())
+        return "SO3({})".format(self.as_matrix())

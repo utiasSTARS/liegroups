@@ -125,7 +125,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/liegroups.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/liegroups.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -273,7 +273,7 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se2"></span><h2>liegroups.SE2<a class="headerlink" href="#module-liegroups.se2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se2.SE2">
-<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=[[ 1.  0.]  [ 0.  1.]], trans=array([ 0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=SO2([[ 1.  0.]  [ 0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homogeneous transformation matrix in SE(2)</p>
 <dl class="method">
 <dt id="liegroups.se2.SE2.adjoint">
@@ -353,6 +353,12 @@ matrix.</p>
 <code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize the rotation matrix to ensure it is a valid rotation and
 negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.se2.SE2.odot">
+<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.odot" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) odot operator as defined by Barfoot.</p>
 </dd></dl>
 
 <dl class="method">
@@ -544,7 +550,7 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se3"></span><h2>liegroups.SE3<a class="headerlink" href="#module-liegroups.se3" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se3.SE3">
-<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=[[ 1.  0.  0.]  [ 0.  1.  0.]  [ 0.  0.  1.]], trans=array([ 0.,  0.,  0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=SO3([[ 1.  0.  0.]  [ 0.  1.  0.]  [ 0.  0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Homogeneous transformation matrix in SE(3)</p>
 <dl class="method">
 <dt id="liegroups.se3.SE3.adjoint">
@@ -624,6 +630,12 @@ matrix.</p>
 <code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize the rotation matrix to ensure it is a valid rotation and
 negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.se3.SE3.odot">
+<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.odot" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) odot operator as defined by Barfoot.</p>
 </dd></dl>
 
 <dl class="method">
