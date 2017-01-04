@@ -18,8 +18,8 @@ class SE3:
         if not isinstance(rot, SO3):
             raise ValueError("rot must be SO3")
 
-        if trans.size != self.dim - 1:
-            raise ValueError("trans must have size 3")
+        if len(trans) != self.dim - 1:
+            raise ValueError("trans must have length 3")
 
         self.rot = rot
         """Storage for the rotation matrix"""
@@ -53,8 +53,8 @@ class SE3:
 
         This is the inverse operation to SE3.vee.
         """
-        if xi.size != cls.dof:
-            raise ValueError("xi must have size 6")
+        if len(xi) != cls.dof:
+            raise ValueError("xi must have length 6")
 
         return np.vstack(
             [np.hstack([SO3.wedge(xi[3:7]),
@@ -65,7 +65,7 @@ class SE3:
     @classmethod
     def odot(cls, p, **kwargs):
         """SE(3) \odot operator as defined by Barfoot."""
-        if p.size == cls.dim - 1:
+        if len(p) == cls.dim - 1:
             result = np.zeros([3, 6])
 
             # Assume scale parameter is 1 unless otherwise p is a direction
@@ -78,7 +78,7 @@ class SE3:
 
             return result
 
-        elif p.size == cls.dim:
+        elif len(p) == cls.dim:
             result = np.zeros([4, 6])
             result[0:3, 0:3] = p[3] * np.eye(3)
             result[0:3, 3:6] = -SO3.wedge(p[0:3])
@@ -108,8 +108,8 @@ class SE3:
 
         This is the inverse operation to SE3.log.
         """
-        if xi.size != cls.dof:
-            raise ValueError("xi must have size 6")
+        if len(xi) != cls.dof:
+            raise ValueError("xi must have length 6")
 
         rho = xi[0:3]
         phi = xi[3:6]
@@ -173,7 +173,7 @@ class SE3:
             # Compound with another transformation
             return SE3(self.rot * other.rot,
                        self.rot * other.trans + self.trans)
-        elif other.size == self.dim - 1:
+        elif len(other) == self.dim - 1:
             # Transform a 3-vector
             return self.rot * other + self.trans
         else:

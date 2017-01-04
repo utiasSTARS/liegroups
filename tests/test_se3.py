@@ -28,15 +28,15 @@ def test_mul():
 
 
 def test_wedge_vee():
-    xi = np.array([1, 2, 3, 4, 5, 6])
+    xi = [1, 2, 3, 4, 5, 6]
     Xi = SE3.wedge(xi)
     assert np.array_equal(xi, SE3.vee(Xi))
 
 
 def test_odot():
-    p1 = np.array([1, 2, 3])
-    p2 = np.array([1, 2, 3, 1])
-    p3 = np.array([1, 2, 3, 0])
+    p1 = [1, 2, 3]
+    p2 = [1, 2, 3, 1]
+    p3 = [1, 2, 3, 0]
 
     odot12 = np.vstack([SE3.odot(p1), np.zeros([1, 6])])
     odot13 = np.vstack([SE3.odot(p1, directional=True), np.zeros([1, 6])])
@@ -48,30 +48,30 @@ def test_odot():
 
 
 def test_exp_log():
-    T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
     assert np.allclose(SE3.exp(SE3.log(T)).as_matrix(), T.as_matrix())
 
 
 def test_perturb():
-    T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
     T_copy = copy.deepcopy(T)
-    xi = np.array([0.6, 0.5, 0.4, 0.3, 0.2, 0.1])
+    xi = [0.6, 0.5, 0.4, 0.3, 0.2, 0.1]
     T.perturb(xi)
     assert np.allclose(T.as_matrix(), (SE3.exp(xi) * T_copy).as_matrix())
 
 
 def test_normalize():
-    T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
     T.rot.mat += 0.1
     T.normalize()
     assert SE3.is_valid_matrix(T.as_matrix())
 
 
 def test_inv():
-    T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
     assert np.allclose((T * T.inv()).as_matrix(), np.identity(4))
 
 
 def test_adjoint():
-    T = SE3.exp(np.array([1, 2, 3, 4, 5, 6]))
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
     assert T.adjoint().shape == (6, 6)

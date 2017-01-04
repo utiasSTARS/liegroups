@@ -18,8 +18,8 @@ class SE2:
         if not isinstance(rot, SO2):
             raise ValueError("rot must be SO2")
 
-        if trans.size != self.dim - 1:
-            raise ValueError("trans must have size 2")
+        if len(trans) != self.dim - 1:
+            raise ValueError("trans must have length 2")
 
         self.rot = rot
         """Storage for the rotation matrix"""
@@ -53,8 +53,8 @@ class SE2:
 
         This is the inverse operation to SE2.vee.
         """
-        if xi.size != cls.dof:
-            raise ValueError("xi must have size 3")
+        if len(xi) != cls.dof:
+            raise ValueError("xi must have length 3")
 
         return np.vstack(
             [np.hstack([SO2.wedge(xi[2]),
@@ -76,7 +76,7 @@ class SE2:
     @classmethod
     def odot(cls, p, **kwargs):
         """SE(2) \odot operator as defined by Barfoot."""
-        if p.size == cls.dim - 1:
+        if len(p) == cls.dim - 1:
             result = np.zeros([2, 3])
 
             # Assume scale parameter is 1 unless otherwise p is a direction
@@ -89,7 +89,7 @@ class SE2:
 
             return result
 
-        elif p.size == cls.dim:
+        elif len(p) == cls.dim:
             result = np.zeros([3, 3])
             result[0:2, 0:2] = p[2] * np.eye(2)
             result[0:2, 2] = SO2.wedge(1).dot(p[0:2])
@@ -108,8 +108,8 @@ class SE2:
 
         This is the inverse operation to SE2.log.
         """
-        if xi.size != cls.dof:
-            raise ValueError("xi must have size 3")
+        if len(xi) != cls.dof:
+            raise ValueError("xi must have length 3")
 
         rho = xi[0:2]
         phi = xi[2]
@@ -172,7 +172,7 @@ class SE2:
             # Compound with another transformation
             return SE2(self.rot * other.rot,
                        self.rot * other.trans + self.trans)
-        elif other.size == self.dim - 1:
+        elif len(other) == self.dim - 1:
             # Transform a 2-vector
             return self.rot * other + self.trans
         else:

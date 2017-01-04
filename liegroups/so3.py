@@ -79,8 +79,8 @@ class SO3:
 
         This is the inverse operation to SO3.vee.
         """
-        if phi.size != cls.dof:
-            raise ValueError("phi must have size 3")
+        if len(phi) != cls.dof:
+            raise ValueError("phi must have length 3")
 
         return np.array([[0, -phi[2], phi[1]],
                          [phi[2], 0, -phi[0]],
@@ -101,8 +101,8 @@ class SO3:
     def left_jacobian(cls, phi):
         """Left SO(3) Jacobian (see Barfoot).
         """
-        if phi.size != cls.dof:
-            raise ValueError("phi must have size 3")
+        if len(phi) != cls.dof:
+            raise ValueError("phi must have length 3")
 
         angle = np.linalg.norm(phi)
 
@@ -122,8 +122,8 @@ class SO3:
     def inv_left_jacobian(cls, phi):
         """Inverse left SO(3) Jacobian (see Barfoot).
         """
-        if phi.size != cls.dof:
-            raise ValueError("phi must have size 3")
+        if len(phi) != cls.dof:
+            raise ValueError("phi must have length 3")
 
         angle = np.linalg.norm(phi)
 
@@ -147,8 +147,8 @@ class SO3:
 
         This is the inverse operation to SO3.log.
         """
-        if phi.size != cls.dof:
-            raise ValueError("phi must have size 3")
+        if len(phi) != cls.dof:
+            raise ValueError("phi must have length 3")
 
         angle = np.linalg.norm(phi)
 
