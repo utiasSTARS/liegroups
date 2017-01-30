@@ -62,3 +62,17 @@ def test_inv():
 def test_adjoint():
     C = SO2.exp(np.pi / 4)
     assert C.adjoint() == 1.
+
+
+def test_transform_multiple():
+    C = SO2.exp(np.pi / 4)
+    pt1 = np.array([1, 2])
+    pt2 = np.array([4, 5])
+    pts = np.array([pt1, pt2]).T  # 2x2
+    Cpt1 = C * pt1
+    Cpt2 = C * pt2
+    Cpts = C * pts
+    assert(
+        np.allclose(Cpt1, Cpts[:, 0])
+        and np.allclose(Cpt2, Cpts[:, 1])
+    )

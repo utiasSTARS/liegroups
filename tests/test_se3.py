@@ -68,3 +68,15 @@ def test_inv():
 def test_adjoint():
     T = SE3.exp([1, 2, 3, 4, 5, 6])
     assert T.adjoint().shape == (6, 6)
+
+
+def test_transform_multiple():
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
+    pt1 = np.array([1, 2, 3])
+    pt2 = np.array([4, 5, 3])
+    pts = np.array([pt1, pt2]).T  # 2x2
+    Tpt1 = T * pt1
+    Tpt2 = T * pt2
+    Tpts = T * pts
+    assert np.allclose(Tpt1, Tpts[:, 0])
+    assert np.allclose(Tpt2, Tpts[:, 1])

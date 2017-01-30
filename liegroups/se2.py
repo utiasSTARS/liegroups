@@ -167,12 +167,20 @@ class SE2:
             # Compound with another transformation
             return SE2(self.rot * other.rot,
                        self.rot * other.trans + self.trans)
-        elif len(other) == self.dim - 1:
-            # Transform a 2-vector
-            return self.rot * other + self.trans
         else:
-            # Transform one or more 3-vectors or fail
-            return self.as_matrix().dot(other)
+            other = np.atleast_2d(other)
+            if other.shape[0] == 1:
+                other = other.T
+
+            if other.shape[0] == self.dim - 1:
+                # Transform one or more 2-vectors
+                return np.squeeze(self.rot * other + np.atleast_2d(self.trans).T)
+            elif other.shape[0] == self.dim:
+                # Transform one or more 3-vectors
+                return np.squeeze(self.as_matrix().dot(other))
+            else:
+                raise ValueError("Vector must have shape ({},), ({},), ({},N) or ({},N)".format(
+                    self.dim - 1, self.dim, self.dim - 1, self.dim))
 
     def __repr__(self):
         return "SE2({})".format(self.as_matrix())
