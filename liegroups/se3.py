@@ -53,40 +53,15 @@ class SE3:
 
         This is the inverse operation to SE3.vee.
         """
-        if len(xi) != cls.dof:
-            raise ValueError("xi must have length 6")
+        xi = np.atleast_2d(xi)
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        return np.vstack(
-            [np.hstack([SO3.wedge(xi[3:7]),
-                        np.reshape(xi[0:3], (3, 1))]),
-             [0, 0, 0, 0]]
-        )
-
-    @classmethod
-    def odot(cls, p, **kwargs):
-        """SE(3) \odot operator as defined by Barfoot."""
-        if len(p) == cls.dim - 1:
-            result = np.zeros([3, 6])
-
-            # Assume scale parameter is 1 unless otherwise p is a direction
-            # vector, in which case the scale is 0
-            scale_is_zero = kwargs.get('directional', False)
-            if not scale_is_zero:
-                result[0:3, 0:3] = np.eye(3)
-
-            result[0:3, 3:6] = -SO3.wedge(p)
-
-            return result
-
-        elif len(p) == cls.dim:
-            result = np.zeros([4, 6])
-            result[0:3, 0:3] = p[3] * np.eye(3)
-            result[0:3, 3:6] = -SO3.wedge(p[0:3])
-
-            return result
-
-        else:
-            raise ValueError("p must have dimension 3 or 4")
+        Xi = np.zeros([xi.shape[0], cls.dim, cls.dim])
+        Xi[:, 0:3, 0:3] = SO3.wedge(xi[:, 3:7])
+        Xi[:, 0:3, 3] = xi[:, 0:3]
+        return np.squeeze(Xi)
 
     @classmethod
     def vee(cls, Xi):
@@ -94,10 +69,42 @@ class SE3:
 
         This is the inverse operation to SE3.wedge.
         """
-        if Xi.shape != (cls.dim, cls.dim):
-            raise ValueError("Xi must have shape (4,4)")
+        if Xi.ndim < 3:
+            Xi = np.expand_dims(Xi, axis=0)
 
-        return np.hstack([Xi[0:3, 3], SO3.vee(Xi[0:3, 0:3])])
+        if Xi.shape[1:3] != (cls.dim, cls.dim):
+            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
+                cls.dim, cls.dim, cls.dim, cls.dim))
+
+        xi = np.empty([Xi.shape[0], cls.dof])
+        xi[:, 0:3] = Xi[:, 0:3, 3]
+        xi[:, 3:6] = SO3.vee(Xi[:, 0:3, 0:3])
+        return np.squeeze(xi)
+
+    @classmethod
+    def odot(cls, p, **kwargs):
+        """SE(3) \odot operator as defined by Barfoot."""
+        p = np.atleast_2d(p)
+        result = np.zeros([p.shape[0], p.shape[1], cls.dof])
+
+        if p.shape[1] == cls.dim - 1:
+            # Assume scale parameter is 1 unless otherwise p is a direction
+            # vector, in which case the scale is 0
+            scale_is_zero = kwargs.get('directional', False)
+            if not scale_is_zero:
+                result[:, 0:3, 0:3] = np.eye(3)
+
+            result[:, 0:3, 3:6] = -SO3.wedge(p)
+
+        elif p.shape[1] == cls.dim:
+            result[:, 0:3, 0:3] = p[:, 3] * np.eye(3)
+            result[:, 0:3, 3:6] = -SO3.wedge(p[:, 0:3])
+
+        else:
+            raise ValueError("p must have shape ({},), ({},), (N,{}) or (N,{})".format(
+                cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
+
+        return np.squeeze(result)
 
     @classmethod
     def exp(cls, xi):
@@ -170,17 +177,15 @@ class SE3:
                        self.rot * other.trans + self.trans)
         else:
             other = np.atleast_2d(other)
-            if other.shape[0] == 1:
-                other = other.T
 
-            if other.shape[0] == self.dim - 1:
+            if other.shape[1] == self.dim - 1:
                 # Transform one or more 3-vectors
-                return np.squeeze(self.rot * other + np.atleast_2d(self.trans).T)
-            elif other.shape[0] == self.dim:
+                return np.squeeze(self.rot * other.T + np.atleast_2d(self.trans).T).T
+            elif other.shape[1] == self.dim:
                 # Transform one or more 4-vectors
-                return np.squeeze(self.as_matrix().dot(other))
+                return np.squeeze(self.as_matrix().dot(other.T)).T
             else:
-                raise ValueError("Vector must have shape ({},), ({},), ({},N) or ({},N)".format(
+                raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
                     self.dim - 1, self.dim, self.dim - 1, self.dim))
 
     def __repr__(self):

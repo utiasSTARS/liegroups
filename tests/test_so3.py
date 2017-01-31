@@ -52,15 +52,22 @@ def test_rpy():
 
 
 def test_wedge():
-    phi = np.array([1, 2, 3])
+    phi = [1, 2, 3]
     Phi = SO3.wedge(phi)
+    phis = np.array([[1, 2, 3], [4, 5, 6]])
+    Phis = SO3.wedge(phis)
     assert np.array_equal(Phi, -Phi.T)
+    assert np.array_equal(Phis[0, :, :], SO3.wedge(phis[0]))
+    assert np.array_equal(Phis[1, :, :], SO3.wedge(phis[1]))
 
 
 def test_wedge_vee():
-    phi = np.array([1, 2, 3])
+    phi = [1, 2, 3]
     Phi = SO3.wedge(phi)
+    phis = np.array([[1, 2, 3], [4, 5, 6]])
+    Phis = SO3.wedge(phis)
     assert np.array_equal(phi, SO3.vee(Phi))
+    assert np.array_equal(phis, SO3.vee(Phis))
 
 
 def test_exp_log():

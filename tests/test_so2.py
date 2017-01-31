@@ -20,13 +20,20 @@ def test_mul():
 def test_wedge():
     phi = 1
     Phi = SO2.wedge(phi)
+    phis = [1, 2]
+    Phis = SO2.wedge(phis)
     assert np.array_equal(Phi, -Phi.T)
+    assert np.array_equal(Phis[0, :, :], SO2.wedge(phis[0]))
+    assert np.array_equal(Phis[1, :, :], SO2.wedge(phis[1]))
 
 
 def test_wedge_vee():
     phi = 1
     Phi = SO2.wedge(phi)
+    phis = [1, 2]
+    Phis = SO2.wedge(phis)
     assert phi == SO2.vee(Phi)
+    assert np.array_equal(phis, SO2.vee(Phis))
 
 
 def test_exp_log():

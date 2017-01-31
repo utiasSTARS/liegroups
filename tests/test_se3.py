@@ -23,7 +23,10 @@ def test_mul():
 def test_wedge_vee():
     xi = [1, 2, 3, 4, 5, 6]
     Xi = SE3.wedge(xi)
+    xis = np.array([[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12]])
+    Xis = SE3.wedge(xis)
     assert np.array_equal(xi, SE3.vee(Xi))
+    assert np.array_equal(xis, SE3.vee(Xis))
 
 
 def test_odot():
@@ -38,6 +41,19 @@ def test_odot():
 
     assert np.array_equal(odot12, odot2)
     assert np.array_equal(odot13, odot3)
+
+
+def test_odot_multiple():
+    p1 = [1, 2, 3]
+    p2 = [2, 3, 4]
+    ps = np.array([p1, p2])
+
+    odot1 = SE3.odot(p1)
+    odot2 = SE3.odot(p2)
+    odots = SE3.odot(ps)
+
+    assert np.array_equal(odot1, odots[0, :, :])
+    assert np.array_equal(odot2, odots[1, :, :])
 
 
 def test_exp_log():
@@ -73,10 +89,18 @@ def test_adjoint():
 def test_transform_multiple():
     T = SE3.exp([1, 2, 3, 4, 5, 6])
     pt1 = np.array([1, 2, 3])
-    pt2 = np.array([4, 5, 3])
-    pts = np.array([pt1, pt2]).T  # 2x2
+    pt2 = np.array([4, 5, 6])
+    pt3 = np.array([1, 2, 3, 1])
+    pt4 = np.array([4, 5, 6, 1])
+    pts12 = np.array([pt1, pt2])  # 2x2
+    pts34 = np.array([pt3, pt4])  # 2x3
     Tpt1 = T * pt1
     Tpt2 = T * pt2
-    Tpts = T * pts
-    assert np.allclose(Tpt1, Tpts[:, 0])
-    assert np.allclose(Tpt2, Tpts[:, 1])
+    Tpt3 = T * pt3
+    Tpt4 = T * pt4
+    Tpts12 = T * pts12
+    Tpts34 = T * pts34
+    assert np.allclose(Tpt1, Tpts12[0, :])
+    assert np.allclose(Tpt2, Tpts12[1, :])
+    assert np.allclose(Tpt3, Tpts34[0, :])
+    assert np.allclose(Tpt4, Tpts34[1, :])

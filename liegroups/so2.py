@@ -53,8 +53,12 @@ class SO2:
 
         This is the inverse operation to SO2.vee.
         """
-        return np.array([[0, -phi],
-                         [phi, 0]])
+        phi = np.atleast_1d(phi)
+
+        Phi = np.zeros([len(phi), cls.dim, cls.dim])
+        Phi[:, 0, 1] = -phi
+        Phi[:, 1, 0] = phi
+        return np.squeeze(Phi)
 
     @classmethod
     def vee(cls, Phi):
@@ -62,10 +66,14 @@ class SO2:
 
         This is the inverse operation to SO2.wedge.
         """
-        if Phi.shape != (cls.dim, cls.dim):
-            raise ValueError("Phi must have shape (2,2)")
+        if Phi.ndim < 3:
+            Phi = np.expand_dims(Phi, axis=0)
 
-        return Phi[1, 0]
+        if Phi.shape[1:3] != (cls.dim, cls.dim):
+            raise ValueError(
+                "Phi must have shape ({},{}) or (N,{},{})".format(cls.dim, cls.dim, cls.dim, cls.dim))
+
+        return np.squeeze(Phi[:, 1, 0])
 
     @classmethod
     def left_jacobian(cls, phi):

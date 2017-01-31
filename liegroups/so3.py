@@ -79,12 +79,19 @@ class SO3:
 
         This is the inverse operation to SO3.vee.
         """
-        if len(phi) != cls.dof:
-            raise ValueError("phi must have length 3")
+        phi = np.atleast_2d(phi)
+        if phi.shape[1] != cls.dof:
+            raise ValueError(
+                "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        return np.array([[0, -phi[2], phi[1]],
-                         [phi[2], 0, -phi[0]],
-                         [-phi[1], phi[0], 0]])
+        Phi = np.zeros([phi.shape[0], cls.dim, cls.dim])
+        Phi[:, 0, 1] = -phi[:, 2]
+        Phi[:, 1, 0] = phi[:, 2]
+        Phi[:, 0, 2] = phi[:, 1]
+        Phi[:, 2, 0] = -phi[:, 1]
+        Phi[:, 1, 2] = -phi[:, 0]
+        Phi[:, 2, 1] = phi[:, 0]
+        return np.squeeze(Phi)
 
     @classmethod
     def vee(cls, Phi):
@@ -92,10 +99,18 @@ class SO3:
 
         This is the inverse operation to SO3.wedge.
         """
-        if Phi.shape != (cls.dim, cls.dim):
-            raise ValueError("Phi must have shape (3,3)")
+        if Phi.ndim < 3:
+            Phi = np.expand_dims(Phi, axis=0)
 
-        return np.array([Phi[2, 1], Phi[0, 2], Phi[1, 0]])
+        if Phi.shape[1:3] != (cls.dim, cls.dim):
+            raise ValueError("Phi must have shape ({},{}) or (N,{},{})".format(
+                cls.dim, cls.dim, cls.dim, cls.dim))
+
+        phi = np.empty([Phi.shape[0], cls.dim])
+        phi[:, 0] = Phi[:, 2, 1]
+        phi[:, 1] = Phi[:, 0, 2]
+        phi[:, 2] = Phi[:, 1, 0]
+        return np.squeeze(phi)
 
     @classmethod
     def left_jacobian(cls, phi):
