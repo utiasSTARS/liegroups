@@ -71,7 +71,7 @@ def test_adjoint():
     assert C.adjoint() == 1.
 
 
-def test_transform_multiple():
+def test_transform_vectorized():
     C = SO2.exp(np.pi / 4)
     pt1 = np.array([1, 2])
     pt2 = np.array([4, 5])

@@ -43,7 +43,7 @@ def test_odot():
     assert np.array_equal(odot13, odot3)
 
 
-def test_odot_multiple():
+def test_odot_vectorized():
     p1 = [1, 2, 3]
     p2 = [2, 3, 4]
     ps = np.array([p1, p2])
@@ -86,7 +86,7 @@ def test_adjoint():
     assert T.adjoint().shape == (6, 6)
 
 
-def test_transform_multiple():
+def test_transform_vectorized():
     T = SE3.exp([1, 2, 3, 4, 5, 6])
     pt1 = np.array([1, 2, 3])
     pt2 = np.array([4, 5, 6])

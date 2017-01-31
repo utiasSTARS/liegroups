@@ -105,7 +105,7 @@ def test_adjoint():
     assert np.allclose(C.adjoint(), C.mat)
 
 
-def test_transform_multiple():
+def test_transform_vectorized():
     C = SO3.exp(np.pi * np.ones(3) / 4)
     pt1 = np.array([1, 2, 3])
     pt2 = np.array([4, 5, 3])
