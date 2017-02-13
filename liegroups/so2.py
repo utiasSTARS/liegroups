@@ -21,9 +21,6 @@ class SO2:
     @classmethod
     def from_matrix(cls, mat):
         """Create a SO2 object from a 2x2 rotation matrix."""
-        if not SO2.is_valid_matrix(mat):
-            raise ValueError("Invalid rotation matrix")
-
         return cls(mat)
 
     @classmethod

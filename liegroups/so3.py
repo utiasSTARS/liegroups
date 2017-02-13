@@ -21,9 +21,6 @@ class SO3:
     @classmethod
     def from_matrix(cls, mat):
         """Create a SO3 object from a 3x3 rotation matrix."""
-        if not SO3.is_valid_matrix(mat):
-            raise ValueError("Invalid rotation matrix")
-
         return cls(mat)
 
     @classmethod
