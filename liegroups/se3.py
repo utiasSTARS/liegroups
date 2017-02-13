@@ -7,7 +7,7 @@ class SE3:
     """Homogeneous transformation matrix in SE(3)"""
 
     dim = 4
-    """Dimension of the rotation matrix."""
+    """Dimension of the transformation matrix."""
 
     dof = 6
     """Underlying degrees of freedom (i.e., dim of the tangent space)."""
