@@ -133,12 +133,14 @@ class SO2:
         """ Normalize the rotation matrix to ensure it is a valid rotation and
         negate the effect of rounding errors.
         """
-        U, s, V = np.linalg.svd(self.mat, full_matrices=False)
+        # The SVD is commonly written as a = U S V.H.
+        # The v returned by this function is V.H and u = U.
+        u, s, v = np.linalg.svd(self.mat, full_matrices=False)
 
         middle = np.identity(self.dim)
-        middle[1, 1] = np.linalg.det(V) * np.linalg.det(U)
+        middle[1, 1] = np.linalg.det(u) * np.linalg.det(v)
 
-        self.mat = U.dot(middle.dot(V.T))
+        self.mat = u.dot(middle.dot(v))
 
     def inv(self):
         """Return the inverse rotation."""
