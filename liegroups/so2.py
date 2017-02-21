@@ -11,16 +11,17 @@ class SO2:
     """Underlying degrees of freedom (i.e., dim of the tangent space)."""
 
     def __init__(self, mat=np.identity(dim)):
-        """Create a SO2 object from a 2x2 rotation matrix."""
-        if not SO2.is_valid_matrix(mat):
-            raise ValueError("Invalid rotation matrix")
+        """Create a SO2 object from a 2x2 rotation matrix (unsafe, but faster)."""
 
         self.mat = mat
         """Storage for the rotation matrix"""
 
     @classmethod
     def from_matrix(cls, mat):
-        """Create a SO2 object from a 2x2 rotation matrix."""
+        """Create a SO2 object from a 2x2 rotation matrix (safe, but slower)."""
+        if not SO2.is_valid_matrix(mat):
+            raise ValueError("Invalid rotation matrix")
+
         return cls(mat)
 
     @classmethod
@@ -140,7 +141,7 @@ class SO2:
         middle = np.identity(self.dim)
         middle[1, 1] = np.linalg.det(u) * np.linalg.det(v)
 
-        self.mat = u.dot(middle.dot(v))
+        self.mat = u.dot(middle).dot(v)
 
     def inv(self):
         """Return the inverse rotation."""
