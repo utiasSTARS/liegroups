@@ -10,6 +10,14 @@ def test_identity():
     assert isinstance(T, SO3)
 
 
+def test_from_rpy_to_rpy():
+    r, p, y = np.pi / 4., np.pi / 3., np.pi
+    test_r, test_p, test_y = SO3.from_rpy(r, p, y).to_rpy()
+    assert np.isclose(test_r, r)
+    assert np.isclose(test_p, p)
+    assert np.isclose(test_y, y)
+
+
 def test_mul():
     C = np.array([[0, 0, -1],
                   [0, 1, 0],

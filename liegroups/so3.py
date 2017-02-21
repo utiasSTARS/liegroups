@@ -67,9 +67,29 @@ class SO3:
                              [0., 0., 1.]]))
 
     @classmethod
-    def from_rpy(cls, r, p, y):
+    def from_rpy(cls, roll, pitch, yaw):
         """Form a rotation matrix from RPY Euler angles."""
-        return cls.rotz(y) * cls.roty(p) * cls.rotx(r)
+        return cls.rotz(yaw) * cls.roty(pitch) * cls.rotx(roll)
+
+    def to_rpy(self):
+        """Convert a rotation matrix to RPY Euler angles."""
+        pitch = np.arctan2(-self.mat[2, 0],
+                           np.sqrt(self.mat[0, 0]**2 + self.mat[1, 0]**2))
+
+        if np.isclose(pitch, np.pi / 2.):
+            yaw = 0.
+            roll = np.arctan2(self.mat[0, 1], self.mat[1, 1])
+        elif np.isclose(pitch, -np.pi / 2.):
+            yaw = 0.
+            roll = -np.arctan2(self.mat[0, 1], self.mat[1, 1])
+        else:
+            sec_pitch = 1. / np.cos(pitch)
+            yaw = np.arctan2(self.mat[1, 0] * sec_pitch,
+                             self.mat[0, 0] * sec_pitch)
+            roll = np.arctan2(self.mat[2, 1] * sec_pitch,
+                              self.mat[2, 2] * sec_pitch)
+
+        return roll, pitch, yaw
 
     @classmethod
     def wedge(cls, phi):

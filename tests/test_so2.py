@@ -10,6 +10,11 @@ def test_identity():
     assert isinstance(C, SO2)
 
 
+def test_from_angle_to_angle():
+    angle = np.pi / 2.
+    assert np.isclose(SO2.from_angle(angle).to_angle(), angle)
+
+
 def test_mul():
     C = np.array([[0, -1],
                   [1, 0]])

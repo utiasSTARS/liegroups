@@ -37,13 +37,19 @@ class SO2:
         return cls(np.identity(cls.dim))
 
     @classmethod
-    def fromangle(cls, angle_in_radians):
+    def from_angle(cls, angle_in_radians):
         """Form a rotation matrix given an angle in rad."""
         c = np.cos(angle_in_radians)
         s = np.sin(angle_in_radians)
 
         return cls(np.array([[c, -s],
                              [s,  c]]))
+
+    def to_angle(self):
+        """Recover the rotation angle in rad from the rotation matrix."""
+        c = self.mat[0, 0]
+        s = self.mat[1, 0]
+        return np.arctan2(s, c)
 
     @classmethod
     def wedge(cls, phi):
@@ -109,7 +115,7 @@ class SO2:
 
         This is the inverse operation to SO2.log.
         """
-        return cls.fromangle(phi)
+        return cls.from_angle(phi)
 
     def log(self):
         """Logarithmic map for SO(3).
