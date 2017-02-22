@@ -12,7 +12,9 @@ class SO3:
 
     def __init__(self, mat=np.identity(dim)):
         """Create a SO3 object from a 3x3 rotation matrix (unsafe, but faster)."""
-
+        if mat.shape != (self.dim, self.dim):
+            raise ValueError(
+                "mat must have shape ({},{})".format(self.dim, self.dim))
         self.mat = mat
         """Storage for the rotation matrix"""
 

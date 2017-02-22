@@ -16,7 +16,7 @@ class SE3:
         """Create a SE3 object from a translation and a
          rotation."""
         if not isinstance(rot, SO3):
-            raise ValueError("rot must be SO3")
+            rot = SO3(rot)
 
         if len(trans) != self.dim - 1:
             raise ValueError("trans must have length 3")

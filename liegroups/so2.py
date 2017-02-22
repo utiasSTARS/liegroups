@@ -12,7 +12,9 @@ class SO2:
 
     def __init__(self, mat=np.identity(dim)):
         """Create a SO2 object from a 2x2 rotation matrix (unsafe, but faster)."""
-
+        if mat.shape != (self.dim, self.dim):
+            raise ValueError(
+                "mat must have shape ({},{})".format(self.dim, self.dim))
         self.mat = mat
         """Storage for the rotation matrix"""
 
