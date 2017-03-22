@@ -2,7 +2,7 @@ import numpy as np
 
 
 class SO2:
-    """Rotation matrix in SO(2)"""
+    """Rotation matrix in SO(2) using active (alibi) transformations."""
 
     dim = 2
     """Dimension of the rotation matrix."""
@@ -168,4 +168,4 @@ class SO2:
             return np.dot(self.mat, other)
 
     def __repr__(self):
-        return "SO2({})".format(self.as_matrix())
+        return "SO2({})".format(str(self.as_matrix()).replace('\n', '\n    '))

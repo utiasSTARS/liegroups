@@ -4,7 +4,7 @@ from liegroups import SO2
 
 
 class SE2:
-    """Homogeneous transformation matrix in SE(2)"""
+    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
 
     dim = 3
     """Dimension of the transformation matrix."""
@@ -189,4 +189,4 @@ class SE2:
                     self.dim - 1, self.dim, self.dim - 1, self.dim))
 
     def __repr__(self):
-        return "SE2({})".format(self.as_matrix())
+        return "SE2({})".format(str(self.as_matrix()).replace('\n', '\n    '))
