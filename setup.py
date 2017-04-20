@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='liegroups',
-    version='0.1.0',
+    version='0.1.1',
     description='Lie groups in Python',
     author='Lee Clement',
     author_email='lee.clement@robotics.utias.utoronto.ca',

@@ -82,23 +82,23 @@ class SE3:
         return np.squeeze(xi)
 
     @classmethod
-    def odot(cls, p, **kwargs):
+    def odot(cls, vec, directional=False):
         """SE(3) \odot operator as defined by Barfoot."""
-        p = np.atleast_2d(p)
-        result = np.zeros([p.shape[0], p.shape[1], cls.dof])
+        vec = np.atleast_2d(vec)
+        result = np.zeros([vec.shape[0], vec.shape[1], cls.dof])
 
-        if p.shape[1] == cls.dim - 1:
-            # Assume scale parameter is 1 unless otherwise p is a direction
+        if vec.shape[1] == cls.dim - 1:
+            # Assume scale parameter is 1 unless vec is a direction
             # vector, in which case the scale is 0
-            scale_is_zero = kwargs.get('directional', False)
-            if not scale_is_zero:
+            if not directional:
                 result[:, 0:3, 0:3] = np.eye(3)
 
-            result[:, 0:3, 3:6] = -SO3.wedge(p)
+            result[:, 0:3, 3:6] = SO3.wedge(-vec)
 
-        elif p.shape[1] == cls.dim:
-            result[:, 0:3, 0:3] = p[:, 3] * np.eye(3)
-            result[:, 0:3, 3:6] = -SO3.wedge(p[:, 0:3])
+        elif vec.shape[1] == cls.dim:
+            # Broadcast magic
+            result[:, 0:3, 0:3] = vec[:, 3][:, None, None] * np.eye(3)
+            result[:, 0:3, 3:6] = SO3.wedge(-vec[:, 0:3])
 
         else:
             raise ValueError("p must have shape ({},), ({},), (N,{}) or (N,{})".format(
