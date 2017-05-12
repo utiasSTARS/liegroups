@@ -170,7 +170,10 @@ class SE3:
              np.hstack([np.zeros((3, 3)), rotmat])]
         )
 
-    def __mul__(self, other):
+    def dot(self, other):
+        """Transform another transformation or one or more vectors.
+        The multiplication operator is equivalent to dot.
+        """
         if isinstance(other, SE3):
             # Compound with another transformation
             return SE3(self.rot * other.rot,
@@ -187,6 +190,9 @@ class SE3:
             else:
                 raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
                     self.dim - 1, self.dim, self.dim - 1, self.dim))
+
+    def __mul__(self, other):
+        return self.dot(other)
 
     def __repr__(self):
         return "SE3({})".format(str(self.as_matrix()).replace('\n', '\n    '))

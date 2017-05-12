@@ -159,13 +159,19 @@ class SO2:
         """Return the adjoint matrix of the rotation."""
         return 1.
 
-    def __mul__(self, other):
+    def dot(self, other):
+        """Transform another rotation or one or more vectors.
+            The multiplication operator is equivalent to dot.
+        """
         if isinstance(other, SO2):
             # Compound with another rotation
             return SO2(np.dot(self.mat, other.mat))
         else:
             # Transform one or more 2-vectors or fail
             return np.dot(self.mat, other)
+
+    def __mul__(self, other):
+        return self.dot(other)
 
     def __repr__(self):
         return "SO2({})".format(str(self.as_matrix()).replace('\n', '\n    '))

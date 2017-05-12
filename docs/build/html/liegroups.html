@@ -13,6 +13,8 @@
 
   
   
+  
+  
 
   
 
@@ -43,6 +45,7 @@
 
 <body class="wy-body-for-nav" role="document">
 
+   
   <div class="wy-grid-for-nav">
 
     
@@ -83,7 +86,10 @@
           
             
             
-                <ul class="current">
+              
+            
+            
+              <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Lie Groups</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-liegroups.so2">liegroups.SO2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-liegroups.se2">liegroups.SE2</a></li>
@@ -103,8 +109,10 @@
 
       
       <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">Lie Groups</a>
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lie Groups</a>
+        
       </nav>
 
 
@@ -113,23 +121,40 @@
         <div class="rst-content">
           
 
- 
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 <div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>Lie Groups</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Lie Groups</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
         
-          
+            
             <a href="_sources/liegroups.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -143,7 +168,7 @@
 <dl class="class">
 <dt id="liegroups.so2.SO2">
 <em class="property">class </em><code class="descclassname">liegroups.so2.</code><code class="descname">SO2</code><span class="sig-paren">(</span><em>mat=array([[ 1.,  0.],        [ 0.,  1.]])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotation matrix in SO(2)</p>
+<dd><p>Rotation matrix in SO(2) using active (alibi) transformations.</p>
 <dl class="method">
 <dt id="liegroups.so2.SO2.adjoint">
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.adjoint" title="Permalink to this definition">¶</a></dt>
@@ -168,6 +193,13 @@
 <dd><p>Underlying degrees of freedom (i.e., dim of the tangent space).</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="liegroups.so2.SO2.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform another rotation or one or more vectors.
+The multiplication operator is equivalent to dot.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="liegroups.so2.SO2.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.exp" title="Permalink to this definition">¶</a></dt>
@@ -177,15 +209,15 @@
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="liegroups.so2.SO2.from_matrix">
-<em class="property">classmethod </em><code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.from_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a SO2 object from a 2x2 rotation matrix.</p>
+<dt id="liegroups.so2.SO2.from_angle">
+<em class="property">classmethod </em><code class="descname">from_angle</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.from_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix given an angle in rad.</p>
 </dd></dl>
 
 <dl class="classmethod">
-<dt id="liegroups.so2.SO2.fromangle">
-<em class="property">classmethod </em><code class="descname">fromangle</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.fromangle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Form a rotation matrix given an angle in rad.</p>
+<dt id="liegroups.so2.SO2.from_matrix">
+<em class="property">classmethod </em><code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a SO2 object from a 2x2 rotation matrix (safe, but slower).</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -246,6 +278,12 @@ negate the effect of rounding errors.</p>
 by a vector in its local tangent space.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="liegroups.so2.SO2.to_angle">
+<code class="descname">to_angle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.to_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover the rotation angle in rad from the rotation matrix.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="liegroups.so2.SO2.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so2.SO2.vee" title="Permalink to this definition">¶</a></dt>
@@ -267,8 +305,8 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se2"></span><h2>liegroups.SE2<a class="headerlink" href="#module-liegroups.se2" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se2.SE2">
-<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=SO2([[ 1.  0.]  [ 0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homogeneous transformation matrix in SE(2)</p>
+<em class="property">class </em><code class="descclassname">liegroups.se2.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot=SO2([[ 1.  0.]      [ 0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous transformation matrix in SE(2) using active (alibi) transformations.</p>
 <dl class="method">
 <dt id="liegroups.se2.SE2.adjoint">
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.adjoint" title="Permalink to this definition">¶</a></dt>
@@ -285,13 +323,20 @@ transformation.</p>
 <dl class="attribute">
 <dt id="liegroups.se2.SE2.dim">
 <code class="descname">dim</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.se2.SE2.dim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dimension of the rotation matrix.</p>
+<dd><p>Dimension of the transformation matrix.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="liegroups.se2.SE2.dof">
 <code class="descname">dof</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.se2.SE2.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Underlying degrees of freedom (i.e., dim of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.se2.SE2.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se2.SE2.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform another transformation or one or more vectors.
+The multiplication operator is equivalent to dot.</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -390,7 +435,7 @@ by a vector in its local tangent space.</p>
 <dl class="class">
 <dt id="liegroups.so3.SO3">
 <em class="property">class </em><code class="descclassname">liegroups.so3.</code><code class="descname">SO3</code><span class="sig-paren">(</span><em>mat=array([[ 1.,  0.,  0.],        [ 0.,  1.,  0.],        [ 0.,  0.,  1.]])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotation matrix in SO(3)</p>
+<dd><p>Rotation matrix in SO(3) using active (alibi) transformations.</p>
 <dl class="method">
 <dt id="liegroups.so3.SO3.adjoint">
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.adjoint" title="Permalink to this definition">¶</a></dt>
@@ -415,6 +460,13 @@ by a vector in its local tangent space.</p>
 <dd><p>Underlying degrees of freedom (i.e., dim of the tangent space).</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="liegroups.so3.SO3.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform another rotation or one or more vectors.
+The multiplication operator is equivalent to dot.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="liegroups.so3.SO3.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.exp" title="Permalink to this definition">¶</a></dt>
@@ -426,12 +478,12 @@ by a vector in its local tangent space.</p>
 <dl class="classmethod">
 <dt id="liegroups.so3.SO3.from_matrix">
 <em class="property">classmethod </em><code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.from_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a SO3 object from a 3x3 rotation matrix.</p>
+<dd><p>Create a SO3 object from a 3x3 rotation matrix (safe, but slower).</p>
 </dd></dl>
 
 <dl class="classmethod">
 <dt id="liegroups.so3.SO3.from_rpy">
-<em class="property">classmethod </em><code class="descname">from_rpy</code><span class="sig-paren">(</span><em>r</em>, <em>p</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.from_rpy" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">from_rpy</code><span class="sig-paren">(</span><em>roll</em>, <em>pitch</em>, <em>yaw</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.from_rpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Form a rotation matrix from RPY Euler angles.</p>
 </dd></dl>
 
@@ -511,6 +563,12 @@ by a vector in its local tangent space.</p>
 <dd><p>Form a rotation matrix given an angle in rad about the z-axis.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="liegroups.so3.SO3.to_rpy">
+<code class="descname">to_rpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.to_rpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a rotation matrix to RPY Euler angles.</p>
+</dd></dl>
+
 <dl class="classmethod">
 <dt id="liegroups.so3.SO3.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.so3.SO3.vee" title="Permalink to this definition">¶</a></dt>
@@ -532,8 +590,8 @@ by a vector in its local tangent space.</p>
 <span id="liegroups-se3"></span><h2>liegroups.SE3<a class="headerlink" href="#module-liegroups.se3" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="liegroups.se3.SE3">
-<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=SO3([[ 1.  0.  0.]  [ 0.  1.  0.]  [ 0.  0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homogeneous transformation matrix in SE(3)</p>
+<em class="property">class </em><code class="descclassname">liegroups.se3.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot=SO3([[ 1.  0.  0.]      [ 0.  1.  0.]      [ 0.  0.  1.]])</em>, <em>trans=array([ 0.</em>, <em>0.</em>, <em>0.])</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous transformation matrix in SE(3) using active (alibi) transformations.</p>
 <dl class="method">
 <dt id="liegroups.se3.SE3.adjoint">
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.adjoint" title="Permalink to this definition">¶</a></dt>
@@ -550,13 +608,20 @@ transformation.</p>
 <dl class="attribute">
 <dt id="liegroups.se3.SE3.dim">
 <code class="descname">dim</code><em class="property"> = 4</em><a class="headerlink" href="#liegroups.se3.SE3.dim" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dimension of the rotation matrix.</p>
+<dd><p>Dimension of the transformation matrix.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="liegroups.se3.SE3.dof">
 <code class="descname">dof</code><em class="property"> = 6</em><a class="headerlink" href="#liegroups.se3.SE3.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Underlying degrees of freedom (i.e., dim of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.se3.SE3.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform another transformation or one or more vectors.
+The multiplication operator is equivalent to dot.</p>
 </dd></dl>
 
 <dl class="classmethod">
@@ -610,7 +675,7 @@ negate the effect of rounding errors.</p>
 
 <dl class="classmethod">
 <dt id="liegroups.se3.SE3.odot">
-<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.odot" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>vec</em>, <em>directional=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.se3.SE3.odot" title="Permalink to this definition">¶</a></dt>
 <dd><p>SE(3) odot operator as defined by Barfoot.</p>
 </dd></dl>
 
@@ -654,13 +719,16 @@ by a vector in its local tangent space.</p>
 
 
            </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="index.html" class="btn btn-neutral" title="Lie Groups" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Lie Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -694,7 +762,8 @@ by a vector in its local tangent space.</p>
             VERSION:'0.1.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
         };
     </script>
       <script type="text/javascript" src="_static/jquery.js"></script>
