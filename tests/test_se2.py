@@ -99,7 +99,7 @@ def test_transform_vectorized():
     Tpt4 = T * pt4
     Tpts12 = T * pts12
     Tpts34 = T * pts34
-    assert np.allclose(Tpt1, Tpts12[0, :])
-    assert np.allclose(Tpt2, Tpts12[1, :])
-    assert np.allclose(Tpt3, Tpts34[0, :])
-    assert np.allclose(Tpt4, Tpts34[1, :])
+    assert np.allclose(Tpt1, Tpts12[0])
+    assert np.allclose(Tpt2, Tpts12[1])
+    assert np.allclose(Tpt3, Tpts34[0])
+    assert np.allclose(Tpt4, Tpts34[1])

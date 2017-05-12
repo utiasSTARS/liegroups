@@ -92,15 +92,15 @@ def test_transform_vectorized():
     pt2 = np.array([4, 5, 6])
     pt3 = np.array([1, 2, 3, 1])
     pt4 = np.array([4, 5, 6, 1])
-    pts12 = np.array([pt1, pt2])  # 2x2
-    pts34 = np.array([pt3, pt4])  # 2x3
+    pts12 = np.array([pt1, pt2])  # 2x3
+    pts34 = np.array([pt3, pt4])  # 2x4
     Tpt1 = T * pt1
     Tpt2 = T * pt2
     Tpt3 = T * pt3
     Tpt4 = T * pt4
     Tpts12 = T * pts12
     Tpts34 = T * pts34
-    assert np.allclose(Tpt1, Tpts12[0, :])
-    assert np.allclose(Tpt2, Tpts12[1, :])
-    assert np.allclose(Tpt3, Tpts34[0, :])
-    assert np.allclose(Tpt4, Tpts34[1, :])
+    assert np.allclose(Tpt1, Tpts12[0])
+    assert np.allclose(Tpt2, Tpts12[1])
+    assert np.allclose(Tpt3, Tpts34[0])
+    assert np.allclose(Tpt4, Tpts34[1])

@@ -266,8 +266,14 @@ class SO3:
             # Compound with another rotation
             return SO3(np.dot(self.mat, other.mat))
         else:
+            other = np.atleast_2d(other)
+
             # Transform one or more 3-vectors or fail
-            return np.dot(self.mat, other)
+            if other.shape[1] == self.dim:
+                return np.squeeze(np.dot(self.mat, other.T).T)
+            else:
+                raise ValueError("Vector must have shape ({},) or (N,{})".format(
+                    self.dim, self.dim))
 
     def __mul__(self, other):
         return self.dot(other)

@@ -117,11 +117,11 @@ def test_transform_vectorized():
     C = SO3.exp(np.pi * np.ones(3) / 4)
     pt1 = np.array([1, 2, 3])
     pt2 = np.array([4, 5, 3])
-    pts = np.array([pt1, pt2]).T  # 3x2
+    pts = np.array([pt1, pt2])  # 2x3
     Cpt1 = C * pt1
     Cpt2 = C * pt2
     Cpts = C * pts
     assert(
-        np.allclose(Cpt1, Cpts[:, 0])
-        and np.allclose(Cpt2, Cpts[:, 1])
+        np.allclose(Cpt1, Cpts[0])
+        and np.allclose(Cpt2, Cpts[1])
     )

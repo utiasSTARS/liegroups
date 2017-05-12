@@ -183,7 +183,7 @@ class SE3:
 
             if other.shape[1] == self.dim - 1:
                 # Transform one or more 3-vectors
-                return np.squeeze(self.rot * other.T + np.atleast_2d(self.trans).T).T
+                return np.squeeze(self.rot * other + self.trans)
             elif other.shape[1] == self.dim:
                 # Transform one or more 4-vectors
                 return np.squeeze(self.as_matrix().dot(other.T)).T

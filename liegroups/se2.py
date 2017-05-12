@@ -167,8 +167,7 @@ class SE2:
         rotpart = self.rot.as_matrix()
         transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
         return np.vstack([np.hstack([rotpart, transpart]),
-                          [0, 0, 1]]
-                         )
+                          [0, 0, 1]])
 
     def dot(self, other):
         """Transform another transformation or one or more vectors.
@@ -183,7 +182,7 @@ class SE2:
 
             if other.shape[1] == self.dim - 1:
                 # Transform one or more 2-vectors
-                return np.squeeze(self.rot * other.T + np.atleast_2d(self.trans).T).T
+                return np.squeeze(self.rot * other + self.trans)
             elif other.shape[1] == self.dim:
                 # Transform one or more 3-vectors
                 return np.squeeze(self.as_matrix().dot(other.T)).T
