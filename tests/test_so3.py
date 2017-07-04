@@ -59,6 +59,23 @@ def test_rpy():
     assert np.allclose(C_got.mat, C_expected.mat)
 
 
+def test_quaternion():
+    q1 = np.array([1, 0, 0, 0])
+    q2 = np.array([0, 1, 0, 0])
+    q3 = np.array([0, 0, 1, 0])
+    q4 = np.array([0, 0, 0, 1])
+    q5 = 0.5 * np.ones(4)
+    q6 = -q5
+
+    assert np.allclose(SO3.from_quaternion(q1).to_quaternion(), q1)
+    assert np.allclose(SO3.from_quaternion(q2).to_quaternion(), q2)
+    assert np.allclose(SO3.from_quaternion(q3).to_quaternion(), q3)
+    assert np.allclose(SO3.from_quaternion(q4).to_quaternion(), q4)
+    assert np.allclose(SO3.from_quaternion(q5).to_quaternion(), q5)
+    assert np.allclose(SO3.from_quaternion(q5).mat,
+                       SO3.from_quaternion(q6).mat)
+
+
 def test_wedge():
     phi = [1, 2, 3]
     Phi = SO3.wedge(phi)

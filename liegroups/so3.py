@@ -94,6 +94,89 @@ class SO3:
         return roll, pitch, yaw
 
     @classmethod
+    def from_quaternion(cls, quat, ordering='wxyz'):
+        """Form a rotation matrix from a unit length quaternion.
+
+           Valid orderings are 'xyzw' and 'wxyz'.
+        """
+        if not np.isclose(np.linalg.norm(quat), 1.):
+            raise ValueError("Quaternion must be unit length")
+
+        if ordering is 'xyzw':
+            qx, qy, qz, qw = quat
+        elif ordering is 'wxyz':
+            qw, qx, qy, qz = quat
+        else:
+            raise ValueError(
+                "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+
+        # Form the matrix
+        qw2 = qw * qw
+        qx2 = qx * qx
+        qy2 = qy * qy
+        qz2 = qz * qz
+
+        R00 = 1. - 2. * (qy2 + qz2)
+        R01 = 2. * (qx * qy - qw * qz)
+        R02 = 2. * (qw * qy + qx * qz)
+
+        R10 = 2. * (qw * qz + qx * qy)
+        R11 = 1. - 2. * (qx2 + qz2)
+        R12 = 2. * (qy * qz - qw * qx)
+
+        R20 = 2. * (qx * qz - qw * qy)
+        R21 = 2. * (qw * qx + qy * qz)
+        R22 = 1. - 2. * (qx2 + qy2)
+
+        return cls(np.array([[R00, R01, R02],
+                             [R10, R11, R12],
+                             [R20, R21, R22]]))
+
+    def to_quaternion(self, ordering='wxyz'):
+        """Convert a rotation matrix to a unit length quaternion.
+
+           Valid orderings are 'xyzw' and 'wxyz'.
+        """
+        R = self.mat
+        qw = 0.5 * np.sqrt(1. + R[0, 0] + R[1, 1] + R[2, 2])
+
+        if np.isclose(qw, 0.):
+            if R[0, 0] > R[1, 1] and R[0, 0] > R[2, 2]:
+                d = 2. * np.sqrt(1. + R[0, 0] - R[1, 1] - R[2, 2])
+                qw = (R[2, 1] - R[1, 2]) / d
+                qx = 0.25 * d
+                qy = (R[1, 0] + R[0, 1]) / d
+                qz = (R[0, 2] + R[2, 0]) / d
+            elif R[1, 1] > R[2, 2]:
+                d = 2. * np.sqrt(1. + R[1, 1] - R[0, 0] - R[2, 2])
+                qw = (R[0, 2] - R[2, 0]) / d
+                qx = (R[1, 0] + R[0, 1]) / d
+                qy = 0.25 * d
+                qz = (R[2, 1] + R[1, 2]) / d
+            else:
+                d = 2. * np.sqrt(1. + R[2, 2] - R[0, 0] - R[1, 1])
+                qw = (R[1, 0] - R[0, 1]) / d
+                qx = (R[0, 2] + R[2, 0]) / d
+                qy = (R[2, 1] + R[1, 2]) / d
+                qz = 0.25 * d
+        else:
+            d = 4. * qw
+            qx = (R[2, 1] - R[1, 2]) / d
+            qy = (R[0, 2] - R[2, 0]) / d
+            qz = (R[2, 1] - R[1, 2]) / d
+
+        # Check ordering last
+        if ordering is 'xyzw':
+            quat = np.array([qx, qy, qz, qw])
+        elif ordering is 'wxyz':
+            quat = np.array([qw, qx, qy, qz])
+        else:
+            raise ValueError(
+                "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+
+        return quat
+
+    @classmethod
     def wedge(cls, phi):
         """SO(3) wedge operator as defined by Barfoot.
 
