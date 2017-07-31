@@ -290,25 +290,15 @@ class SO3:
         This is the inverse operation to SO3.exp.
         """
 
-        # The rotation axis (not unit-length) is given by
-        axis = np.array([self.mat[2, 1] - self.mat[1, 2],
-                         self.mat[0, 2] - self.mat[2, 0],
-                         self.mat[1, 0] - self.mat[0, 1]])
-
-        # The sine of the rotation angle is half the norm of the axis
-        sin_angle = 0.5 * np.linalg.norm(axis)
-
         # The cosine of the rotation angle is related to the trace of C
-        cos_angle = 0.5 * np.trace(self.mat) - 0.5
-
-        angle = np.arctan2(sin_angle, cos_angle)
+        angle = np.arccos(0.5 * np.trace(self.mat) - 0.5)
 
         # If angle is close to zero, use first-order Taylor expansion
         if np.isclose(angle, 0.):
             return SO3.vee(self.mat - np.identity(3))
 
-        # Otherwise normalize the axis and return the axis-angle vector
-        return 0.5 * angle * axis / sin_angle
+        # Otherwise take the matrix logarithm and return the rotation vector
+        return SO3.vee((0.5 * angle / np.sin(angle)) * (self.mat - self.mat.T))
 
     def perturb(self, phi):
         """Perturb the rotation on the left
