@@ -10,13 +10,13 @@ def test_identity():
     assert isinstance(T, SE2)
 
 
-def test_mul():
+def test_dot():
     T = np.array([[0, -1, -0.5],
                   [1, 0, 0.5],
                   [0, 0, 1]])
     T2 = T.dot(T)
     assert np.allclose(
-        (SE2.from_matrix(T) * SE2.from_matrix(T)).as_matrix(), T2)
+        (SE2.from_matrix(T).dot(SE2.from_matrix(T))).as_matrix(), T2)
 
 
 def test_wedge_vee():
@@ -65,7 +65,7 @@ def test_perturb():
     T_copy = copy.deepcopy(T)
     xi = [0.3, 0.2, 0.1]
     T.perturb(xi)
-    assert np.allclose(T.as_matrix(), (SE2.exp(xi) * T_copy).as_matrix())
+    assert np.allclose(T.as_matrix(), (SE2.exp(xi).dot(T_copy)).as_matrix())
 
 
 def test_normalize():
@@ -77,7 +77,7 @@ def test_normalize():
 
 def test_inv():
     T = SE2.exp([1, 2, 3])
-    assert np.allclose((T * T.inv()).as_matrix(), np.identity(3))
+    assert np.allclose((T.dot(T.inv())).as_matrix(), np.identity(3))
 
 
 def test_adjoint():
@@ -93,12 +93,12 @@ def test_transform_vectorized():
     pt4 = np.array([4, 5, 1])
     pts12 = np.array([pt1, pt2])  # 2x2
     pts34 = np.array([pt3, pt4])  # 2x3
-    Tpt1 = T * pt1
-    Tpt2 = T * pt2
-    Tpt3 = T * pt3
-    Tpt4 = T * pt4
-    Tpts12 = T * pts12
-    Tpts34 = T * pts34
+    Tpt1 = T.dot(pt1)
+    Tpt2 = T.dot(pt2)
+    Tpt3 = T.dot(pt3)
+    Tpt4 = T.dot(pt4)
+    Tpts12 = T.dot(pts12)
+    Tpts34 = T.dot(pts34)
     assert np.allclose(Tpt1, Tpts12[0])
     assert np.allclose(Tpt2, Tpts12[1])
     assert np.allclose(Tpt3, Tpts34[0])

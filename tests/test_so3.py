@@ -18,12 +18,12 @@ def test_from_rpy_to_rpy():
     assert np.isclose(test_y, y)
 
 
-def test_mul():
+def test_dot():
     C = np.array([[0, 0, -1],
                   [0, 1, 0],
                   [1, 0, 0]])
     C2 = C.dot(C)
-    assert np.allclose((SO3(C) * SO3(C)).mat, C2)
+    assert np.allclose((SO3(C).dot(SO3(C))).mat, C2)
 
 
 def test_rotx():
@@ -55,7 +55,7 @@ def test_rpy():
     p = np.pi / 6
     y = np.pi / 3
     C_got = SO3.from_rpy(r, p, y)
-    C_expected = SO3.rotz(y) * SO3.roty(p) * SO3.rotx(r)
+    C_expected = SO3.rotz(y).dot(SO3.roty(p).dot(SO3.rotx(r)))
     assert np.allclose(C_got.mat, C_expected.mat)
 
 
@@ -110,7 +110,7 @@ def test_perturb():
     C_copy = copy.deepcopy(C)
     phi = np.array([0.3, 0.2, 0.1])
     C.perturb(phi)
-    assert np.allclose(C.as_matrix(), (SO3.exp(phi) * C_copy).as_matrix())
+    assert np.allclose(C.as_matrix(), (SO3.exp(phi).dot(C_copy)).as_matrix())
 
 
 def test_normalize():
@@ -122,7 +122,7 @@ def test_normalize():
 
 def test_inv():
     C = SO3.exp(np.pi * np.ones(3) / 4)
-    assert np.allclose((C * C.inv()).mat, np.identity(3))
+    assert np.allclose((C.dot(C.inv())).mat, np.identity(3))
 
 
 def test_adjoint():
@@ -135,9 +135,9 @@ def test_transform_vectorized():
     pt1 = np.array([1, 2, 3])
     pt2 = np.array([4, 5, 3])
     pts = np.array([pt1, pt2])  # 2x3
-    Cpt1 = C * pt1
-    Cpt2 = C * pt2
-    Cpts = C * pts
+    Cpt1 = C.dot(pt1)
+    Cpt2 = C.dot(pt2)
+    Cpts = C.dot(pts)
     assert(
         np.allclose(Cpt1, Cpts[0])
         and np.allclose(Cpt2, Cpts[1])

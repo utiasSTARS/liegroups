@@ -138,7 +138,7 @@ class SE2:
     def perturb(self, xi):
         """Perturb the transformation on the left
         by a vector in its local tangent space."""
-        perturbed = SE2.exp(xi) * self
+        perturbed = SE2.exp(xi).dot(self)
         self.rot = perturbed.rot
         self.trans = perturbed.trans
 
@@ -159,7 +159,7 @@ class SE2:
     def inv(self):
         """Return the inverse transformation."""
         inv_rot = self.rot.inv()
-        inv_trans = -(inv_rot * self.trans)
+        inv_trans = -(inv_rot.dot(self.trans))
         return SE2(inv_rot, inv_trans)
 
     def adjoint(self):
@@ -175,23 +175,20 @@ class SE2:
         """
         if isinstance(other, SE2):
             # Compound with another transformation
-            return SE2(self.rot * other.rot,
-                       self.rot * other.trans + self.trans)
+            return SE2(self.rot.dot(other.rot),
+                       self.rot.dot(other.trans) + self.trans)
         else:
             other = np.atleast_2d(other)
 
             if other.shape[1] == self.dim - 1:
                 # Transform one or more 2-vectors
-                return np.squeeze(self.rot * other + self.trans)
+                return np.squeeze(self.rot.dot(other) + self.trans)
             elif other.shape[1] == self.dim:
                 # Transform one or more 3-vectors
                 return np.squeeze(self.as_matrix().dot(other.T)).T
             else:
                 raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
                     self.dim - 1, self.dim, self.dim - 1, self.dim))
-
-    def __mul__(self, other):
-        return self.dot(other)
 
     def __repr__(self):
         return "SE2({})".format(str(self.as_matrix()).replace('\n', '\n    '))

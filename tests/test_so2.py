@@ -15,11 +15,11 @@ def test_from_angle_to_angle():
     assert np.isclose(SO2.from_angle(angle).to_angle(), angle)
 
 
-def test_mul():
+def test_dot():
     C = np.array([[0, -1],
                   [1, 0]])
     C2 = C.dot(C)
-    assert np.allclose((SO2(C) * SO2(C)).mat, C2)
+    assert np.allclose((SO2(C).dot(SO2(C))).mat, C2)
 
 
 def test_wedge():
@@ -56,7 +56,7 @@ def test_perturb():
     C_copy = copy.deepcopy(C)
     phi = 0.1
     C.perturb(phi)
-    assert np.allclose(C.as_matrix(), (SO2.exp(phi) * C_copy).as_matrix())
+    assert np.allclose(C.as_matrix(), (SO2.exp(phi).dot(C_copy)).as_matrix())
 
 
 def test_normalize():
@@ -68,7 +68,7 @@ def test_normalize():
 
 def test_inv():
     C = SO2.exp(np.pi / 4)
-    assert np.allclose((C * C.inv()).mat, np.identity(2))
+    assert np.allclose(C.dot(C.inv()).mat, np.identity(2))
 
 
 def test_adjoint():
@@ -81,9 +81,9 @@ def test_transform_vectorized():
     pt1 = np.array([1, 2])
     pt2 = np.array([4, 5])
     pts = np.array([pt1, pt2])  # 2x2
-    Cpt1 = C * pt1
-    Cpt2 = C * pt2
-    Cpts = C * pts
+    Cpt1 = C.dot(pt1)
+    Cpt2 = C.dot(pt2)
+    Cpts = C.dot(pts)
     assert(
         np.allclose(Cpt1, Cpts[0])
         and np.allclose(Cpt2, Cpts[1])

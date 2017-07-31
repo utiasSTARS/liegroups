@@ -71,7 +71,7 @@ class SO3:
     @classmethod
     def from_rpy(cls, roll, pitch, yaw):
         """Form a rotation matrix from RPY Euler angles."""
-        return cls.rotz(yaw) * cls.roty(pitch) * cls.rotx(roll)
+        return cls.rotz(yaw).dot(cls.roty(pitch).dot(cls.rotx(roll)))
 
     def to_rpy(self):
         """Convert a rotation matrix to RPY Euler angles."""
@@ -303,7 +303,7 @@ class SO3:
     def perturb(self, phi):
         """Perturb the rotation on the left
         by a vector in its local tangent space."""
-        perturbed = SO3.exp(phi) * self
+        perturbed = SO3.exp(phi).dot(self)
         self.mat = perturbed.mat
 
     def as_matrix(self):
@@ -347,9 +347,6 @@ class SO3:
             else:
                 raise ValueError("Vector must have shape ({},) or (N,{})".format(
                     self.dim, self.dim))
-
-    def __mul__(self, other):
-        return self.dot(other)
 
     def __repr__(self):
         return "SO3({})".format(str(self.as_matrix()).replace('\n', '\n    '))
