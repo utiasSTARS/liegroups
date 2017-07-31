@@ -291,7 +291,10 @@ class SO3:
         """
 
         # The cosine of the rotation angle is related to the trace of C
-        angle = np.arccos(0.5 * np.trace(self.mat) - 0.5)
+        cos_angle = 0.5 * np.trace(self.mat) - 0.5
+        # Clip cos(angle) to its proper domain to avoid NaNs from rounding errors
+        cos_angle = np.clip(cos_angle, -1., 1.)
+        angle = np.arccos(cos_angle)
 
         # If angle is close to zero, use first-order Taylor expansion
         if np.isclose(angle, 0.):
