@@ -28,12 +28,19 @@ class SE3:
         """Storage for the translation vector"""
 
     @classmethod
-    def from_matrix(cls, mat):
+    def from_matrix(cls, mat, normalize=False):
         """Create a SE3 object from a 4x4 transformation matrix."""
-        if not SE3.is_valid_matrix(mat):
-            raise ValueError("Invalid transformation matrix")
+        mat_is_valid = cls.is_valid_matrix(mat)
+        if mat_is_valid:
+            result = cls(SO3(mat[0:3, 0:3]), mat[0:3, 3])
+        elif not mat_is_valid and normalize:
+            result = cls(SO3(mat[0:3, 0:3]), mat[0:3, 3])
+            result.normalize()
+        else:
+            raise ValueError(
+                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
 
-        return cls(SO3(mat[0:3, 0:3]), mat[0:3, 3])
+        return result
 
     @classmethod
     def is_valid_matrix(cls, mat):

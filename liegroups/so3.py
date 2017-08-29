@@ -19,12 +19,19 @@ class SO3:
         """Storage for the rotation matrix"""
 
     @classmethod
-    def from_matrix(cls, mat):
+    def from_matrix(cls, mat, normalize=False):
         """Create a SO3 object from a 3x3 rotation matrix (safe, but slower)."""
-        if not SO3.is_valid_matrix(mat):
-            raise ValueError("Invalid rotation matrix")
+        mat_is_valid = cls.is_valid_matrix(mat)
+        if mat_is_valid:
+            result = cls(mat)
+        elif not mat_is_valid and normalize:
+            result = cls(mat)
+            result.normalize()
+        else:
+            raise ValueError(
+                "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
 
-        return cls(mat)
+        return result
 
     @classmethod
     def is_valid_matrix(cls, mat):
