@@ -246,12 +246,12 @@ class SO2(base.SpecialOrthogonalGroup):
         """Recover the rotation angle in rad from the rotation matrix."""
         return self.log()
 
-    def cuda(self):
-        """Copy the underlying tensor to the GPU."""
-        return self.__class__(self.mat.cuda())
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensor on the GPU."""
+        return self.__class__(self.mat.cuda(**kwargs))
 
     def cpu(self):
-        """Copy the underlying tensor to the CPU."""
+        """Return a copy with the underlying tensor on the CPU."""
         return self.__class__(self.mat.cpu())
 
 
