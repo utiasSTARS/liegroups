@@ -44,10 +44,9 @@ class SO2(base.SpecialOrthogonalGroup):
     @classmethod
     def left_jacobian(cls, phi):
         """(see Barfoot/Eade)."""
-        # Near angle is close to 0, use first order Taylor expansion
-        # TODO: 1st order term
+        # Near phi==0, use first order Taylor expansion
         if np.isclose(phi, 0.):
-            return np.identity(cls.dim)
+            return np.identity(cls.dim) + 0.5 * cls.wedge(phi)
 
         s = np.sin(phi)
         c = np.cos(phi)
@@ -57,12 +56,10 @@ class SO2(base.SpecialOrthogonalGroup):
 
     @classmethod
     def inv_left_jacobian(cls, phi):
-        """(see Barfoot/Eade).
-        """
-        # Near angle is close to 0, use first order Taylor expansion
-        # TODO: 1st order term
+        """(see Barfoot/Eade)."""
+        # Near phi==0, use first order Taylor expansion
         if np.isclose(phi, 0.):
-            return np.identity(cls.dim)
+            return np.identity(cls.dim) - 0.5 * cls.wedge(phi)
 
         A = np.sin(phi) / phi
         B = (1. - np.cos(phi)) / phi
@@ -87,12 +84,12 @@ class SO2(base.SpecialOrthogonalGroup):
     def normalize(self):
         # The SVD is commonly written as a = U S V.H.
         # The v returned by this function is V.H and u = U.
-        u, s, v = np.linalg.svd(self.mat, full_matrices=False)
+        U, _, V = np.linalg.svd(self.mat, full_matrices=False)
 
-        middle = np.identity(self.dim)
-        middle[1, 1] = np.linalg.det(u) * np.linalg.det(v)
+        S = np.identity(self.dim)
+        S[1, 1] = np.linalg.det(U) * np.linalg.det(V)
 
-        self.mat = u.dot(middle).dot(v)
+        self.mat = U.dot(S).dot(V)
 
     def dot(self, other):
         if isinstance(other, self.__class__):
@@ -300,7 +297,7 @@ class SO3(base.SpecialOrthogonalGroup):
 
         angle = np.linalg.norm(phi)
 
-        # Near angle is close to 0, use first order Taylor expansion
+        # Near phi==0, use first order Taylor expansion
         if np.isclose(angle, 0.):
             return np.identity(cls.dim) + 0.5 * cls.wedge(phi)
 
@@ -319,7 +316,7 @@ class SO3(base.SpecialOrthogonalGroup):
 
         angle = np.linalg.norm(phi)
 
-        # Near angle is close to 0, use first order Taylor expansion
+        # Near phi==0, use first order Taylor expansion
         if np.isclose(angle, 0.):
             return np.identity(cls.dim) - 0.5 * cls.wedge(phi)
 
@@ -338,7 +335,7 @@ class SO3(base.SpecialOrthogonalGroup):
 
         angle = np.linalg.norm(phi)
 
-        # Near angle is close to 0, use first order Taylor expansion
+        # Near phi==0, use first order Taylor expansion
         if np.isclose(angle, 0.):
             return cls(np.identity(cls.dim) + cls.wedge(phi))
 

@@ -98,14 +98,11 @@ class LieGroup:
 
     def __repr__(self):
         """Return a string representation of the transformation."""
-        return "{}\n[{}.{}]".format(str(self.as_matrix()), self.__class__.__module__, self.__class__.__name__)
+        return "<{}.{}>\n{}".format(self.__class__.__module__, self.__class__.__name__, self.as_matrix()).replace("\n", "\n| ")
 
 
 class SpecialOrthogonalGroup(LieGroup):
     def __init__(self, mat):
-        if mat.shape != (self.dim, self.dim):
-            raise ValueError(
-                "mat must have shape ({},{})".format(self.dim, self.dim))
         self.mat = mat
         """Storage for the transformation matrix"""
 
@@ -139,12 +136,6 @@ class SpecialEuclideanGroup(LieGroup):
 
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)."""
-        if not isinstance(rot, self.RotationType):
-            rot = self.RotationType(rot)
-
-        if len(trans) != self.dim - 1:
-            raise ValueError("trans must have length {}".format(self.dim - 1))
-
         self.rot = rot
         """Storage for the rotation matrix"""
         self.trans = trans
