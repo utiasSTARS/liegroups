@@ -201,7 +201,9 @@ class SO2(base.SpecialOrthogonalGroup):
         # Irrespective of the original strides, the returned matrix U will
         # be transposed, i.e. with strides (1, n) instead of (n, 1).
         U, _, V = mat.svd()
-        S = U.__class__(torch.eye(self.dim))
+        S = torch.eye(self.dim)
+        if U.is_cuda:
+            S = S.cuda()
         S[1, 1] = float(np.linalg.det(U.cpu().numpy()) *
                         np.linalg.det(V.cpu().numpy()))
 
@@ -246,13 +248,11 @@ class SO2(base.SpecialOrthogonalGroup):
 
     def cuda(self):
         """Copy the underlying tensor to the GPU."""
-        self.mat = self.mat.cuda()
-        return self
+        return self.__class__(self.mat.cuda())
 
     def cpu(self):
         """Copy the underlying tensor to the CPU."""
-        self.mat = self.mat.cpu()
-        return self
+        return self.__class__(self.mat.cpu())
 
 
 class SE2(base.SpecialEuclideanGroup):
