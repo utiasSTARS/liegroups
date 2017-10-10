@@ -1,5 +1,5 @@
 # liegroups
-Python implementation of SO2, SE2, SO3, and SE3 matrix Lie groups using numpy
+Python implementation of SO2, SE2, SO3, and SE3 matrix Lie groups using numpy or pytorch.
 
 ### Installation
 To install, `cd` into the repository directory (the one with `setup.py`) and run:

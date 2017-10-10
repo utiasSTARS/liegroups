@@ -6,6 +6,36 @@ import numpy as np
 from liegroups.torch import SO2, isclose, allclose
 
 
+def test_from_matrix():
+    C_good = SO2.from_matrix(torch.eye(2))
+    assert isinstance(C_good, SO2) \
+        and C_good.mat.dim() == 2 \
+        and C_good.mat.shape == (2, 2) \
+        and SO2.is_valid_matrix(C_good.mat).all()
+
+    C_bad = SO2.from_matrix(torch.eye(2).add_(1e-3), normalize=True)
+    assert isinstance(C_bad, SO2) \
+        and C_bad.mat.dim() == 2 \
+        and C_bad.mat.shape == (2, 2) \
+        and SO2.is_valid_matrix(C_bad.mat).all()
+
+
+def test_from_matrix_batch():
+    C_good = SO2.from_matrix(torch.eye(2).repeat(5, 1, 1))
+    assert isinstance(C_good, SO2) \
+        and C_good.mat.dim() == 3 \
+        and C_good.mat.shape == (5, 2, 2) \
+        and SO2.is_valid_matrix(C_good.mat).all()
+
+    C_bad = copy.deepcopy(C_good.mat)
+    C_bad[3].add_(0.1)
+    C_bad = SO2.from_matrix(C_bad, normalize=True)
+    assert isinstance(C_bad, SO2) \
+        and C_bad.mat.dim() == 3 \
+        and C_bad.mat.shape == (5, 2, 2) \
+        and SO2.is_valid_matrix(C_bad.mat).all()
+
+
 def test_identity():
     C = SO2.identity()
     assert isinstance(C, SO2) \

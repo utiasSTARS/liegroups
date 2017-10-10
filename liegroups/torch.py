@@ -29,6 +29,21 @@ class SO2(base.SpecialOrthogonalGroup):
         super().__init__(mat)
 
     @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid.all() or normalize:
+            result = cls(mat)
+
+            if normalize:
+                result.normalize(inds=(1 - mat_is_valid).nonzero())
+
+            return result
+        else:
+            raise ValueError(
+                "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
+
+    @classmethod
     def is_valid_matrix(cls, mat):
         if mat.dim() < 3:
             mat = mat.unsqueeze(dim=0)
@@ -200,7 +215,7 @@ class SO2(base.SpecialOrthogonalGroup):
         # decomposition of a real matrix A of size (n x m) such that A=USV′.
         # Irrespective of the original strides, the returned matrix U will
         # be transposed, i.e. with strides (1, n) instead of (n, 1).
-        U, _, V = mat.svd()
+        U, _, V = mat.squeeze().svd()
         S = torch.eye(self.dim)
         if U.is_cuda:
             S = S.cuda()
@@ -220,7 +235,8 @@ class SO2(base.SpecialOrthogonalGroup):
                 inds = range(self.mat.shape[0])
 
             for batch_ind in inds:
-                self._normalize_one(self.mat[batch_ind])
+                # Slicing is a copy operation?
+                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
 
     def dot(self, other):
         if isinstance(other, self.__class__):

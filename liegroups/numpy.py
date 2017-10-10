@@ -12,6 +12,20 @@ class SO2(base.SpecialOrthogonalGroup):
         super().__init__(mat)
 
     @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid or normalize:
+            result = cls(mat)
+            if not mat_is_valid and normalize:
+                result.normalize()
+        else:
+            raise ValueError(
+                "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
+
+        return result
+
+    @classmethod
     def is_valid_matrix(cls, mat):
         return mat.shape == (cls.dim, cls.dim) and \
             np.isclose(np.linalg.det(mat), 1.) and \
@@ -539,8 +553,8 @@ class SE3(base.SpecialEuclideanGroup):
     @classmethod
     def is_valid_matrix(cls, mat):
         return mat.shape == (cls.dim, cls.dim) and \
-            np.array_equal(mat[3, :], np.array([0, 0, 0, 1])) and \
-            cls.RotationType.is_valid_matrix(mat[0:3, 0:3])
+            np.array_equal(mat[cls.dim - 1, :], np.array([0, 0, 0, 1])) and \
+            cls.RotationType.is_valid_matrix(mat[0:cls.dim - 1, 0:cls.dim - 1])
 
     @classmethod
     def identity(cls):
