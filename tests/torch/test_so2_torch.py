@@ -49,7 +49,7 @@ def test_identity_batch():
         and C.mat.dim() == 3 \
         and C.mat.shape == (5, 2, 2)
 
-    C_copy = SO2.identity(5)
+    C_copy = SO2.identity(5, copy=True)
     assert isinstance(C_copy, SO2) \
         and C_copy.mat.dim() == 3 \
         and C_copy.mat.shape == (5, 2, 2)

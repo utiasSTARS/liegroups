@@ -486,7 +486,7 @@ class SO3(SpecialOrthogonalBase):
             B = (1. - c) * outer(axis, axis)
             C = s * cls.wedge(axis)
 
-            mat = A + B + C
+            mat[large_angle_inds] = A + B + C
 
         return cls(mat.squeeze_())
 
@@ -521,8 +521,8 @@ class SO3(SpecialOrthogonalBase):
 
             phi[large_angle_inds, :] = \
                 self.vee(
-                    (0.5 * angle / sin_angle).unsqueeze_(dim=1).unsqueeze_(dim=1).expand_as(mat) *
-                    (mat - mat.transpose(2, 1)))
+                    (0.5 * angle / sin_angle).unsqueeze_(dim=1).unsqueeze_(dim=1).expand_as(mat[large_angle_inds]) *
+                    (mat[large_angle_inds] - mat[large_angle_inds].transpose(2, 1)))
 
         return phi.squeeze_()
 
