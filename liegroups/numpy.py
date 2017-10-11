@@ -3,10 +3,8 @@ import numpy as np
 from . import base
 
 
-class SO2(base.SpecialOrthogonalGroup):
-    """Rotation matrix in SO(2) using active (alibi) transformations."""
-    dim = 2
-    dof = 1
+class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
+    """Implementation of methods common to SO(N) using Numpy"""
 
     def __init__(self, mat):
         super().__init__(mat)
@@ -34,6 +32,39 @@ class SO2(base.SpecialOrthogonalGroup):
     @classmethod
     def identity(cls):
         return cls(np.identity(cls.dim))
+
+    def normalize(self):
+        # The SVD is commonly written as a = U S V.H.
+        # The v returned by this function is V.H and u = U.
+        U, _, V = np.linalg.svd(self.mat, full_matrices=False)
+
+        S = np.identity(self.dim)
+        S[self.dim - 1, self.dim - 1] = np.linalg.det(U) * np.linalg.det(V)
+
+        self.mat = U.dot(S).dot(V)
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            return self.__class__(np.dot(self.mat, other.mat))
+        else:
+            other = np.atleast_2d(other)
+
+            # Transform one or more 2-vectors or fail
+            if other.shape[1] == self.dim:
+                return np.squeeze(np.dot(self.mat, other.T).T)
+            else:
+                raise ValueError(
+                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
+
+
+class SO2(SpecialOrthogonalBase):
+    """Rotation matrix in SO(2) using active (alibi) transformations."""
+    dim = 2
+    dof = 1
+
+    def __init__(self, mat):
+        super().__init__(mat)
 
     @classmethod
     def wedge(cls, phi):
@@ -95,30 +126,6 @@ class SO2(base.SpecialOrthogonalGroup):
     def adjoint(self):
         return 1.
 
-    def normalize(self):
-        # The SVD is commonly written as a = U S V.H.
-        # The v returned by this function is V.H and u = U.
-        U, _, V = np.linalg.svd(self.mat, full_matrices=False)
-
-        S = np.identity(self.dim)
-        S[1, 1] = np.linalg.det(U) * np.linalg.det(V)
-
-        self.mat = U.dot(S).dot(V)
-
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(np.dot(self.mat, other.mat))
-        else:
-            other = np.atleast_2d(other)
-
-            # Transform one or more 2-vectors or fail
-            if other.shape[1] == self.dim:
-                return np.squeeze(np.dot(self.mat, other.T).T)
-            else:
-                raise ValueError(
-                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
-
     @classmethod
     def from_angle(cls, angle_in_radians):
         """Form a rotation matrix given an angle in rad."""
@@ -129,149 +136,13 @@ class SO2(base.SpecialOrthogonalGroup):
         return self.log()
 
 
-class SE2(base.SpecialEuclideanGroup):
-    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
-    dim = 3
-    dof = 3
-    RotationType = SO2
-
-    def __init__(self, rot, trans):
-        super().__init__(rot, trans)
-
-    @classmethod
-    def is_valid_matrix(cls, mat):
-        """Check if a matrix is a valid transformation matrix."""
-        return mat.shape == (cls.dim, cls.dim) and \
-            np.array_equal(mat[2, :], np.array([0, 0, 1])) and \
-            cls.RotationType.is_valid_matrix(mat[0:2, 0:2])
-
-    @classmethod
-    def identity(cls):
-        """Return the identity element."""
-        return cls.from_matrix(np.identity(cls.dim))
-
-    @classmethod
-    def wedge(cls, xi):
-        """SE(2) wedge operator as defined by Barfoot.
-
-        This is the inverse operation to SE2.vee.
-        """
-        xi = np.atleast_2d(xi)
-        if xi.shape[1] != cls.dof:
-            raise ValueError(
-                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
-
-        Xi = np.zeros([xi.shape[0], cls.dof, cls.dof])
-        Xi[:, 0:2, 0:2] = SO2.wedge(xi[:, 2])
-        Xi[:, 0:2, 2] = xi[:, 0:2]
-
-        return np.squeeze(Xi)
-
-    @classmethod
-    def vee(cls, Xi):
-        """SE(2) vee operator as defined by Barfoot.
-
-        This is the inverse operation to SE2.wedge.
-        """
-        if Xi.ndim < 3:
-            Xi = np.expand_dims(Xi, axis=0)
-
-        if Xi.shape[1:3] != (cls.dim, cls.dim):
-            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
-                cls.dim, cls.dim, cls.dim, cls.dim))
-
-        xi = np.empty([Xi.shape[0], cls.dim])
-        xi[:, 0:2] = Xi[:, 0:2, 2]
-        xi[:, 2] = SO2.vee(Xi[:, 0:2, 0:2])
-        return np.squeeze(xi)
-
-    @classmethod
-    def exp(cls, xi):
-        if len(xi) != cls.dof:
-            raise ValueError("xi must have length 3")
-
-        rho = xi[0:2]
-        phi = xi[2]
-        return cls(SO2.exp(phi), SO2.left_jacobian(phi).dot(rho))
-
-    def log(self):
-        phi = SO2.log(self.rot)
-        rho = SO2.inv_left_jacobian(phi).dot(self.trans)
-        return np.hstack([rho, phi])
-
-    def as_matrix(self):
-        R = self.rot.as_matrix()
-        t = np.reshape(self.trans, (2, 1))
-        return np.vstack([np.hstack([R, t]),
-                          np.array([0, 0, 1])])
-
-    def adjoint(self):
-        rotpart = self.rot.as_matrix()
-        transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
-        return np.vstack([np.hstack([rotpart, transpart]),
-                          [0, 0, 1]])
-
-    def dot(self, other):
-        if isinstance(other, SE2):
-            # Compound with another transformation
-            return SE2(self.rot.dot(other.rot),
-                       self.rot.dot(other.trans) + self.trans)
-        else:
-            other = np.atleast_2d(other)
-
-            if other.shape[1] == self.dim - 1:
-                # Transform one or more 2-vectors
-                return np.squeeze(self.rot.dot(other) + self.trans)
-            elif other.shape[1] == self.dim:
-                # Transform one or more 3-vectors
-                return np.squeeze(self.as_matrix().dot(other.T)).T
-            else:
-                raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
-                    self.dim - 1, self.dim, self.dim - 1, self.dim))
-
-    @classmethod
-    def odot(cls, p, **kwargs):
-        """SE(2) \odot operator as defined by Barfoot."""
-        p = np.atleast_2d(p)
-        result = np.zeros([p.shape[0], p.shape[1], cls.dof])
-
-        if p.shape[1] == cls.dim - 1:
-            # Assume scale parameter is 1 unless p is a direction
-            # vector, in which case the scale is 0
-            scale_is_zero = kwargs.get('directional', False)
-            if not scale_is_zero:
-                result[:, 0:2, 0:2] = np.eye(2)
-
-            result[:, 0:2, 2] = SO2.wedge(1).dot(p.T).T
-
-        elif p.shape[1] == cls.dim:
-            result[:, 0:2, 0:2] = p[:, 2] * np.eye(2)
-            result[:, 0:2, 2] = SO2.wedge(1).dot(p[:, 0:2].T).T
-
-        else:
-            raise ValueError("p must have shape ({},), ({},), (N,{}) or (N,{})".format(
-                cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
-
-        return np.squeeze(result)
-
-
-class SO3(base.SpecialOrthogonalGroup):
+class SO3(SpecialOrthogonalBase):
     """Rotation matrix in SO(3) using active (alibi) transformations."""
     dim = 3
     dof = 3
 
     def __init__(self, mat):
         super().__init__(mat)
-
-    @classmethod
-    def is_valid_matrix(cls, mat):
-        return mat.shape == (cls.dim, cls.dim) and \
-            np.isclose(np.linalg.det(mat), 1.) and \
-            np.allclose(mat.T.dot(mat), np.identity(cls.dim))
-
-    @classmethod
-    def identity(cls):
-        return cls(np.identity(cls.dim))
 
     @classmethod
     def wedge(cls, phi):
@@ -375,32 +246,8 @@ class SO3(base.SpecialOrthogonalGroup):
         # Otherwise take the matrix logarithm and return the rotation vector
         return self.__class__.vee((0.5 * angle / np.sin(angle)) * (self.mat - self.mat.T))
 
-    def normalize(self):
-        # The SVD is commonly written as a = U S V.H.
-        # The v returned by this function is V.H and u = U.
-        u, s, v = np.linalg.svd(self.mat, full_matrices=False)
-
-        middle = np.identity(self.dim)
-        middle[2, 2] = np.linalg.det(u) * np.linalg.det(v)
-
-        self.mat = u.dot(middle).dot(v)
-
     def adjoint(self):
         return self.mat
-
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(np.dot(self.mat, other.mat))
-        else:
-            other = np.atleast_2d(other)
-
-            # Transform one or more 3-vectors or fail
-            if other.shape[1] == self.dim:
-                return np.squeeze(np.dot(self.mat, other.T).T)
-            else:
-                raise ValueError(
-                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
 
     @classmethod
     def rotx(cls, angle_in_radians):
@@ -541,7 +388,165 @@ class SO3(base.SpecialOrthogonalGroup):
         return quat
 
 
-class SE3(base.SpecialEuclideanGroup):
+class SpecialEuclideanBase(base.SpecialEuclideanBase):
+    """Implementation of methods common to SE(N) using Numpy"""
+
+    def __init__(self, rot, trans):
+        super().__init__(rot, trans)
+
+    @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid or normalize:
+            result = cls(
+                cls.RotationType(mat[0:cls.dim - 1, 0:cls.dim - 1]),
+                mat[0:cls.dim - 1, cls.dim - 1])
+            if not mat_is_valid and normalize:
+                result.normalize()
+        else:
+            raise ValueError(
+                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
+
+        return result
+
+    @classmethod
+    def is_valid_matrix(cls, mat):
+        bottom_row = np.append(np.zeros(cls.dim - 1), 1.)
+
+        return mat.shape == (cls.dim, cls.dim) and \
+            np.array_equal(mat[cls.dim - 1, :], bottom_row) and \
+            cls.RotationType.is_valid_matrix(mat[0:cls.dim - 1, 0:cls.dim - 1])
+
+    @classmethod
+    def identity(cls):
+        return cls.from_matrix(np.identity(cls.dim))
+
+    def as_matrix(self):
+        R = self.rot.as_matrix()
+        t = np.reshape(self.trans, (self.dim - 1, 1))
+        bottom_row = np.append(np.zeros(self.dim - 1), 1.)
+        return np.vstack([np.hstack([R, t]),
+                          bottom_row])
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another transformation
+            return self.__class__(self.rot.dot(other.rot),
+                                  self.rot.dot(other.trans) + self.trans)
+        else:
+            other = np.atleast_2d(other)
+
+            if other.shape[1] == self.dim - 1:
+                # Transform one or more 2-vectors
+                return np.squeeze(self.rot.dot(other) + self.trans)
+            elif other.shape[1] == self.dim:
+                # Transform one or more 3-vectors
+                return np.squeeze(self.as_matrix().dot(other.T)).T
+            else:
+                raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
+                    self.dim - 1, self.dim, self.dim - 1, self.dim))
+
+
+class SE2(SpecialEuclideanBase):
+    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
+    dim = 3
+    dof = 3
+    RotationType = SO2
+
+    def __init__(self, rot, trans):
+        super().__init__(rot, trans)
+
+    @classmethod
+    def wedge(cls, xi):
+        """SE(2) wedge operator as defined by Barfoot.
+
+        This is the inverse operation to SE2.vee.
+        """
+        xi = np.atleast_2d(xi)
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
+        Xi = np.zeros([xi.shape[0], cls.dof, cls.dof])
+        Xi[:, 0:2, 0:2] = cls.RotationType.wedge(xi[:, 2])
+        Xi[:, 0:2, 2] = xi[:, 0:2]
+
+        return np.squeeze(Xi)
+
+    @classmethod
+    def vee(cls, Xi):
+        """SE(2) vee operator as defined by Barfoot.
+
+        This is the inverse operation to SE2.wedge.
+        """
+        if Xi.ndim < 3:
+            Xi = np.expand_dims(Xi, axis=0)
+
+        if Xi.shape[1:3] != (cls.dim, cls.dim):
+            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
+                cls.dim, cls.dim, cls.dim, cls.dim))
+
+        xi = np.empty([Xi.shape[0], cls.dim])
+        xi[:, 0:2] = Xi[:, 0:2, 2]
+        xi[:, 2] = cls.RotationType.vee(Xi[:, 0:2, 0:2])
+        return np.squeeze(xi)
+
+    @classmethod
+    def left_jacobian(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
+    def inv_left_jacobian(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
+    def exp(cls, xi):
+        if len(xi) != cls.dof:
+            raise ValueError("xi must have length 3")
+
+        rho = xi[0:2]
+        phi = xi[2]
+        return cls(cls.RotationType.exp(phi), cls.RotationType.left_jacobian(phi).dot(rho))
+
+    def log(self):
+        phi = self.RotationType.log(self.rot)
+        rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)
+        return np.hstack([rho, phi])
+
+    def adjoint(self):
+        rotpart = self.rot.as_matrix()
+        transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
+        return np.vstack([np.hstack([rotpart, transpart]),
+                          [0, 0, 1]])
+
+    @classmethod
+    def odot(cls, p, **kwargs):
+        """SE(2) \odot operator as defined by Barfoot."""
+        p = np.atleast_2d(p)
+        result = np.zeros([p.shape[0], p.shape[1], cls.dof])
+
+        if p.shape[1] == cls.dim - 1:
+            # Assume scale parameter is 1 unless p is a direction
+            # vector, in which case the scale is 0
+            scale_is_zero = kwargs.get('directional', False)
+            if not scale_is_zero:
+                result[:, 0:2, 0:2] = np.eye(2)
+
+            result[:, 0:2, 2] = cls.RotationType.wedge(1).dot(p.T).T
+
+        elif p.shape[1] == cls.dim:
+            result[:, 0:2, 0:2] = p[:, 2] * np.eye(2)
+            result[:, 0:2, 2] = cls.RotationType.wedge(1).dot(p[:, 0:2].T).T
+
+        else:
+            raise ValueError("p must have shape ({},), ({},), (N,{}) or (N,{})".format(
+                cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
+
+        return np.squeeze(result)
+
+
+class SE3(SpecialEuclideanBase):
     """Homogeneous transformation matrix in SE(3) using active (alibi) transformations."""
     dim = 4
     dof = 6
@@ -587,6 +592,14 @@ class SE3(base.SpecialEuclideanGroup):
         return np.squeeze(xi)
 
     @classmethod
+    def left_jacobian(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
+    def inv_left_jacobian(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
     def exp(cls, xi):
         if len(xi) != cls.dof:
             raise ValueError("xi must have length 6")
@@ -601,12 +614,6 @@ class SE3(base.SpecialEuclideanGroup):
         rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)
         return np.hstack([rho, phi])
 
-    def as_matrix(self):
-        R = self.rot.as_matrix()
-        t = np.reshape(self.trans, (3, 1))
-        return np.vstack([np.hstack([R, t]),
-                          np.array([0, 0, 0, 1])])
-
     def adjoint(self):
         """Return the adjoint matrix of the transformation."""
         rotmat = self.rot.as_matrix()
@@ -615,24 +622,6 @@ class SE3(base.SpecialEuclideanGroup):
                         self.RotationType.wedge(self.trans).dot(rotmat)]),
              np.hstack([np.zeros((3, 3)), rotmat])]
         )
-
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another transformation
-            return SE3(self.rot.dot(other.rot),
-                       self.rot.dot(other.trans) + self.trans)
-        else:
-            other = np.atleast_2d(other)
-
-            if other.shape[1] == self.dim - 1:
-                # Transform one or more 3-vectors
-                return np.squeeze(self.rot.dot(other) + self.trans)
-            elif other.shape[1] == self.dim:
-                # Transform one or more 4-vectors
-                return np.squeeze(self.as_matrix().dot(other.T)).T
-            else:
-                raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
-                    self.dim - 1, self.dim, self.dim - 1, self.dim))
 
     @classmethod
     def odot(cls, vec, directional=False):

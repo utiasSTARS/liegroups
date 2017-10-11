@@ -20,10 +20,8 @@ def allclose(mat1, mat2, tol=1e-6):
     return isclose(mat1, mat2, tol).all()
 
 
-class SO2(base.SpecialOrthogonalGroup):
-    """Rotation matrix in SO(2) using active (alibi) transformations."""
-    dim = 2
-    dof = 1
+class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
+    """Implementation of methods common to SO(N) using PyTorch"""
 
     def __init__(self, mat):
         super().__init__(mat)
@@ -84,6 +82,66 @@ class SO2(base.SpecialOrthogonalGroup):
                 mat = mat.expand(batch_size, cls.dim, cls.dim)
 
         return cls(mat)
+
+    def _normalize_one(self, mat):
+        # U, S, V = torch.svd(A) returns the singular value
+        # decomposition of a real matrix A of size (n x m) such that A=USV′.
+        # Irrespective of the original strides, the returned matrix U will
+        # be transposed, i.e. with strides (1, n) instead of (n, 1).
+        U, _, V = mat.squeeze().svd()
+        S = torch.eye(self.dim)
+        if U.is_cuda:
+            S = S.cuda()
+        S[self.dim - 1, self.dim - 1] = float(np.linalg.det(U.cpu().numpy()) *
+                                              np.linalg.det(V.cpu().numpy()))
+
+        mat_normalized = U.mm(S.mm(V.t_()))
+
+        mat.copy_(mat_normalized)
+        return mat
+
+    def normalize(self, inds=None):
+        if self.mat.dim() < 3:
+            self._normalize_one(self.mat)
+        else:
+            if inds is None:
+                inds = range(self.mat.shape[0])
+
+            for batch_ind in inds:
+                # Slicing is a copy operation?
+                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            return self.__class__(torch.matmul(self.mat, other.mat))
+        else:
+            if other.dim() < 2:
+                other = other.unsqueeze(dim=1)
+
+            # Transform one or more 2-vectors or fail
+            if other.shape[0] == self.dim:
+                return torch.matmul(self.mat, other).squeeze()
+            else:
+                raise ValueError(
+                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
+
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensor on the GPU."""
+        return self.__class__(self.mat.cuda(**kwargs))
+
+    def cpu(self):
+        """Return a copy with the underlying tensor on the CPU."""
+        return self.__class__(self.mat.cpu())
+
+
+class SO2(SpecialOrthogonalBase):
+    """Rotation matrix in SO(2) using active (alibi) transformations."""
+    dim = 2
+    dof = 1
+
+    def __init__(self, mat):
+        super().__init__(mat)
 
     @classmethod
     def wedge(cls, phi):
@@ -198,60 +256,11 @@ class SO2(base.SpecialOrthogonalGroup):
 
         return torch.atan2(s, c).squeeze()
 
-    def inv(self):
-        if self.mat.dim() < 3:
-            return self.__class__(self.mat.transpose(1, 0))
-        else:
-            return self.__class__(self.mat.transpose(2, 1))
-
     def adjoint(self):
         if self.mat.dim() < 3:
             return self.mat.__class__([1.])
         else:
             return self.mat.__class__(self.mat.shape[0]).fill_(1.)
-
-    def _normalize_one(self, mat):
-        # U, S, V = torch.svd(A) returns the singular value
-        # decomposition of a real matrix A of size (n x m) such that A=USV′.
-        # Irrespective of the original strides, the returned matrix U will
-        # be transposed, i.e. with strides (1, n) instead of (n, 1).
-        U, _, V = mat.squeeze().svd()
-        S = torch.eye(self.dim)
-        if U.is_cuda:
-            S = S.cuda()
-        S[1, 1] = float(np.linalg.det(U.cpu().numpy()) *
-                        np.linalg.det(V.cpu().numpy()))
-
-        mat_normalized = U.mm(S.mm(V.t_()))
-
-        mat.copy_(mat_normalized)
-        return mat
-
-    def normalize(self, inds=None):
-        if self.mat.dim() < 3:
-            self._normalize_one(self.mat)
-        else:
-            if inds is None:
-                inds = range(self.mat.shape[0])
-
-            for batch_ind in inds:
-                # Slicing is a copy operation?
-                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
-
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(torch.matmul(self.mat, other.mat))
-        else:
-            if other.dim() < 2:
-                other = other.unsqueeze(dim=1)
-
-            # Transform one or more 2-vectors or fail
-            if other.shape[0] == self.dim:
-                return torch.matmul(self.mat, other).squeeze()
-            else:
-                raise ValueError(
-                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
 
     @classmethod
     def from_angle(cls, angle_in_radians):
@@ -262,22 +271,29 @@ class SO2(base.SpecialOrthogonalGroup):
         """Recover the rotation angle in rad from the rotation matrix."""
         return self.log()
 
+
+class SO3(SpecialOrthogonalBase):
+    pass
+
+
+class SpecialEuclideanlBase(base.SpecialEuclideanBase):
+    """Implementation of methods common to SE(N) using PyTorch"""
+
+    def __init__(self, rot, trans):
+        super().__init__(rot, trans)
+
     def cuda(self, **kwargs):
-        """Return a copy with the underlying tensor on the GPU."""
-        return self.__class__(self.mat.cuda(**kwargs))
+        """Return a copy with the underlying tensors on the GPU."""
+        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
 
     def cpu(self):
-        """Return a copy with the underlying tensor on the CPU."""
-        return self.__class__(self.mat.cpu())
+        """Return a copy with the underlying tensors on the CPU."""
+        return self.__class__(self.rot.cpu(), self.trans.cpu())
 
 
-class SE2(base.SpecialEuclideanGroup):
+class SE2(SpecialEuclideanlBase):
     pass
 
 
-class SO3(base.SpecialOrthogonalGroup):
-    pass
-
-
-class SE3(base.SpecialEuclideanGroup):
+class SE3(SpecialEuclideanlBase):
     pass
