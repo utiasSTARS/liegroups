@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import base
+from liegroups import base
 
 
 class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
@@ -241,10 +241,10 @@ class SO3(SpecialOrthogonalBase):
 
         # If angle is close to zero, use first-order Taylor expansion
         if np.isclose(angle, 0.):
-            return self.__class__.vee(self.mat - np.identity(3))
+            return self.vee(self.mat - np.identity(3))
 
         # Otherwise take the matrix logarithm and return the rotation vector
-        return self.__class__.vee((0.5 * angle / np.sin(angle)) * (self.mat - self.mat.T))
+        return self.vee((0.5 * angle / np.sin(angle)) * (self.mat - self.mat.T))
 
     def adjoint(self):
         return self.mat

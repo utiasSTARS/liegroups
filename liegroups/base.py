@@ -1,16 +1,18 @@
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractmethod
 
 
 class LieGroupBase(ABC):
     """Base class for Lie groups."""
     @property
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def dim(cls):
         """Dimension of the transformation matrix."""
         pass
 
     @property
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def dof(cls):
         """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
         pass
@@ -19,22 +21,26 @@ class LieGroupBase(ABC):
     def __init__(self):
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def from_matrix(cls, mat, normalize=False):
         """Create a transformation from a matrix (safe, but slower)."""
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def is_valid_matrix(cls, mat):
         """Check if a matrix is a valid transformation matrix."""
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def identity(cls):
         """Return the identity transformation."""
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def wedge(cls, vec):
         """wedge operator as defined by Barfoot.
 
@@ -42,7 +48,8 @@ class LieGroupBase(ABC):
         """
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def vee(cls, mat):
         """vee operator as defined by Barfoot.
 
@@ -50,17 +57,20 @@ class LieGroupBase(ABC):
         """
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def left_jacobian(cls, vec):
         """Left Jacobian for the group."""
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def inv_left_jacobian(cls, vec):
         """Inverse of the left Jacobian for the group."""
         pass
 
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def exp(cls, vec):
         """Exponential map for the group.
 
@@ -142,7 +152,8 @@ class SpecialOrthogonalBase(LieGroupBase, ABC):
 class SpecialEuclideanBase(LieGroupBase, ABC):
     """Base class for Special Euclidean groups SE(N)."""
     @property
-    @abstractclassmethod
+    @classmethod
+    @abstractmethod
     def RotationType(cls):
         """Rotation type."""
         pass
