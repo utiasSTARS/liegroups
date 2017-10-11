@@ -104,7 +104,10 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
 
     @classmethod
     def identity(cls, batch_size=1, copy=False):
-        mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim).squeeze()
+        if copy:
+            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
+        else:
+            mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim).squeeze()
         return cls(mat)
 
     def _normalize_one(self, mat):
