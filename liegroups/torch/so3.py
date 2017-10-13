@@ -1,320 +1,10 @@
 import torch
 import numpy as np
 
-from liegroups import base
+from . import base
+from . import utils
 
-
-def isclose(mat1, mat2, tol=1e-6):
-    """Check element-wise if two tensors are close within some tolerance.
-
-    Either tensor can be replaced by a scalar.
-    """
-    return (mat1 - mat2).abs_().lt(tol)
-
-
-def allclose(mat1, mat2, tol=1e-6):
-    """Check if all elements of two tensors are close within some tolerance.
-
-    Either tensor can be replaced by a scalar.
-    """
-    return isclose(mat1, mat2, tol).all()
-
-
-def outer(vecs1, vecs2):
-    """Return the N x D x D outer products of a N x D batch of vectors,
-    or return the D x D outer product of two D-dimensional vectors.
-    """
-    # Default batch size is 1
-    if vecs1.dim() < 2:
-        vecs1 = vecs1.unsqueeze(dim=0)
-
-    if vecs2.dim() < 2:
-        vecs2 = vecs2.unsqueeze(dim=0)
-
-    if vecs1.shape[0] != vecs2.shape[0]:
-        raise ValueError("Got inconsistent batch sizes {} and {}".format(
-            vecs1.shape[0], vecs2.shape[0]))
-
-    return torch.bmm(vecs1.unsqueeze(dim=2),
-                     vecs2.unsqueeze(dim=2).transpose(2, 1)).squeeze_()
-
-
-def trace(mat):
-    """Return the N traces of a batch of N square matrices,
-    or return the trace of a square matrix."""
-    # Default batch size is 1
-    if mat.dim() < 3:
-        mat = mat.unsqueeze(dim=0)
-
-    # Element-wise multiply by identity and take the sum
-    return (torch.eye(mat.shape[1]) * mat).sum(dim=1).sum(dim=1).squeeze_()
-
-
-class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
-    """Implementation of methods common to SO(N) using PyTorch"""
-
-    def __init__(self, mat):
-        super().__init__(mat)
-
-    @classmethod
-    def from_matrix(cls, mat, normalize=False):
-        mat_is_valid = cls.is_valid_matrix(mat)
-
-        if mat_is_valid.all() or normalize:
-            result = cls(mat)
-
-            if normalize:
-                result.normalize(inds=(1 - mat_is_valid).nonzero())
-
-            return result
-        else:
-            raise ValueError(
-                "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
-
-    @classmethod
-    def is_valid_matrix(cls, mat):
-        if mat.dim() < 3:
-            mat = mat.unsqueeze(dim=0)
-
-        if mat.is_cuda:
-            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
-            det_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
-            inv_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
-        else:
-            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
-            det_check = torch.ByteTensor(mat.shape[0]).fill_(False)
-            inv_check = torch.ByteTensor(mat.shape[0]).fill_(False)
-
-        # Check the shape
-        if mat.shape[1:3] != (cls.dim, cls.dim):
-            return shape_check
-        else:
-            shape_check.fill_(True)
-
-        # Determinants of each matrix in the batch should be 1
-        det_check = isclose(mat.__class__(
-            np.linalg.det(mat.cpu().numpy())), 1.)
-
-        # The transpose of each matrix in the batch should be its inverse
-        inv_check = isclose(mat.transpose(2, 1).bmm(mat),
-                            torch.eye(cls.dim)).sum(dim=1).sum(dim=1) \
-            == cls.dim * cls.dim
-
-        return shape_check & det_check & inv_check
-
-    @classmethod
-    def identity(cls, batch_size=1, copy=False):
-        if copy:
-            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
-        else:
-            mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim).squeeze()
-        return cls(mat)
-
-    def _normalize_one(self, mat):
-        # U, S, V = torch.svd(A) returns the singular value
-        # decomposition of a real matrix A of size (n x m) such that A=USV′.
-        # Irrespective of the original strides, the returned matrix U will
-        # be transposed, i.e. with strides (1, n) instead of (n, 1).
-        U, _, V = mat.squeeze().svd()
-        S = torch.eye(self.dim)
-        if U.is_cuda:
-            S = S.cuda()
-        S[self.dim - 1, self.dim - 1] = float(np.linalg.det(U.cpu().numpy()) *
-                                              np.linalg.det(V.cpu().numpy()))
-
-        mat_normalized = U.mm(S.mm(V.t_()))
-
-        mat.copy_(mat_normalized)
-        return mat
-
-    def normalize(self, inds=None):
-        if self.mat.dim() < 3:
-            self._normalize_one(self.mat)
-        else:
-            if inds is None:
-                inds = range(self.mat.shape[0])
-
-            for batch_ind in inds:
-                # Slicing is a copy operation?
-                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
-
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(torch.matmul(self.mat, other.mat))
-        else:
-            if other.dim() < 2:
-                other = other.unsqueeze(dim=0)  # vector --> matrix
-            if other.dim() < 3:
-                other = other.unsqueeze(dim=0)  # matrix --> batch
-
-            if self.mat.dim() < 3:
-                mat = self.mat.unsqueeze(dim=0).expand(
-                    other.shape[0], self.dim, self.dim)  # matrix --> batch
-            else:
-                mat = self.mat
-                if other.shape[0] == 1:
-                    other = other.expand(
-                        mat.shape[0], other.shape[1], other.shape[2])
-
-            # Transform one or more 2-vectors or fail
-            if other.shape[0] != mat.shape[0]:
-                raise ValueError("Expected vector-batch batch size of {}, got {}".format(
-                    mat.shape[0], other.shape[0]))
-
-            if other.shape[2] == self.dim:
-                return torch.bmm(mat, other.transpose(2, 1)).transpose(2, 1).squeeze()
-            else:
-                raise ValueError(
-                    "Vector or vector-batch must have shape ({},), (N,{}), or ({},N,{})".format(self.dim, self.dim, mat.shape[0], self.dim))
-
-    def cuda(self, **kwargs):
-        """Return a copy with the underlying tensor on the GPU."""
-        return self.__class__(self.mat.cuda(**kwargs))
-
-    def cpu(self):
-        """Return a copy with the underlying tensor on the CPU."""
-        return self.__class__(self.mat.cpu())
-
-
-class SO2(SpecialOrthogonalBase):
-    """Rotation matrix in SO(2) using active (alibi) transformations."""
-    dim = 2
-    dof = 1
-
-    def __init__(self, mat):
-        super().__init__(mat)
-
-    @classmethod
-    def wedge(cls, phi):
-        Phi = phi.__class__(phi.shape[0], cls.dim, cls.dim).zero_()
-        Phi[:, 0, 1] = -phi
-        Phi[:, 1, 0] = phi
-        return Phi.squeeze_()
-
-    @classmethod
-    def vee(cls, Phi):
-        if Phi.dim() < 3:
-            Phi = Phi.unsqueeze(dim=0)
-
-        if Phi.shape[1:3] != (cls.dim, cls.dim):
-            raise ValueError(
-                "Phi must have shape ({},{}) or (N,{},{})".format(cls.dim, cls.dim, cls.dim, cls.dim))
-
-        return Phi[:, 1, 0].squeeze_()
-
-    @classmethod
-    def left_jacobian(cls, phi):
-        """(see Barfoot/Eade)."""
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
-
-        # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
-
-        if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
-                len(small_angle_inds), cls.dim, cls.dim) \
-                + 0.5 * cls.wedge(phi[small_angle_inds])
-
-        # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
-
-        if len(large_angle_inds) > 0:
-            s = phi[large_angle_inds].sin()
-            c = phi[large_angle_inds].cos()
-
-            A = s / phi[large_angle_inds]
-            B = (1. - c) / phi[large_angle_inds]
-
-            jac_large_angle = phi.__class__(
-                len(large_angle_inds), cls.dim, cls.dim)
-            jac_large_angle[:, 0, 0] = A
-            jac_large_angle[:, 0, 1] = -B
-            jac_large_angle[:, 1, 0] = B
-            jac_large_angle[:, 1, 1] = A
-            jac[large_angle_inds] = jac_large_angle
-
-        return jac.squeeze_()
-
-    @classmethod
-    def inv_left_jacobian(cls, phi):
-        """(see Barfoot/Eade)."""
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
-
-        # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
-
-        if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
-                len(small_angle_inds), cls.dim, cls.dim) \
-                - 0.5 * cls.wedge(phi[small_angle_inds])
-
-        # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
-
-        if len(large_angle_inds) > 0:
-            s = phi[large_angle_inds].sin()
-            c = phi[large_angle_inds].cos()
-
-            A = s / phi[large_angle_inds]
-            B = (1. - c) / phi[large_angle_inds]
-            C = (1. / (A * A + B * B))
-
-            jac_large_angle = phi.__class__(
-                len(large_angle_inds), cls.dim, cls.dim)
-            jac_large_angle[:, 0, 0] = C * A
-            jac_large_angle[:, 0, 1] = C * B
-            jac_large_angle[:, 1, 0] = -C * B
-            jac_large_angle[:, 1, 1] = C * A
-            jac[large_angle_inds] = jac_large_angle
-
-        return jac.squeeze_()
-
-    @classmethod
-    def exp(cls, phi):
-        s = phi.sin()
-        c = phi.cos()
-
-        mat = phi.__class__(phi.shape[0], cls.dim, cls.dim)
-        mat[:, 0, 0] = c
-        mat[:, 0, 1] = -s
-        mat[:, 1, 0] = s
-        mat[:, 1, 1] = c
-
-        return cls(mat.squeeze_())
-
-    def log(self):
-        if self.mat.dim() < 3:
-            mat = self.mat.unsqueeze(dim=0)
-        else:
-            mat = self.mat
-
-        s = mat[:, 1, 0]
-        c = mat[:, 0, 0]
-
-        return torch.atan2(s, c).squeeze_()
-
-    def adjoint(self):
-        if self.mat.dim() < 3:
-            return self.mat.__class__([1.])
-        else:
-            return self.mat.__class__(self.mat.shape[0]).fill_(1.)
-
-    @classmethod
-    def from_angle(cls, angle_in_radians):
-        """Form a rotation matrix given an angle in rad."""
-        return cls.exp(angle_in_radians)
-
-    def to_angle(self):
-        """Recover the rotation angle in rad from the rotation matrix."""
-        return self.log()
-
-
-class SO3(SpecialOrthogonalBase):
+class SO3(base.SpecialOrthogonalBaseTorch):
     """Rotation matrix in SO(3) using active (alibi) transformations."""
     dim = 3
     dof = 3
@@ -368,7 +58,7 @@ class SO3(SpecialOrthogonalBase):
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(angle, 0.)
+        small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
@@ -392,7 +82,7 @@ class SO3(SpecialOrthogonalBase):
                 jac[large_angle_inds])
             B = (1. - s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                outer(axis, axis)
+                utils.outer(axis, axis)
             C = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
                 cls.wedge(axis.squeeze())
@@ -414,7 +104,7 @@ class SO3(SpecialOrthogonalBase):
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(angle, 0.)
+        small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
@@ -441,7 +131,7 @@ class SO3(SpecialOrthogonalBase):
             A = hacha * \
                 torch.eye(cls.dim).unsqueeze_(
                     dim=0).expand_as(jac[large_angle_inds])
-            B = (1. - hacha) * outer(axis, axis)
+            B = (1. - hacha) * utils.outer(axis, axis)
             C = -ha * cls.wedge(axis)
 
             jac[large_angle_inds] = A + B + C
@@ -461,7 +151,7 @@ class SO3(SpecialOrthogonalBase):
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(angle, 0.)
+        small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             mat[small_angle_inds] = \
@@ -483,7 +173,7 @@ class SO3(SpecialOrthogonalBase):
 
             A = c * torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
                 mat[large_angle_inds])
-            B = (1. - c) * outer(axis, axis)
+            B = (1. - c) * utils.outer(axis, axis)
             C = s * cls.wedge(axis)
 
             mat[large_angle_inds] = A + B + C
@@ -498,13 +188,13 @@ class SO3(SpecialOrthogonalBase):
 
         phi = mat.__class__(mat.shape[0], self.dof)
 
-        # The cosine of the rotation angle is related to the trace of C
+        # The cosine of the rotation angle is related to the utils.trace of C
         # Clamp to its proper domain to avoid NaNs from rounding errors
-        cos_angle = (0.5 * trace(mat) - 0.5).clamp_(-1., 1.)
+        cos_angle = (0.5 * utils.trace(mat) - 0.5).clamp_(-1., 1.)
         angle = cos_angle.acos()
 
         # Near phi==0, use first order Taylor expansion
-        small_angle_mask = isclose(angle, 0.)
+        small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             phi[small_angle_inds, :] = \
@@ -600,10 +290,10 @@ class SO3(SpecialOrthogonalBase):
         yaw = pitch.__class__(pitch.shape)
         roll = pitch.__class__(pitch.shape)
 
-        near_pi_over_two_mask = isclose(pitch, np.pi / 2.)
+        near_pi_over_two_mask = utils.isclose(pitch, np.pi / 2.)
         near_pi_over_two_inds = near_pi_over_two_mask.nonzero().squeeze_()
 
-        near_neg_pi_over_two_mask = isclose(pitch, -np.pi / 2.)
+        near_neg_pi_over_two_mask = utils.isclose(pitch, -np.pi / 2.)
         near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero().squeeze_()
 
         remainder_inds = (1 - (near_pi_over_two_mask |
@@ -642,7 +332,7 @@ class SO3(SpecialOrthogonalBase):
         if quat.dim() < 2:
             quat = quat.unsqueeze(dim=0)
 
-        if not allclose(quat.norm(p=2, dim=1), 1.):
+        if not utils.allclose(quat.norm(p=2, dim=1), 1.):
             raise ValueError("Quaternions must be unit length")
 
         if ordering is 'xyzw':
@@ -696,7 +386,7 @@ class SO3(SpecialOrthogonalBase):
         qy = qw.__class__(qw.shape)
         qz = qw.__class__(qw.shape)
 
-        near_zero_mask = isclose(qw, 0.)
+        near_zero_mask = utils.isclose(qw, 0.)
 
         if sum(near_zero_mask) > 0:
             cond1_mask = near_zero_mask & \
@@ -762,25 +452,3 @@ class SO3(SpecialOrthogonalBase):
 
         return quat
 
-
-class SpecialEuclideanlBase(base.SpecialEuclideanBase):
-    """Implementation of methods common to SE(N) using PyTorch"""
-
-    def __init__(self, rot, trans):
-        super().__init__(rot, trans)
-
-    def cuda(self, **kwargs):
-        """Return a copy with the underlying tensors on the GPU."""
-        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
-
-    def cpu(self):
-        """Return a copy with the underlying tensors on the CPU."""
-        return self.__class__(self.rot.cpu(), self.trans.cpu())
-
-
-class SE2(SpecialEuclideanlBase):
-    pass
-
-
-class SE3(SpecialEuclideanlBase):
-    pass

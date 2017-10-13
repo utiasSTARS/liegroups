@@ -1,0 +1,274 @@
+import torch
+import numpy as np
+
+from .. import base
+from . import utils
+
+
+class SpecialOrthogonalBaseTorch(base.SpecialOrthogonalBase):
+    """Implementation of methods common to SO(N) using PyTorch"""
+
+    def __init__(self, mat):
+        super().__init__(mat)
+
+    @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid.all() or normalize:
+            result = cls(mat)
+
+            if normalize:
+                result.normalize(inds=(1 - mat_is_valid).nonzero())
+
+            return result
+        else:
+            raise ValueError(
+                "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
+
+    @classmethod
+    def is_valid_matrix(cls, mat):
+        if mat.dim() < 3:
+            mat = mat.unsqueeze(dim=0)
+
+        # Check the shape
+        if mat.is_cuda:
+            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+        else:
+            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+
+        if mat.shape[1:3] != (cls.dim, cls.dim):
+            return shape_check
+        else:
+            shape_check.fill_(True)
+
+        # Determinants of each matrix in the batch should be 1
+        det_check = utils.isclose(mat.__class__(
+            np.linalg.det(mat.cpu().numpy())), 1.)
+
+        # The transpose of each matrix in the batch should be its inverse
+        inv_check = utils.isclose(mat.transpose(2, 1).bmm(mat),
+                            torch.eye(cls.dim)).sum(dim=1).sum(dim=1) \
+            == cls.dim * cls.dim
+
+        return shape_check & det_check & inv_check
+
+    @classmethod
+    def identity(cls, batch_size=1, copy=False):
+        if copy:
+            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
+        else:
+            mat = torch.eye(cls.dim).expand(
+                batch_size, cls.dim, cls.dim).squeeze()
+        return cls(mat)
+
+    def _normalize_one(self, mat):
+        # U, S, V = torch.svd(A) returns the singular value
+        # decomposition of a real matrix A of size (n x m) such that A=USV′.
+        # Irrespective of the original strides, the returned matrix U will
+        # be transposed, i.e. with strides (1, n) instead of (n, 1).
+        U, _, V = mat.squeeze().svd()
+        S = torch.eye(self.dim)
+        if U.is_cuda:
+            S = S.cuda()
+        S[self.dim - 1, self.dim - 1] = float(np.linalg.det(U.cpu().numpy()) *
+                                              np.linalg.det(V.cpu().numpy()))
+
+        mat_normalized = U.mm(S.mm(V.t_()))
+
+        mat.copy_(mat_normalized)
+        return mat
+
+    def normalize(self, inds=None):
+        if self.mat.dim() < 3:
+            self._normalize_one(self.mat)
+        else:
+            if inds is None:
+                inds = range(self.mat.shape[0])
+
+            for batch_ind in inds:
+                # Slicing is a copy operation?
+                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            return self.__class__(torch.matmul(self.mat, other.mat))
+        else:
+            if other.dim() < 2:
+                other = other.unsqueeze(dim=0)  # vector --> matrix
+            if other.dim() < 3:
+                other = other.unsqueeze(dim=0)  # matrix --> batch
+
+            if self.mat.dim() < 3:
+                mat = self.mat.unsqueeze(dim=0).expand(
+                    other.shape[0], self.dim, self.dim)  # matrix --> batch
+            else:
+                mat = self.mat
+                if other.shape[0] == 1:
+                    other = other.expand(
+                        mat.shape[0], other.shape[1], other.shape[2])
+
+            # Transform one or more vectors or fail
+            if other.shape[0] != mat.shape[0]:
+                raise ValueError("Expected vector-batch batch size of {}, got {}".format(
+                    mat.shape[0], other.shape[0]))
+
+            if other.shape[2] == self.dim:
+                return torch.bmm(mat, other.transpose(2, 1)).transpose(2, 1).squeeze_()
+            else:
+                raise ValueError(
+                    "Vector or vector-batch must have shape ({},), (N,{}), or ({},N,{})".format(self.dim, self.dim, mat.shape[0], self.dim))
+
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensor on the GPU."""
+        return self.__class__(self.mat.cuda(**kwargs))
+
+    def cpu(self):
+        """Return a copy with the underlying tensor on the CPU."""
+        return self.__class__(self.mat.cpu())
+
+class SpecialEuclideanBaseTorch(base.SpecialEuclideanBase):
+    """Implementation of methods common to SE(N) using PyTorch"""
+
+    def __init__(self, rot, trans):
+        super().__init__(rot, trans)
+
+    @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        if mat.dim() < 3:
+            mat = mat.unsqueeze(dim=0)
+
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid.all() or normalize:
+            rot = mat[:, 0:cls.dim - 1, 0:cls.dim - 1].squeeze()
+            trans = mat[:, 0:cls.dim - 1, cls.dim - 1].squeeze()
+            result = cls(cls.RotationType(rot), trans)
+
+            if normalize:
+                result.normalize(inds=(1 - mat_is_valid).nonzero())
+
+            return result
+        else:
+            raise ValueError(
+                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
+
+    @classmethod
+    def is_valid_matrix(cls, mat):
+        if mat.dim() < 3:
+            mat = mat.unsqueeze(dim=0)
+
+        # Check the shape
+        if mat.is_cuda:
+            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+        else:
+            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+
+        if mat.shape[1:3] != (cls.dim, cls.dim):
+            return shape_check
+        else:
+            shape_check.fill_(True)
+
+        # Bottom row should be [zeros, 1]
+        bottom_row = mat.__class__(cls.dim).zero_()
+        bottom_row[-1] = 1.
+        bottom_check = (mat[:,cls.dim-1,:] == bottom_row.unsqueeze_(dim=0).expand(mat.shape[0], cls.dim)).sum(dim=1) == cls.dim
+
+        # Check that the rotation part is valid
+        rot_check = cls.RotationType.is_valid_matrix(
+            mat[:, 0:cls.dim-1, 0:cls.dim-1])
+
+        return shape_check & bottom_check & rot_check
+
+    @classmethod
+    def identity(cls, batch_size=1, copy=False):
+        if copy:
+            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
+        else:
+            mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim)
+
+        return cls.from_matrix(mat.squeeze_())
+
+    def as_matrix(self):
+        R = self.rot.as_matrix()
+        if R.dim() < 3:
+            R = R.unsqueeze(dim=0)
+
+        if self.trans.dim() < 2:
+            t = self.trans.unsqueeze(dim=0)
+        else:
+            t = self.trans
+
+        t = t.unsqueeze(dim=2) # N x self.dim-1 x 1
+
+        bottom_row = self.trans.__class__(self.dim).zero_()
+        bottom_row[-1] = 1.
+        bottom_row = bottom_row.unsqueeze_(dim=0).unsqueeze_(dim=1).expand(R.shape[0], 1, self.dim)
+
+        return torch.cat([torch.cat([R, t], dim=2),
+                          bottom_row], dim=1).squeeze_()
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another transformation
+            return self.__class__(self.rot.dot(other.rot),
+                                  self.rot.dot(other.trans) + self.trans)
+        else:
+            if other.dim() < 2:
+                other = other.unsqueeze(dim=0)  # vector --> matrix
+            if other.dim() < 3:
+                other = other.unsqueeze(dim=0)  # matrix --> batch
+
+            # Got euclidean vectors 
+            if other.shape[2] == self.dim-1:
+                rot = self.rot.as_matrix()
+                trans = self.trans
+
+                if trans.dim() < 2:
+                    trans = trans.unsqueeze(dim=1) # D-vector --> Dx1 matrix
+
+                if rot.dim() < 3:
+                    rot = rot.unsqueeze(dim=0).expand(other.shape[0], self.rot.dim, self.rot.dim) # matrix --> batch
+                    trans = trans.unsqueeze(dim=0).expand(other.shape[0], self.dim-1, 1) # matrix --> batch        
+
+                if other.shape[0] != rot.shape[0]:
+                    raise ValueError("Expected vector-batch batch size of {}, got {}".format(rot.shape[0], other.shape[0]))
+
+                # rot * other + trans
+                return torch.baddbmm(trans, 
+                    rot, other.transpose(2,1)).transpose(2,1).squeeze_()
+            
+            # Got homogeneous vectors 
+            elif other.shape[2] == self.dim:
+                mat = self.as_matrix()
+
+                if mat.dim() < 3:
+                    mat = mat.unsqueeze(dim=0).expand(
+                        other.shape[0], self.dim, self.dim) # matrix --> batch
+                elif other.shape[0] == 1:
+                    other = other.expand(
+                        mat.shape[0], other.shape[1], other.shape[2])
+
+                if other.shape[0] != mat.shape[0]:
+                    raise ValueError("Expected vector-batch batch size of {}, got {}".format(mat.shape[0], other.shape[0]))
+
+                return torch.bmm(mat, other.transpose(2,1)).transpose(2,1).squeeze_()
+
+            # Got wrong dimension
+            else:
+                if self.trans.dim() < 2:
+                    batch_size = 1
+                else:
+                    batch_size = self.trans.shape[0]
+
+                raise ValueError(
+                    "Vector or vector-batch must have shape ({},), ({},), (N,{}), (N,{}), ({},N,{}), or ({},N,{})".format(self.dim-1, self.dim, self.dim-1, self.dim, batch_size, self.dim-1, batch_size, self.dim))
+
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensors on the GPU."""
+        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
+
+    def cpu(self):
+        """Return a copy with the underlying tensors on the CPU."""
+        return self.__class__(self.rot.cpu(), self.trans.cpu())

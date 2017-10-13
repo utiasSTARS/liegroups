@@ -3,7 +3,7 @@ import copy
 import torch
 import numpy as np
 
-from liegroups.torch import SO3, isclose, allclose
+from liegroups.torch import SO3, utils
 
 
 def test_from_matrix():
@@ -62,10 +62,10 @@ def test_dot():
     pt = torch.Tensor([1, 2, 3])
 
     CC = C.mat.mm(C.mat)
-    assert allclose(C.dot(C).mat, CC)
+    assert utils.allclose(C.dot(C).mat, CC)
 
     Cpt = C.mat.matmul(pt)
-    assert allclose(C.dot(pt), Cpt)
+    assert utils.allclose(C.dot(pt), Cpt)
 
 
 def test_dot_batch():
@@ -85,42 +85,42 @@ def test_dot_batch():
 
     C1C1 = torch.bmm(C1.mat, C1.mat)
     C1C1_SO3 = C1.dot(C1).mat
-    assert C1C1_SO3.shape == C1.mat.shape and allclose(C1C1_SO3, C1C1)
+    assert C1C1_SO3.shape == C1.mat.shape and utils.allclose(C1C1_SO3, C1C1)
 
     C1C3 = torch.matmul(C1.mat, C3.mat)
     C1C3_SO3 = C1.dot(C3).mat
-    assert C1C3_SO3.shape == C1.mat.shape and allclose(C1C3_SO3, C1C3)
+    assert C1C3_SO3.shape == C1.mat.shape and utils.allclose(C1C3_SO3, C1C3)
 
     C1pt1 = torch.matmul(C1.mat, pt1)
     C1pt1_SO3 = C1.dot(pt1)
     assert C1pt1_SO3.shape == (C1.mat.shape[0], pt1.shape[0]) \
-        and allclose(C1pt1_SO3, C1pt1)
+        and utils.allclose(C1pt1_SO3, C1pt1)
 
     C1pt3 = torch.matmul(C1.mat, pt3)
     C1pt3_SO3 = C1.dot(pt3)
     assert C1pt3_SO3.shape == (C1.mat.shape[0], pt3.shape[0]) \
-        and allclose(C1pt3_SO3, C1pt3)
+        and utils.allclose(C1pt3_SO3, C1pt3)
 
     C1pts = torch.matmul(C1.mat, pts.transpose(1, 0)).transpose(2, 1)
     C1pts_SO3 = C1.dot(pts)
     assert C1pts_SO3.shape == (C1.mat.shape[0], pts.shape[0], pts.shape[1]) \
-        and allclose(C1pts_SO3, C1pts) \
-        and allclose(C1pt1, C1pts[:, 0, :]) \
-        and allclose(C1pt3, C1pts[:, 1, :])
+        and utils.allclose(C1pts_SO3, C1pts) \
+        and utils.allclose(C1pt1, C1pts[:, 0, :]) \
+        and utils.allclose(C1pt3, C1pts[:, 1, :])
 
     C1ptsbatch = torch.bmm(C1.mat, ptsbatch.transpose(2, 1)).transpose(2, 1)
     C1ptsbatch_SO3 = C1.dot(ptsbatch)
     assert C1ptsbatch_SO3.shape == ptsbatch.shape \
-        and allclose(C1ptsbatch_SO3, C1ptsbatch) \
-        and allclose(C1pt1, C1ptsbatch[:, 0, :]) \
-        and allclose(C1pt3, C1ptsbatch[:, 1, :])
+        and utils.allclose(C1ptsbatch_SO3, C1ptsbatch) \
+        and utils.allclose(C1pt1, C1ptsbatch[:, 0, :]) \
+        and utils.allclose(C1pt3, C1ptsbatch[:, 1, :])
 
     C3ptsbatch = torch.matmul(C3.mat, ptsbatch.transpose(2, 1)).transpose(2, 1)
     C3ptsbatch_SO3 = C3.dot(ptsbatch)
     assert C3ptsbatch_SO3.shape == ptsbatch.shape \
-        and allclose(C3ptsbatch_SO3, C3ptsbatch) \
-        and allclose(C3.dot(pt1), C3ptsbatch[:, 0, :]) \
-        and allclose(C3.dot(pt3), C3ptsbatch[:, 1, :])
+        and utils.allclose(C3ptsbatch_SO3, C3ptsbatch) \
+        and utils.allclose(C3.dot(pt1), C3ptsbatch[:, 0, :]) \
+        and utils.allclose(C3.dot(pt3), C3ptsbatch[:, 1, :])
 
 
 def test_wedge():
@@ -152,16 +152,16 @@ def test_wedge_vee_batch():
 
 def test_exp_log():
     C_big = SO3.exp(0.25 * np.pi * torch.ones(3))
-    assert allclose(SO3.exp(SO3.log(C_big)).mat, C_big.mat)
+    assert utils.allclose(SO3.exp(SO3.log(C_big)).mat, C_big.mat)
 
     C_small = SO3.exp(torch.zeros(3))
-    assert allclose(SO3.exp(SO3.log(C_small)).mat, C_small.mat)
+    assert utils.allclose(SO3.exp(SO3.log(C_small)).mat, C_small.mat)
 
 
 def test_exp_log_batch():
     C = SO3.exp(torch.Tensor([[1, 2, 3],
                               [0, 0, 0]]))
-    assert allclose(SO3.exp(SO3.log(C)).mat, C.mat)
+    assert utils.allclose(SO3.exp(SO3.log(C)).mat, C.mat)
 
 
 def test_perturb():
@@ -169,7 +169,8 @@ def test_perturb():
     C_copy = copy.deepcopy(C)
     phi = torch.Tensor([0.1, 0.2, 0.3])
     C.perturb(phi)
-    assert allclose(C.as_matrix(), (SO3.exp(phi).dot(C_copy)).as_matrix())
+    assert utils.allclose(
+        C.as_matrix(), (SO3.exp(phi).dot(C_copy)).as_matrix())
 
 
 def test_perturb_batch():
@@ -180,12 +181,14 @@ def test_perturb_batch():
 
     phi = torch.Tensor([0.1, 0.2, 0.3])
     C_copy1.perturb(phi)
-    assert allclose(C_copy1.as_matrix(), (SO3.exp(phi).dot(C)).as_matrix())
+    assert utils.allclose(C_copy1.as_matrix(),
+                          (SO3.exp(phi).dot(C)).as_matrix())
 
     phis = torch.Tensor([[0.1, 0.2, 0.3],
                          [0.4, 0.5, 0.6]])
     C_copy2.perturb(phis)
-    assert allclose(C_copy2.as_matrix(), (SO3.exp(phis).dot(C)).as_matrix())
+    assert utils.allclose(C_copy2.as_matrix(),
+                          (SO3.exp(phis).dot(C)).as_matrix())
 
 
 def test_normalize():
@@ -213,13 +216,13 @@ def test_normalize_batch():
 
 def test_inv():
     C = SO3.exp(0.25 * np.pi * torch.ones(3))
-    assert allclose(C.dot(C.inv()).mat, SO3.identity().mat)
+    assert utils.allclose(C.dot(C.inv()).mat, SO3.identity().mat)
 
 
 def test_inv_batch():
     C = SO3.exp(torch.Tensor([[1, 2, 3],
                               [4, 5, 6]]))
-    assert allclose(C.dot(C.inv()).mat, SO3.identity(C.mat.shape[0]).mat)
+    assert utils.allclose(C.dot(C.inv()).mat, SO3.identity(C.mat.shape[0]).mat)
 
 
 def test_adjoint():
@@ -238,7 +241,7 @@ def test_rotx():
     C_expected = torch.Tensor([[1, 0, 0],
                                [0, 0, -1],
                                [0, 1, 0]])
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_rotx_batch():
@@ -249,7 +252,7 @@ def test_rotx_batch():
                             torch.Tensor([[1, 0, 0],
                                           [0, -1, 0],
                                           [0, 0, -1]]).unsqueeze_(dim=0)], dim=0)
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_roty():
@@ -257,7 +260,7 @@ def test_roty():
     C_expected = torch.Tensor([[0, 0, 1],
                                [0, 1, 0],
                                [-1, 0, 0]])
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_roty_batch():
@@ -268,7 +271,7 @@ def test_roty_batch():
                             torch.Tensor([[-1, 0, 0],
                                           [0, 1, 0],
                                           [0, 0, -1]]).unsqueeze_(dim=0)], dim=0)
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_rotz():
@@ -276,7 +279,7 @@ def test_rotz():
     C_expected = torch.Tensor([[0, -1, 0],
                                [1, 0, 0],
                                [0, 0, 1]])
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_rotz_batch():
@@ -287,7 +290,7 @@ def test_rotz_batch():
                             torch.Tensor([[-1, 0, 0],
                                           [0, -1, 0],
                                           [0, 0, 1]]).unsqueeze_(dim=0)], dim=0)
-    assert allclose(C_got.mat, C_expected)
+    assert utils.allclose(C_got.mat, C_expected)
 
 
 def test_rpy():
@@ -298,7 +301,7 @@ def test_rpy():
             SO3.rotx(torch.Tensor([rpy[0]]))
         )
     )
-    assert allclose(C_got.mat, C_expected.mat)
+    assert utils.allclose(C_got.mat, C_expected.mat)
 
 
 def test_rpy_batch():
@@ -310,7 +313,7 @@ def test_rpy_batch():
             SO3.rotx(rpy[:, 0])
         )
     )
-    assert allclose(C_got.mat, C_expected.mat)
+    assert utils.allclose(C_got.mat, C_expected.mat)
 
 
 def test_quaternion():
@@ -321,13 +324,13 @@ def test_quaternion():
     q5 = 0.5 * torch.ones(4)
     q6 = -q5
 
-    assert allclose(SO3.from_quaternion(q1).to_quaternion(), q1)
-    assert allclose(SO3.from_quaternion(q2).to_quaternion(), q2)
-    assert allclose(SO3.from_quaternion(q3).to_quaternion(), q3)
-    assert allclose(SO3.from_quaternion(q4).to_quaternion(), q4)
-    assert allclose(SO3.from_quaternion(q5).to_quaternion(), q5)
-    assert allclose(SO3.from_quaternion(q5).mat,
-                    SO3.from_quaternion(q6).mat)
+    assert utils.allclose(SO3.from_quaternion(q1).to_quaternion(), q1)
+    assert utils.allclose(SO3.from_quaternion(q2).to_quaternion(), q2)
+    assert utils.allclose(SO3.from_quaternion(q3).to_quaternion(), q3)
+    assert utils.allclose(SO3.from_quaternion(q4).to_quaternion(), q4)
+    assert utils.allclose(SO3.from_quaternion(q5).to_quaternion(), q5)
+    assert utils.allclose(SO3.from_quaternion(q5).mat,
+                          SO3.from_quaternion(q6).mat)
 
 
 def test_quaternion_batch():
@@ -337,4 +340,4 @@ def test_quaternion_batch():
                           [0, 0, 0, 1],
                           [0.5, 0.5, 0.5, 0.5]])
 
-    assert allclose(SO3.from_quaternion(quats).to_quaternion(), quats)
+    assert utils.allclose(SO3.from_quaternion(quats).to_quaternion(), quats)

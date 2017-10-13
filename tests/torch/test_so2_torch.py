@@ -3,7 +3,7 @@ import copy
 import torch
 import numpy as np
 
-from liegroups.torch import SO2, isclose, allclose
+from liegroups.torch import SO2, utils
 
 
 def test_from_matrix():
@@ -57,12 +57,12 @@ def test_identity_batch():
 
 def test_from_angle_to_angle():
     angle = torch.Tensor([np.pi / 2.])
-    assert allclose(SO2.from_angle(angle).to_angle(), angle)
+    assert utils.allclose(SO2.from_angle(angle).to_angle(), angle)
 
 
 def test_from_angle_to_angle_batch():
     angles = torch.Tensor([-1., 0, 1.])
-    assert allclose(SO2.from_angle(angles).to_angle(), angles)
+    assert utils.allclose(SO2.from_angle(angles).to_angle(), angles)
 
 
 def test_dot():
@@ -71,10 +71,10 @@ def test_dot():
     pt = torch.Tensor([1, 2])
 
     CC = C.mat.mm(C.mat)
-    assert allclose(C.dot(C).mat, CC)
+    assert utils.allclose(C.dot(C).mat, CC)
 
     Cpt = C.mat.matmul(pt)
-    assert allclose(C.dot(pt), Cpt)
+    assert utils.allclose(C.dot(pt), Cpt)
 
 
 def test_dot_batch():
@@ -92,42 +92,42 @@ def test_dot_batch():
 
     C1C1 = torch.bmm(C1.mat, C1.mat)
     C1C1_SO2 = C1.dot(C1).mat
-    assert C1C1_SO2.shape == C1.mat.shape and allclose(C1C1_SO2, C1C1)
+    assert C1C1_SO2.shape == C1.mat.shape and utils.allclose(C1C1_SO2, C1C1)
 
     C1C2 = torch.matmul(C1.mat, C2.mat)
     C1C2_SO2 = C1.dot(C2).mat
-    assert C1C2_SO2.shape == C1.mat.shape and allclose(C1C2_SO2, C1C2)
+    assert C1C2_SO2.shape == C1.mat.shape and utils.allclose(C1C2_SO2, C1C2)
 
     C1pt1 = torch.matmul(C1.mat, pt1)
     C1pt1_SO2 = C1.dot(pt1)
     assert C1pt1_SO2.shape == (C1.mat.shape[0], pt1.shape[0]) \
-        and allclose(C1pt1_SO2, C1pt1)
+        and utils.allclose(C1pt1_SO2, C1pt1)
 
     C1pt2 = torch.matmul(C1.mat, pt2)
     C1pt2_SO2 = C1.dot(pt2)
     assert C1pt2_SO2.shape == (C1.mat.shape[0], pt2.shape[0]) \
-        and allclose(C1pt2_SO2, C1pt2)
+        and utils.allclose(C1pt2_SO2, C1pt2)
 
     C1pts = torch.matmul(C1.mat, pts.transpose(1, 0)).transpose(2, 1)
     C1pts_SO2 = C1.dot(pts)
     assert C1pts_SO2.shape == (C1.mat.shape[0], pts.shape[0], pts.shape[1]) \
-        and allclose(C1pts_SO2, C1pts) \
-        and allclose(C1pt1, C1pts[:, 0, :]) \
-        and allclose(C1pt2, C1pts[:, 1, :])
+        and utils.allclose(C1pts_SO2, C1pts) \
+        and utils.allclose(C1pt1, C1pts[:, 0, :]) \
+        and utils.allclose(C1pt2, C1pts[:, 1, :])
 
     C1ptsbatch = torch.bmm(C1.mat, ptsbatch.transpose(2, 1)).transpose(2, 1)
     C1ptsbatch_SO2 = C1.dot(ptsbatch)
     assert C1ptsbatch_SO2.shape == ptsbatch.shape \
-        and allclose(C1ptsbatch_SO2, C1ptsbatch) \
-        and allclose(C1pt1, C1ptsbatch[:, 0, :]) \
-        and allclose(C1pt2, C1ptsbatch[:, 1, :])
+        and utils.allclose(C1ptsbatch_SO2, C1ptsbatch) \
+        and utils.allclose(C1pt1, C1ptsbatch[:, 0, :]) \
+        and utils.allclose(C1pt2, C1ptsbatch[:, 1, :])
 
     C2ptsbatch = torch.matmul(C2.mat, ptsbatch.transpose(2, 1)).transpose(2, 1)
     C2ptsbatch_SO2 = C2.dot(ptsbatch)
     assert C2ptsbatch_SO2.shape == ptsbatch.shape \
-        and allclose(C2ptsbatch_SO2, C2ptsbatch) \
-        and allclose(C2.dot(pt1), C2ptsbatch[:, 0, :]) \
-        and allclose(C2.dot(pt2), C2ptsbatch[:, 1, :])
+        and utils.allclose(C2ptsbatch_SO2, C2ptsbatch) \
+        and utils.allclose(C2.dot(pt1), C2ptsbatch[:, 0, :]) \
+        and utils.allclose(C2.dot(pt2), C2ptsbatch[:, 1, :])
 
 
 def test_wedge():
@@ -157,15 +157,15 @@ def test_wedge_vee_batch():
 
 def test_exp_log():
     C_big = SO2.exp(torch.Tensor([np.pi / 4]))
-    assert allclose(SO2.exp(SO2.log(C_big)).mat, C_big.mat)
+    assert utils.allclose(SO2.exp(SO2.log(C_big)).mat, C_big.mat)
 
     C_small = SO2.exp(torch.Tensor([0]))
-    assert allclose(SO2.exp(SO2.log(C_small)).mat, C_small.mat)
+    assert utils.allclose(SO2.exp(SO2.log(C_small)).mat, C_small.mat)
 
 
 def test_exp_log_batch():
     C = SO2.exp(torch.Tensor([-1., 0., 1.]))
-    assert allclose(SO2.exp(SO2.log(C)).mat, C.mat)
+    assert utils.allclose(SO2.exp(SO2.log(C)).mat, C.mat)
 
 
 def test_perturb():
@@ -173,7 +173,8 @@ def test_perturb():
     C_copy = copy.deepcopy(C)
     phi = torch.Tensor([0.1])
     C.perturb(phi)
-    assert allclose(C.as_matrix(), (SO2.exp(phi).dot(C_copy)).as_matrix())
+    assert utils.allclose(
+        C.as_matrix(), (SO2.exp(phi).dot(C_copy)).as_matrix())
 
 
 def test_perturb_batch():
@@ -183,11 +184,13 @@ def test_perturb_batch():
 
     phi = torch.Tensor([0.1])
     C_copy1.perturb(phi)
-    assert allclose(C_copy1.as_matrix(), (SO2.exp(phi).dot(C)).as_matrix())
+    assert utils.allclose(C_copy1.as_matrix(),
+                          (SO2.exp(phi).dot(C)).as_matrix())
 
     phis = torch.Tensor([0.1, 0.2, 0.3])
     C_copy2.perturb(phis)
-    assert allclose(C_copy2.as_matrix(), (SO2.exp(phis).dot(C)).as_matrix())
+    assert utils.allclose(C_copy2.as_matrix(),
+                          (SO2.exp(phis).dot(C)).as_matrix())
 
 
 def test_normalize():
@@ -213,12 +216,12 @@ def test_normalize_batch():
 
 def test_inv():
     C = SO2.exp(torch.Tensor([np.pi / 4]))
-    assert allclose(C.dot(C.inv()).mat, SO2.identity().mat)
+    assert utils.allclose(C.dot(C.inv()).mat, SO2.identity().mat)
 
 
 def test_inv_batch():
     C = SO2.exp(torch.Tensor([-1., 0., 1.]))
-    assert allclose(C.dot(C.inv()).mat, SO2.identity(C.mat.shape[0]).mat)
+    assert utils.allclose(C.dot(C.inv()).mat, SO2.identity(C.mat.shape[0]).mat)
 
 
 def test_adjoint():
