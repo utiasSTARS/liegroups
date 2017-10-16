@@ -4,7 +4,7 @@ from . import base
 from .so2 import SO2
 
 
-class SE2(base.SpecialEuclideanBaseNumpy):
+class SE2(base.SpecialEuclideanBase):
     """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
     dim = 3
     dof = 3
@@ -15,10 +15,6 @@ class SE2(base.SpecialEuclideanBaseNumpy):
 
     @classmethod
     def wedge(cls, xi):
-        """SE(2) wedge operator as defined by Barfoot.
-
-        This is the inverse operation to SE2.vee.
-        """
         xi = np.atleast_2d(xi)
         if xi.shape[1] != cls.dof:
             raise ValueError(
@@ -32,18 +28,14 @@ class SE2(base.SpecialEuclideanBaseNumpy):
 
     @classmethod
     def vee(cls, Xi):
-        """SE(2) vee operator as defined by Barfoot.
-
-        This is the inverse operation to SE2.wedge.
-        """
         if Xi.ndim < 3:
             Xi = np.expand_dims(Xi, axis=0)
 
-        if Xi.shape[1:3] != (cls.dim, cls.dim):
+        if Xi.shape[1:3] != (cls.dof, cls.dof):
             raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
-                cls.dim, cls.dim, cls.dim, cls.dim))
+                cls.dof, cls.dof, cls.dof, cls.dof))
 
-        xi = np.empty([Xi.shape[0], cls.dim])
+        xi = np.empty([Xi.shape[0], cls.dof])
         xi[:, 0:2] = Xi[:, 0:2, 2]
         xi[:, 2] = cls.RotationType.vee(Xi[:, 0:2, 0:2])
         return np.squeeze(xi)
@@ -59,26 +51,26 @@ class SE2(base.SpecialEuclideanBaseNumpy):
     @classmethod
     def exp(cls, xi):
         if len(xi) != cls.dof:
-            raise ValueError("xi must have length 3")
+            raise ValueError("xi must have length {}".format(cls.dof))
 
         rho = xi[0:2]
         phi = xi[2]
-        return cls(cls.RotationType.exp(phi), cls.RotationType.left_jacobian(phi).dot(rho))
+        return cls(cls.RotationType.exp(phi),
+                   cls.RotationType.left_jacobian(phi).dot(rho))
 
     def log(self):
-        phi = self.RotationType.log(self.rot)
+        phi = self.rot.log()
         rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)
         return np.hstack([rho, phi])
 
     def adjoint(self):
-        rotpart = self.rot.as_matrix()
-        transpart = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
-        return np.vstack([np.hstack([rotpart, transpart]),
+        rot_part = self.rot.as_matrix()
+        trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
+        return np.vstack([np.hstack([rot_part, trans_part]),
                           [0, 0, 1]])
 
     @classmethod
     def odot(cls, p, directional=False):
-        """SE(2) \odot operator as defined by Barfoot."""
         p = np.atleast_2d(p)
         result = np.zeros([p.shape[0], p.shape[1], cls.dof])
 

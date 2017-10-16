@@ -136,12 +136,6 @@ class SpecialOrthogonalBase(LieGroupBase, ABC):
         self.mat = mat
         """Storage for the transformation matrix."""
 
-    def inv(self):
-        if len(self.mat.shape) < 3:
-            return self.__class__(self.mat.transpose(1, 0))
-        else:
-            return self.__class__(self.mat.transpose(2, 1))
-
     def perturb(self, phi):
         self.mat = self.__class__.exp(phi).dot(self).mat
 
@@ -165,15 +159,13 @@ class SpecialEuclideanBase(LieGroupBase, ABC):
         self.trans = trans
         """Storage for the translation vector."""
 
-    def normalize(self):
-        self.rot.normalize()
-
-    def inv(self):
-        inv_rot = self.rot.inv()
-        inv_trans = -(inv_rot.dot(self.trans))
-        return self.__class__(inv_rot, inv_trans)
-
     def perturb(self, xi):
         perturbed = self.__class__.exp(xi).dot(self)
         self.rot = perturbed.rot
         self.trans = perturbed.trans
+
+    @classmethod
+    @abstractmethod
+    def odot(cls, p, directional=False):
+        """\odot operator as defined by Barfoot."""
+        pass

@@ -202,7 +202,7 @@ def test_normalize():
 
 def test_normalize_batch():
     C = SO2.exp(torch.Tensor([-1., 0., 1.]))
-    assert (SO2.is_valid_matrix(C.mat) == torch.ByteTensor([1, 1, 1])).all()
+    assert SO2.is_valid_matrix(C.mat).all()
 
     C.mat.add_(0.1)
     assert (SO2.is_valid_matrix(C.mat) == torch.ByteTensor([0, 0, 0])).all()

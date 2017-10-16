@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from liegroups import SE3
+from liegroups.numpy import SE3
 
 
 def test_identity():

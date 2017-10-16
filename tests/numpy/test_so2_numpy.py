@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 
-from liegroups import SO2
+from liegroups.numpy import SO2
 
 
 def test_identity():

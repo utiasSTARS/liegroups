@@ -4,7 +4,7 @@ import numpy as np
 from . import base
 from . import utils
 
-class SO3(base.SpecialOrthogonalBaseTorch):
+class SO3(base.SpecialOrthogonalBase):
     """Rotation matrix in SO(3) using active (alibi) transformations."""
     dim = 3
     dof = 3

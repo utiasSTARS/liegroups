@@ -3,7 +3,7 @@ import numpy as np
 from .. import base
 
 
-class SpecialOrthogonalBaseNumpy(base.SpecialOrthogonalBase):
+class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using Numpy"""
 
     def __init__(self, mat):
@@ -33,6 +33,9 @@ class SpecialOrthogonalBaseNumpy(base.SpecialOrthogonalBase):
     def identity(cls):
         return cls(np.identity(cls.dim))
 
+    def inv(self):
+        return self.__class__(self.mat.T)
+
     def normalize(self):
         # The SVD is commonly written as a = U S V.H.
         # The v returned by this function is V.H and u = U.
@@ -58,7 +61,7 @@ class SpecialOrthogonalBaseNumpy(base.SpecialOrthogonalBase):
                     "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
 
 
-class SpecialEuclideanBaseNumpy(base.SpecialEuclideanBase):
+class SpecialEuclideanBase(base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using Numpy"""
 
     def __init__(self, rot, trans):
@@ -91,6 +94,14 @@ class SpecialEuclideanBaseNumpy(base.SpecialEuclideanBase):
     @classmethod
     def identity(cls):
         return cls.from_matrix(np.identity(cls.dim))
+
+    def inv(self):
+        inv_rot = self.rot.inv()
+        inv_trans = -(inv_rot.dot(self.trans))
+        return self.__class__(inv_rot, inv_trans)
+
+    def normalize(self):
+        self.rot.normalize()
 
     def as_matrix(self):
         R = self.rot.as_matrix()

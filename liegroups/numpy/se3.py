@@ -4,7 +4,7 @@ from . import base
 from .so3 import SO3
 
 
-class SE3(base.SpecialEuclideanBaseNumpy):
+class SE3(base.SpecialEuclideanBase):
     """Homogeneous transformation matrix in SE(3) using active (alibi) transformations."""
     dim = 4
     dof = 6

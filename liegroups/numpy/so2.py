@@ -3,7 +3,7 @@ import numpy as np
 from . import base
 
 
-class SO2(base.SpecialOrthogonalBaseNumpy):
+class SO2(base.SpecialOrthogonalBase):
     """Rotation matrix in SO(2) using active (alibi) transformations."""
     dim = 2
     dof = 1

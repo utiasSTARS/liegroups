@@ -4,7 +4,7 @@ from . import base
 from . import utils
 
 
-class SO2(base.SpecialOrthogonalBaseTorch):
+class SO2(base.SpecialOrthogonalBase):
     """Rotation matrix in SO(2) using active (alibi) transformations."""
     dim = 2
     dof = 1
