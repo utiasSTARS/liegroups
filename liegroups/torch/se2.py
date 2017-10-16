@@ -23,7 +23,7 @@ class SE2(base.SpecialEuclideanBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Xi = xi.__class__(xi.shape[0], cls.dof, cls.dof)
+        Xi = xi.__class__(xi.shape[0], cls.dim, cls.dim).zero_()
         Xi[:, 0:2, 0:2] = cls.RotationType.wedge(xi[:, 2])
         Xi[:, 0:2, 2] = xi[:, 0:2]
 
@@ -34,9 +34,9 @@ class SE2(base.SpecialEuclideanBase):
         if Xi.dim() < 3:
             Xi = Xi.unsqueeze(dim=0)
 
-        if Xi.shape[1:3] != (cls.dof, cls.dof):
+        if Xi.shape[1:3] != (cls.dim, cls.dim):
             raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
-                cls.dof, cls.dof, cls.dof, cls.dof))
+                cls.dim, cls.dim, cls.dim, cls.dim))
 
         xi = Xi.__class__(Xi.shape[0], cls.dof)
         xi[:, 0:2] = Xi[:, 0:2, 2]
@@ -131,7 +131,7 @@ class SE2(base.SpecialEuclideanBase):
         # Got euclidean coordinates
         if p.shape[1] == cls.dim - 1:
             # Assume scale parameter is 1 unless p is a direction
-            # vector, in which case te scale is 0
+            # vector, in which case the scale is 0
             if not directional:
                 result[:, 0:2, 0:2] = torch.eye(
                     cls.RotationType.dim).unsqueeze_(dim=0).expand(

@@ -14,16 +14,6 @@ class SE3(base.SpecialEuclideanBase):
         super().__init__(rot, trans)
 
     @classmethod
-    def is_valid_matrix(cls, mat):
-        return mat.shape == (cls.dim, cls.dim) and \
-            np.array_equal(mat[cls.dim - 1, :], np.array([0, 0, 0, 1])) and \
-            cls.RotationType.is_valid_matrix(mat[0:cls.dim - 1, 0:cls.dim - 1])
-
-    @classmethod
-    def identity(cls):
-        return cls.from_matrix(np.identity(cls.dim))
-
-    @classmethod
     def wedge(cls, xi):
         xi = np.atleast_2d(xi)
         if xi.shape[1] != cls.dof:
@@ -60,7 +50,7 @@ class SE3(base.SpecialEuclideanBase):
     @classmethod
     def exp(cls, xi):
         if len(xi) != cls.dof:
-            raise ValueError("xi must have length 6")
+            raise ValueError("xi must have length {}".format(cls.dof))
 
         rho = xi[0:3]
         phi = xi[3:6]
@@ -73,7 +63,6 @@ class SE3(base.SpecialEuclideanBase):
         return np.hstack([rho, phi])
 
     def adjoint(self):
-        """Return the adjoint matrix of the transformation."""
         rotmat = self.rot.as_matrix()
         return np.vstack(
             [np.hstack([rotmat,
@@ -82,23 +71,22 @@ class SE3(base.SpecialEuclideanBase):
         )
 
     @classmethod
-    def odot(cls, vec, directional=False):
-        """SE(3) \odot operator as defined by Barfoot."""
-        vec = np.atleast_2d(vec)
-        result = np.zeros([vec.shape[0], vec.shape[1], cls.dof])
+    def odot(cls, p, directional=False):
+        p = np.atleast_2d(p)
+        result = np.zeros([p.shape[0], p.shape[1], cls.dof])
 
-        if vec.shape[1] == cls.dim - 1:
-            # Assume scale parameter is 1 unless vec is a direction
-            # vector, in which case the scale is 0
+        if p.shape[1] == cls.dim - 1:
+            # Assume scale parameter is 1 unless p is a direction
+            # ptor, in which case the scale is 0
             if not directional:
                 result[:, 0:3, 0:3] = np.eye(3)
 
-            result[:, 0:3, 3:6] = cls.RotationType.wedge(-vec)
+            result[:, 0:3, 3:6] = cls.RotationType.wedge(-p)
 
-        elif vec.shape[1] == cls.dim:
+        elif p.shape[1] == cls.dim:
             # Broadcast magic
-            result[:, 0:3, 0:3] = vec[:, 3][:, None, None] * np.eye(3)
-            result[:, 0:3, 3:6] = cls.RotationType.wedge(-vec[:, 0:3])
+            result[:, 0:3, 0:3] = p[:, 3][:, None, None] * np.eye(3)
+            result[:, 0:3, 3:6] = cls.RotationType.wedge(-p[:, 0:3])
 
         else:
             raise ValueError("p must have shape ({},), ({},), (N,{}) or (N,{})".format(

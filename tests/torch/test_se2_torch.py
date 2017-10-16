@@ -9,14 +9,12 @@ def test_from_matrix():
     T_good = SE2.from_matrix(torch.eye(3))
     assert isinstance(T_good, SE2) \
         and isinstance(T_good.rot, SO2) \
-        and T_good.trans.dim() == 1 \
         and T_good.trans.shape == (2,) \
         and SE2.is_valid_matrix(T_good.as_matrix()).all()
 
     T_bad = SE2.from_matrix(torch.eye(3).add_(1e-3), normalize=True)
     assert isinstance(T_bad, SE2) \
         and isinstance(T_bad.rot, SO2) \
-        and T_bad.trans.dim() == 1 \
         and T_bad.trans.shape == (2,) \
         and SE2.is_valid_matrix(T_bad.as_matrix()).all()
 
@@ -24,15 +22,13 @@ def test_from_matrix():
 def test_from_matrix_batch():
     T_good = SE2.from_matrix(torch.eye(3).repeat(5, 1, 1))
     assert isinstance(T_good, SE2) \
-        and T_good.trans.dim() == 2 \
         and T_good.trans.shape == (5, 2) \
         and SE2.is_valid_matrix(T_good.as_matrix()).all()
 
     T_bad = T_good.as_matrix()
-    T_bad[3, 0:3, 0:3].add_(0.1)
+    T_bad[3, :, :].add_(0.1)
     T_bad = SE2.from_matrix(T_bad, normalize=True)
     assert isinstance(T_bad, SE2) \
-        and T_bad.trans.dim() == 2 \
         and T_bad.trans.shape == (5, 2) \
         and SE2.is_valid_matrix(T_bad.as_matrix()).all()
 
@@ -42,7 +38,6 @@ def test_identity():
     assert isinstance(T, SE2) \
         and isinstance(T.rot, SO2) \
         and T.rot.mat.dim() == 2 \
-        and T.trans.dim() == 1 \
         and T.trans.shape == (2,)
 
 
@@ -51,7 +46,6 @@ def test_identity_batch():
     assert isinstance(T, SE2) \
         and isinstance(T.rot, SO2) \
         and T.rot.mat.dim() == 3 \
-        and T.trans.dim() == 2 \
         and T.trans.shape == (5, 2)
 
 

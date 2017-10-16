@@ -14,6 +14,13 @@ class SO2(base.SpecialOrthogonalBase):
 
     @classmethod
     def wedge(cls, phi):
+        if phi.dim() < 2:
+            phi = phi.unsqueeze(dim=1)  # vector --> matrix (N --> Nx1)
+
+        if phi.shape[1] != cls.dof:
+            raise ValueError(
+                "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
         Phi = phi.__class__(phi.shape[0], cls.dim, cls.dim).zero_()
         Phi[:, 0, 1] = -phi
         Phi[:, 1, 0] = phi
