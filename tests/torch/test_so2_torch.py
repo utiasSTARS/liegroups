@@ -155,6 +155,32 @@ def test_wedge_vee_batch():
     assert (phis == SO2.vee(Phis)).all()
 
 
+def test_left_jacobians():
+    phi_small = torch.Tensor([0.])
+    phi_big = torch.Tensor([np.pi / 2])
+
+    left_jacobian_small = SO2.left_jacobian(phi_small)
+    inv_left_jacobian_small = SO2.inv_left_jacobian(phi_small)
+    assert utils.allclose(
+        torch.mm(left_jacobian_small, inv_left_jacobian_small),
+        torch.eye(2))
+
+    left_jacobian_big = SO2.left_jacobian(phi_big)
+    inv_left_jacobian_big = SO2.inv_left_jacobian(phi_big)
+    assert utils.allclose(
+        torch.mm(left_jacobian_big, inv_left_jacobian_big),
+        torch.eye(2))
+
+
+def test_left_jacobians_batch():
+    phis = torch.Tensor([0., np.pi / 2])
+
+    left_jacobian = SO2.left_jacobian(phis)
+    inv_left_jacobian = SO2.inv_left_jacobian(phis)
+    assert utils.allclose(torch.bmm(left_jacobian, inv_left_jacobian),
+                          torch.eye(2).unsqueeze_(dim=0).expand(2, 2, 2))
+
+
 def test_exp_log():
     C_big = SO2.exp(torch.Tensor([np.pi / 4]))
     assert utils.allclose(SO2.exp(SO2.log(C_big)).mat, C_big.mat)
