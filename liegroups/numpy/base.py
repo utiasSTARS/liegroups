@@ -7,10 +7,16 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using Numpy"""
 
     def __init__(self, mat):
+        """Create a rotation from a matrix (unsafe, but faster)."""
         super().__init__(mat)
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
+        """Create a rotation from a matrix (safe, but slower).
+
+        Throws an error if mat is invalid and normalize=False.
+        If normalize=True invalid matrices will be normalized to be valid.
+        """
         mat_is_valid = cls.is_valid_matrix(mat)
 
         if mat_is_valid or normalize:
@@ -25,18 +31,28 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
 
     @classmethod
     def is_valid_matrix(cls, mat):
+        """Check if a matrix is a valid rotation matrix."""
         return mat.shape == (cls.dim, cls.dim) and \
             np.isclose(np.linalg.det(mat), 1.) and \
             np.allclose(mat.T.dot(mat), np.identity(cls.dim))
 
     @classmethod
     def identity(cls):
+        """Return the identity rotation."""
         return cls(np.identity(cls.dim))
 
     def inv(self):
+        """Return the inverse rotation:
+
+        .. math::
+            \\mathbf{C}^{-1} = \\mathbf{C}^T
+        """
         return self.__class__(self.mat.T)
 
     def normalize(self):
+        """Normalize the rotation matrix to ensure it is valid and
+        negate the effect of rounding errors.
+        """
         # The SVD is commonly written as a = U S V.H.
         # The v returned by this function is V.H and u = U.
         U, _, V = np.linalg.svd(self.mat, full_matrices=False)
@@ -47,6 +63,8 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
         self.mat = U.dot(S).dot(V)
 
     def dot(self, other):
+        """Multiply another rotation or one or more vectors on the left.
+        """
         if isinstance(other, self.__class__):
             # Compound with another rotation
             return self.__class__(np.dot(self.mat, other.mat))
@@ -65,10 +83,16 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using Numpy"""
 
     def __init__(self, rot, trans):
+        """Create a transformation from a translation and a rotation (unsafe, but faster)."""
         super().__init__(rot, trans)
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
+        """Create a transformation from a matrix (safe, but slower).
+
+        Throws an error if mat is invalid and normalize=False.
+        If normalize=True invalid matrices will be normalized to be valid.
+        """
         mat_is_valid = cls.is_valid_matrix(mat)
 
         if mat_is_valid or normalize:
@@ -85,6 +109,7 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
 
     @classmethod
     def is_valid_matrix(cls, mat):
+        """Check if a matrix is a valid transformation matrix."""
         bottom_row = np.append(np.zeros(cls.dim - 1), 1.)
 
         return mat.shape == (cls.dim, cls.dim) and \
@@ -93,17 +118,31 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
 
     @classmethod
     def identity(cls):
+        """Return the identity transformation."""
         return cls.from_matrix(np.identity(cls.dim))
 
     def inv(self):
+        """Return the inverse transformation:
+
+        .. math::
+            \\mathbf{T}^{-1} = 
+                \\begin{bmatrix}
+                    \\mathbf{C}^T & -\\mathbf{C}^T\\mathbf{r} \\\\
+                    \\mathbf{0}^T & 1
+                \\end{bmatrix}
+        """
         inv_rot = self.rot.inv()
         inv_trans = -(inv_rot.dot(self.trans))
         return self.__class__(inv_rot, inv_trans)
 
     def normalize(self):
+        """Normalize the transformation matrix to ensure it is valid and
+        negate the effect of rounding errors.
+        """
         self.rot.normalize()
 
     def as_matrix(self):
+        """Return the matrix representation of the rotation."""
         R = self.rot.as_matrix()
         t = np.reshape(self.trans, (self.dim - 1, 1))
         bottom_row = np.append(np.zeros(self.dim - 1), 1.)
@@ -111,6 +150,8 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
                           bottom_row])
 
     def dot(self, other):
+        """Multiply another rotation or one or more vectors on the left.
+        """
         if isinstance(other, self.__class__):
             # Compound with another transformation
             return self.__class__(self.rot.dot(other.rot),

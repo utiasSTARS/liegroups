@@ -10,4 +10,5 @@ Lie Groups
 .. toctree::
     :maxdepth: 2
 
-    liegroups
+    numpy
+    torch

@@ -6,7 +6,7 @@ from .so3 import SO3
 
 
 class SE3(base.SpecialEuclideanBase):
-    """Homogeneous transformation matrix in SE(3) using active (alibi) transformations."""
+    """See :mod:`liegroups.SE3` """
     dim = 4
     dof = 6
     RotationType = SO3

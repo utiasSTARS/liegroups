@@ -6,7 +6,7 @@ from .so2 import SO2
 
 
 class SE2(base.SpecialEuclideanBase):
-    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
+    """See :mod:`liegroups.SE2`"""
     dim = 3
     dof = 3
     RotationType = SO2

@@ -5,7 +5,7 @@ from . import utils
 
 
 class SO2(base.SpecialOrthogonalBase):
-    """Rotation matrix in SO(2) using active (alibi) transformations."""
+    """See :mod:`liegroups.SO2`"""
     dim = 2
     dof = 1
 
@@ -56,19 +56,19 @@ class SO2(base.SpecialOrthogonalBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_()
 
         if len(large_angle_inds) > 0:
-            s = phi[large_angle_inds].sin()
-            c = phi[large_angle_inds].cos()
+            angle = phi[large_angle_inds]
+            s = angle.sin()
+            c = angle.cos()
 
-            A = s / phi[large_angle_inds]
-            B = (1. - c) / phi[large_angle_inds]
+            A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+                dim=2).expand_as(jac[large_angle_inds]) * \
+                torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+                jac[large_angle_inds])
+            B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
+                dim=2).expand_as(jac[large_angle_inds]) * \
+                cls.wedge(phi.__class__([1.]))
 
-            jac_large_angle = phi.__class__(
-                len(large_angle_inds), cls.dim, cls.dim)
-            jac_large_angle[:, 0, 0] = A
-            jac_large_angle[:, 0, 1] = -B
-            jac_large_angle[:, 1, 0] = B
-            jac_large_angle[:, 1, 1] = A
-            jac[large_angle_inds] = jac_large_angle
+            jac[large_angle_inds] = A + B
 
         return jac.squeeze_()
 
@@ -91,20 +91,21 @@ class SO2(base.SpecialOrthogonalBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_()
 
         if len(large_angle_inds) > 0:
-            s = phi[large_angle_inds].sin()
-            c = phi[large_angle_inds].cos()
+            angle = phi[large_angle_inds]
+            ha = 0.5 * angle       # half angle
+            hacha = ha / ha.tan()  # half angle * cot(half angle)
 
-            A = s / phi[large_angle_inds]
-            B = (1. - c) / phi[large_angle_inds]
-            C = (1. / (A * A + B * B))
+            ha.unsqueeze_(dim=1).unsqueeze_(
+                dim=2).expand_as(jac[large_angle_inds])
+            hacha.unsqueeze_(dim=1).unsqueeze_(
+                dim=2).expand_as(jac[large_angle_inds])
 
-            jac_large_angle = phi.__class__(
-                len(large_angle_inds), cls.dim, cls.dim)
-            jac_large_angle[:, 0, 0] = C * A
-            jac_large_angle[:, 0, 1] = C * B
-            jac_large_angle[:, 1, 0] = -C * B
-            jac_large_angle[:, 1, 1] = C * A
-            jac[large_angle_inds] = jac_large_angle
+            A = hacha * \
+                torch.eye(cls.dim).unsqueeze_(
+                    dim=0).expand_as(jac[large_angle_inds])
+            B = -ha * cls.wedge(phi.__class__([1.]))
+
+            jac[large_angle_inds] = A + B
 
         return jac.squeeze_()
 

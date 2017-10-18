@@ -4,8 +4,9 @@ import numpy as np
 from . import base
 from . import utils
 
+
 class SO3(base.SpecialOrthogonalBase):
-    """Rotation matrix in SO(3) using active (alibi) transformations."""
+    """See :mod:`liegroups.SO3`"""
     dim = 3
     dof = 3
 
@@ -390,40 +391,42 @@ class SO3(base.SpecialOrthogonalBase):
 
         if sum(near_zero_mask) > 0:
             cond1_mask = near_zero_mask & \
-            (R[:, 0, 0] > R[:, 1, 1]).squeeze_() & \
-            (R[:, 0, 0] > R[:, 2, 2]).squeeze_()
+                (R[:, 0, 0] > R[:, 1, 1]).squeeze_() & \
+                (R[:, 0, 0] > R[:, 2, 2]).squeeze_()
             cond1_inds = cond1_mask.nonzero().squeeze_()
 
             if len(cond1_inds) > 0:
                 R_cond1 = R[cond1_inds]
-                d = 2. * np.sqrt(1. + R_cond1[:,0, 0] - 
-                R_cond1[:,1, 1] - R_cond1[:,2, 2])
-                qw[cond1_inds] = (R_cond1[:,2, 1] - R_cond1[:,1, 2]) / d
+                d = 2. * np.sqrt(1. + R_cond1[:, 0, 0] -
+                                 R_cond1[:, 1, 1] - R_cond1[:, 2, 2])
+                qw[cond1_inds] = (R_cond1[:, 2, 1] - R_cond1[:, 1, 2]) / d
                 qx[cond1_inds] = 0.25 * d
-                qy[cond1_inds] = (R_cond1[:,1, 0] + R_cond1[:,0, 1]) / d
-                qz[cond1_inds] = (R_cond1[:,0, 2] + R_cond1[:,2, 0]) / d
+                qy[cond1_inds] = (R_cond1[:, 1, 0] + R_cond1[:, 0, 1]) / d
+                qz[cond1_inds] = (R_cond1[:, 0, 2] + R_cond1[:, 2, 0]) / d
 
             cond2_mask = near_zero_mask & (R[:, 1, 1] > R[:, 2, 2]).squeeze_()
             cond2_inds = cond2_mask.nonzero().squeeze_()
-            
+
             if len(cond2_inds) > 0:
                 R_cond2 = R[cond2_inds]
-                d = 2. * np.sqrt(1. + R_cond2[:,1, 1] - 
-                R_cond2[:,0, 0] - R_cond2[:,2, 2])
-                qw[cond2_inds] = (R_cond2[:,0, 2] - R_cond2[:,2, 0]) / d
-                qx[cond2_inds] = (R_cond2[:,1, 0] + R_cond2[:,0, 1]) / d
+                d = 2. * np.sqrt(1. + R_cond2[:, 1, 1] -
+                                 R_cond2[:, 0, 0] - R_cond2[:, 2, 2])
+                qw[cond2_inds] = (R_cond2[:, 0, 2] - R_cond2[:, 2, 0]) / d
+                qx[cond2_inds] = (R_cond2[:, 1, 0] + R_cond2[:, 0, 1]) / d
                 qy[cond2_inds] = 0.25 * d
-                qz[cond2_inds] = (R_cond2[:,2, 1] + R_cond2[:,1, 2]) / d
-            
-            cond3_mask = near_zero_mask & (1-cond1_mask) & (1-cond2_mask)
+                qz[cond2_inds] = (R_cond2[:, 2, 1] + R_cond2[:, 1, 2]) / d
+
+            cond3_mask = near_zero_mask & (1 - cond1_mask) & (1 - cond2_mask)
             cond3_inds = cond3_mask.nonzero().squeeze_()
 
             if len(cond3_inds) > 0:
                 R_cond3 = R[cond3_inds]
-                d = 2. * np.sqrt(1. + R_cond3[:,2, 2] - R_cond3[:,0, 0] - R_cond3[:,1, 1])
-                qw[cond3_inds] = (R_cond3[:,1, 0] - R_cond3[:,0, 1]) / d
-                qx[cond3_inds] = (R_cond3[:,0, 2] + R_cond3[:,2, 0]) / d
-                qy[cond3_inds] = (R_cond3[:,2, 1] + R_cond3[:,1, 2]) / d
+                d = 2. * \
+                    np.sqrt(1. + R_cond3[:, 2, 2] -
+                            R_cond3[:, 0, 0] - R_cond3[:, 1, 1])
+                qw[cond3_inds] = (R_cond3[:, 1, 0] - R_cond3[:, 0, 1]) / d
+                qx[cond3_inds] = (R_cond3[:, 0, 2] + R_cond3[:, 2, 0]) / d
+                qy[cond3_inds] = (R_cond3[:, 2, 1] + R_cond3[:, 1, 2]) / d
                 qz[cond3_inds] = 0.25 * d
 
         far_zero_mask = 1 - near_zero_mask
@@ -431,24 +434,23 @@ class SO3(base.SpecialOrthogonalBase):
         if len(far_zero_inds) > 0:
             R_fz = R[far_zero_inds]
             d = 4. * qw[far_zero_inds]
-            qx[far_zero_inds] = (R_fz[:,2, 1] - R_fz[:,1, 2]) / d
-            qy[far_zero_inds] = (R_fz[:,0, 2] - R_fz[:,2, 0]) / d
-            qz[far_zero_inds] = (R_fz[:,2, 1] - R_fz[:,1, 2]) / d
+            qx[far_zero_inds] = (R_fz[:, 2, 1] - R_fz[:, 1, 2]) / d
+            qy[far_zero_inds] = (R_fz[:, 0, 2] - R_fz[:, 2, 0]) / d
+            qz[far_zero_inds] = (R_fz[:, 2, 1] - R_fz[:, 1, 2]) / d
 
         # Check ordering last
         if ordering is 'xyzw':
-            quat = torch.cat([qx.unsqueeze_(dim=1), 
-            qy.unsqueeze_(dim=1), 
-            qz.unsqueeze_(dim=1), 
-            qw.unsqueeze_(dim=1)], dim=1).squeeze_()
+            quat = torch.cat([qx.unsqueeze_(dim=1),
+                              qy.unsqueeze_(dim=1),
+                              qz.unsqueeze_(dim=1),
+                              qw.unsqueeze_(dim=1)], dim=1).squeeze_()
         elif ordering is 'wxyz':
-            quat = torch.cat([qw.unsqueeze_(dim=1), 
-            qx.unsqueeze_(dim=1), 
-            qy.unsqueeze_(dim=1), 
-            qz.unsqueeze_(dim=1)], dim=1).squeeze_()
+            quat = torch.cat([qw.unsqueeze_(dim=1),
+                              qx.unsqueeze_(dim=1),
+                              qy.unsqueeze_(dim=1),
+                              qz.unsqueeze_(dim=1)], dim=1).squeeze_()
         else:
             raise ValueError(
                 "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
 
         return quat
-

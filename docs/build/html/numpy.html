@@ -1,0 +1,1136 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>liegroups &mdash; Lie Groups 1.0.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Lie Groups 1.0.0 documentation" href="index.html"/>
+        <link rel="next" title="liegroups.torch" href="torch.html"/>
+        <link rel="prev" title="Lie Groups" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Lie Groups
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">liegroups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#so-2">SO(2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#se-2">SE(2)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#so-3">SO(3)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#se-3">SE(3)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="torch.html">liegroups.torch</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Lie Groups</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>liegroups</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/numpy.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="liegroups">
+<h1>liegroups<a class="headerlink" href="#liegroups" title="Permalink to this headline">¶</a></h1>
+<p>The default implementation uses numpy as the backend linear algebra library.</p>
+<div class="section" id="so-2">
+<h2>SO(2)<a class="headerlink" href="#so-2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="liegroups.SO2">
+<em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SO2</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation matrix in SO(2) using active (alibi) transformations.</p>
+<div class="math">
+\[\begin{split}SO(2) &amp;= \left\{ \mathbf{C} \in \mathbb{R}^{2 \times 2} ~\middle|~ \mathbf{C}\mathbf{C}^T = \mathbf{1}, \det \mathbf{C} = 1 \right\} \\
+\mathfrak{so}(2) &amp;= \left\{ \boldsymbol{\Phi} = \phi^\wedge \in \mathbb{R}^{2 \times 2} ~\middle|~ \phi \in \mathbb{R} \right\}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#liegroups.SO2.dim" title="liegroups.SO2.dim"><strong>dim</strong></a> – Dimension of the rotation matrix.</li>
+<li><a class="reference internal" href="#liegroups.SO2.dof" title="liegroups.SO2.dof"><strong>dof</strong></a> – Underlying degrees of freedom (i.e., dimension of the tangent space).</li>
+<li><strong>mat</strong> – Storage for the rotation matrix <span class="math">\(\mathbf{C}\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="liegroups.SO2.adjoint">
+<code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.adjoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjoint matrix of the transformation.</p>
+<div class="math">
+\[\mathbf{\mathcal{C}} = 
+\text{Ad}(\mathbf{C}) = 1 \in \mathbb{R}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.as_matrix">
+<code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.as_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SO2.dim">
+<code class="descname">dim</code><em class="property"> = 2</em><a class="headerlink" href="#liegroups.SO2.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimension of the transformation matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SO2.dof">
+<code class="descname">dof</code><em class="property"> = 1</em><a class="headerlink" href="#liegroups.SO2.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underlying degrees of freedom (i.e., dimension of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply another rotation or one or more vectors on the left.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.exp">
+<em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponential map for SO(2), which computes a transformation from a tangent vector:</p>
+<div class="math">
+\[\begin{split}\mathbf{C}(\phi) = 
+\exp(\phi^\wedge) =
+\cos \phi \mathbf{1} + \sin \phi 1^\wedge = 
+\begin{bmatrix}
+    \cos \phi  &amp; -\sin \phi  \\
+    \sin \phi &amp; \cos \phi
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO2.log" title="liegroups.SO2.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.from_angle">
+<em class="property">classmethod </em><code class="descname">from_angle</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.from_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix given an angle in radians.</p>
+<p>See <a class="reference internal" href="#liegroups.SO2.exp" title="liegroups.SO2.exp"><code class="xref py py-meth docutils literal"><span class="pre">exp()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.from_matrix">
+<code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rotation from a matrix (safe, but slower).</p>
+<p>Throws an error if mat is invalid and normalize=False.
+If normalize=True invalid matrices will be normalized to be valid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.identity">
+<code class="descname">identity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the identity rotation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.inv">
+<code class="descname">inv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inverse rotation:</p>
+<div class="math">
+\[\mathbf{C}^{-1} = \mathbf{C}^T\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.inv_left_jacobian">
+<em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(2) inverse left Jacobian.</p>
+<div class="math">
+\[\begin{split}\mathbf{J}^{-1}(\phi) = 
+\begin{cases}
+    \mathbf{1} - \frac{1}{2} \phi^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \frac{\phi}{2} \cot \frac{\phi}{2} \mathbf{1} -
+    \frac{\phi}{2} 1^\wedge, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.is_valid_matrix">
+<code class="descname">is_valid_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.is_valid_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a matrix is a valid rotation matrix.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.left_jacobian">
+<em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(2) left Jacobian.</p>
+<div class="math">
+\[\begin{split}\mathbf{J}(\phi) = 
+\begin{cases}
+    \mathbf{1} + \frac{1}{2} \phi^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \frac{\sin \phi}{\phi} \mathbf{1} - 
+    \frac{1 - \cos \phi}{\phi} 1^\wedge, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.log">
+<code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithmic map for SO(2), which computes a tangent vector from a transformation:</p>
+<div class="math">
+\[\phi(\mathbf{C}) = 
+\ln(\mathbf{C})^\vee =
+\text{atan2}(C_{1,0}, C_{0,0})\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO2.exp" title="liegroups.SO2.exp"><code class="xref py py-meth docutils literal"><span class="pre">exp()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the rotation matrix to ensure it is valid and
+negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.perturb">
+<code class="descname">perturb</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.perturb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturb the rotation in-place on the left by a vector in its local tangent space.</p>
+<div class="math">
+\[\mathbf{C} \gets \exp(\boldsymbol{\phi}^\wedge) \mathbf{C}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO2.to_angle">
+<code class="descname">to_angle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.to_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recover the rotation angle in radians from the rotation matrix.</p>
+<p>See <a class="reference internal" href="#liegroups.SO2.log" title="liegroups.SO2.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.vee">
+<em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.vee" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(2) vee operator as defined by Barfoot.</p>
+<div class="math">
+\[\phi = \boldsymbol{\Phi}^\vee\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO2.wedge" title="liegroups.SO2.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO2.wedge">
+<em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.wedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(2) wedge operator as defined by Barfoot.</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\Phi} = 
+\phi^\wedge = 
+\begin{bmatrix} 
+    0 &amp; -\phi \\
+    \phi &amp; 0 
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO2.vee" title="liegroups.SO2.vee"><code class="xref py py-meth docutils literal"><span class="pre">vee()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="se-2">
+<h2>SE(2)<a class="headerlink" href="#se-2" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="liegroups.SE2">
+<em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous transformation matrix in SE(2) using active (alibi) transformations.</p>
+<div class="math">
+\[\begin{split}SE(2) &amp;= \left\{ \mathbf{T}=
+        \begin{bmatrix}
+            \mathbf{C} &amp; \mathbf{r} \\
+            \mathbf{0}^T &amp; 1
+        \end{bmatrix} \in \mathbb{R}^{3 \times 3} ~\middle|~ \mathbf{C} \in SO(2), \mathbf{r} \in \mathbb{R}^2 \right\} \\
+\mathfrak{se}(2) &amp;= \left\{ \boldsymbol{\Xi} =
+\boldsymbol{\xi}^\wedge \in \mathbb{R}^{3 \times 3} ~\middle|~
+ \boldsymbol{\xi}=
+    \begin{bmatrix}
+        \boldsymbol{\rho} \\ \phi
+    \end{bmatrix} \in \mathbb{R}^3, \boldsymbol{\rho} \in \mathbb{R}^2, \phi \in \mathbb{R} \right\}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#liegroups.SE2.dim" title="liegroups.SE2.dim"><strong>dim</strong></a> – Dimension of the rotation matrix.</li>
+<li><a class="reference internal" href="#liegroups.SE2.dof" title="liegroups.SE2.dof"><strong>dof</strong></a> – Underlying degrees of freedom (i.e., dimension of the tangent space).</li>
+<li><strong>rot</strong> – Storage for the rotation matrix <span class="math">\(\mathbf{C}\)</span>.</li>
+<li><strong>trans</strong> – Storage for the translation vector <span class="math">\(\mathbf{r}\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="liegroups.SE2.RotationType">
+<code class="descname">RotationType</code><a class="headerlink" href="#liegroups.SE2.RotationType" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SO2</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.adjoint">
+<code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.adjoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjoint matrix of the transformation.</p>
+<div class="math">
+\[\begin{split}\mathbf{\mathcal{T}} = 
+\text{Ad}(\mathbf{T}) = 
+\begin{bmatrix}
+    \mathbf{C} &amp; 1^\wedge \mathbf{r} \\
+    \mathbf{0}^T &amp; 1
+\end{bmatrix}
+\in \mathbb{R}^{3 \times 3}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.as_matrix">
+<code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.as_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SE2.dim">
+<code class="descname">dim</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.SE2.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimension of the transformation matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SE2.dof">
+<code class="descname">dof</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.SE2.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underlying degrees of freedom (i.e., dimension of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply another rotation or one or more vectors on the left.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.exp">
+<em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponential map for SE(2), which computes a transformation from a tangent vector:</p>
+<div class="math">
+\[\begin{split}\mathbf{T}(\boldsymbol{\xi}) =
+\exp(\boldsymbol{\xi}^\wedge) =
+\begin{bmatrix}
+    \exp(\phi ^\wedge) &amp; \mathbf{J} \boldsymbol{\rho}  \\
+    \mathbf{0} ^ T &amp; 1
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.log" title="liegroups.SE2.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.from_matrix">
+<code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a transformation from a matrix (safe, but slower).</p>
+<p>Throws an error if mat is invalid and normalize=False.
+If normalize=True invalid matrices will be normalized to be valid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.identity">
+<code class="descname">identity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the identity transformation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.inv">
+<code class="descname">inv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inverse transformation:</p>
+<div class="math">
+\[\begin{split}\mathbf{T}^{-1} = 
+    \begin{bmatrix}
+        \mathbf{C}^T &amp; -\mathbf{C}^T\mathbf{r} \\
+        \mathbf{0}^T &amp; 1
+    \end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.inv_left_jacobian">
+<em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) inverse left Jacobian.</p>
+<div class="math">
+\[\mathcal{J}^{-1}(\boldsymbol{\xi})\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.is_valid_matrix">
+<code class="descname">is_valid_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.is_valid_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a matrix is a valid transformation matrix.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.left_jacobian">
+<em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) left Jacobian.</p>
+<div class="math">
+\[\mathcal{J}(\boldsymbol{\xi})\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.log">
+<code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithmic map for SE(2), which computes a tangent vector from a transformation:</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\xi}(\mathbf{T}) =
+\ln(\mathbf{T})^\vee =
+\begin{bmatrix}
+    \mathbf{J} ^ {-1} \mathbf{r} \\
+    \ln(\boldsymbol{C}) ^\vee
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.log" title="liegroups.SE2.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the transformation matrix to ensure it is valid and
+negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.odot">
+<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>directional=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.odot" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) odot operator as defined by Barfoot.</p>
+<p>This is the Jacobian of a vector</p>
+<div class="math">
+\[\begin{split}\mathbf{p} = 
+\begin{bmatrix}
+    sx \\ sy \\ sz \\ s
+\end{bmatrix} =
+\begin{bmatrix}
+    \boldsymbol{\epsilon} \\ \eta
+\end{bmatrix}\end{split}\]</div>
+<p>with respect to a perturbation in the underlying parameters of <span class="math">\(\mathbf{T}\)</span>.</p>
+<p>If <span class="math">\(\mathbf{p}\)</span> is given in Euclidean coordinates and directional=False, the missing scale value <span class="math">\(\eta\)</span> is assumed to be 1 and the Jacobian is 2x3. If directional=True, <span class="math">\(\eta\)</span> is assumed to be 0:</p>
+<div class="math">
+\[\mathbf{p}^\odot =
+\begin{bmatrix}
+    \eta \mathbf{1} &amp; 1^\wedge \boldsymbol{\epsilon}
+\end{bmatrix}\]</div>
+<p>If <span class="math">\(\mathbf{p}\)</span> is given in Homogeneous coordinates, the Jacobian is 3x3:</p>
+<div class="math">
+\[\begin{split}\mathbf{p}^\odot =
+\begin{bmatrix}
+    \eta \mathbf{1} &amp; 1^\wedge \boldsymbol{\epsilon} \\
+    \mathbf{0}^T &amp; 0
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE2.perturb">
+<code class="descname">perturb</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.perturb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturb the transformation in-place on the left by a vector in its local tangent space.</p>
+<div class="math">
+\[\mathbf{T} \gets \exp(\boldsymbol{\xi}^\wedge) \mathbf{T}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.vee">
+<em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.vee" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) vee operator as defined by Barfoot.</p>
+<div class="math">
+\[\boldsymbol{\xi} = \boldsymbol{\Xi} ^\vee\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.wedge" title="liegroups.SE2.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE2.wedge">
+<em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.wedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(2) wedge operator as defined by Barfoot.</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\Xi} =
+\boldsymbol{\xi} ^\wedge =
+\begin{bmatrix}
+    \phi ^\wedge &amp; \boldsymbol{\rho} \\
+    \mathbf{0} ^ T &amp; 0
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.vee" title="liegroups.SE2.vee"><code class="xref py py-meth docutils literal"><span class="pre">vee()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="so-3">
+<h2>SO(3)<a class="headerlink" href="#so-3" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="liegroups.SO3">
+<em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SO3</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rotation matrix in SO(3) using active (alibi) transformations.</p>
+<div class="math">
+\[\begin{split}SO(3) &amp;= \left\{ \mathbf{C} \in \mathbb{R}^{3 \times 3} ~\middle|~ \mathbf{C}\mathbf{C}^T = \mathbf{1}, \det \mathbf{C} = 1 \right\} \\
+\mathfrak{so}(3) &amp;= \left\{ \boldsymbol{\Phi} = \boldsymbol{\phi}^\wedge \in \mathbb{R}^{3 \times 3} ~\middle|~ \boldsymbol{\phi} = \phi \mathbf{a} \in \mathbb{R}^3, \phi = \Vert \boldsymbol{\phi} \Vert \right\}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#liegroups.SO3.dim" title="liegroups.SO3.dim"><strong>dim</strong></a> – Dimension of the rotation matrix.</li>
+<li><a class="reference internal" href="#liegroups.SO3.dof" title="liegroups.SO3.dof"><strong>dof</strong></a> – Underlying degrees of freedom (i.e., dimension of the tangent space).</li>
+<li><strong>mat</strong> – Storage for the rotation matrix <span class="math">\(\mathbf{C}\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="liegroups.SO3.adjoint">
+<code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.adjoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjoint matrix of the transformation.</p>
+<div class="math">
+\[\mathbf{\mathcal{C}} = 
+\text{Ad}(\mathbf{C}) = \mathbf{1}
+\in \mathbb{R}^{3 \times 3}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.as_matrix">
+<code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.as_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SO3.dim">
+<code class="descname">dim</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.SO3.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimension of the transformation matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SO3.dof">
+<code class="descname">dof</code><em class="property"> = 3</em><a class="headerlink" href="#liegroups.SO3.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underlying degrees of freedom (i.e., dimension of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply another rotation or one or more vectors on the left.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.exp">
+<em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponential map for SO(3), which computes a transformation from a tangent vector:</p>
+<div class="math">
+\[\begin{split}\mathbf{C}(\boldsymbol{\phi}) =
+\exp(\boldsymbol{\phi}^\wedge) =
+\begin{cases}
+    \mathbf{1} + \boldsymbol{\phi}^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \cos \phi \mathbf{1} +
+    (1 - \cos \phi) \mathbf{a}\mathbf{a}^T +
+    \sin \phi \mathbf{a}^\wedge, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO3.log" title="liegroups.SO3.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.from_matrix">
+<code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a rotation from a matrix (safe, but slower).</p>
+<p>Throws an error if mat is invalid and normalize=False.
+If normalize=True invalid matrices will be normalized to be valid.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.from_quaternion">
+<em class="property">classmethod </em><code class="descname">from_quaternion</code><span class="sig-paren">(</span><em>quat</em>, <em>ordering='wxyz'</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.from_quaternion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix from a unit length quaternion.</p>
+<p>Valid orderings are ‘xyzw’ and ‘wxyz’.</p>
+<div class="math">
+\[\begin{split}\mathbf{C} = 
+\begin{bmatrix}
+    1 - 2 (y^2 + z^2) &amp; 2 (xy - wz) &amp; 2 (wy + xz) \\
+    2 (wz + xy) &amp; 1 - 2 (x^2 + z^2) &amp; 2 (yz - wx) \\
+    2 (xz - wy) &amp; 2 (wx + yz) &amp; 1 - 2 (x^2 + y^2)
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.from_rpy">
+<em class="property">classmethod </em><code class="descname">from_rpy</code><span class="sig-paren">(</span><em>roll</em>, <em>pitch</em>, <em>yaw</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.from_rpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix from RPY Euler angles <span class="math">\((\alpha, \beta, \gamma)\)</span>.</p>
+<div class="math">
+\[\mathbf{C} = \mathbf{C}_z(\gamma) \mathbf{C}_y(\beta) \mathbf{C}_x(\alpha)\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.identity">
+<code class="descname">identity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the identity rotation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.inv">
+<code class="descname">inv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inverse rotation:</p>
+<div class="math">
+\[\mathbf{C}^{-1} = \mathbf{C}^T\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.inv_left_jacobian">
+<em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(3) inverse left Jacobian.</p>
+<div class="math">
+\[\begin{split}\mathbf{J}^{-1}(\boldsymbol{\phi}) =
+\begin{cases}
+    \mathbf{1} - \frac{1}{2} \boldsymbol{\phi}^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \frac{\phi}{2} \cot \frac{\phi}{2} \mathbf{1} +
+    \left( 1 - \frac{\phi}{2} \cot \frac{\phi}{2} \right) \mathbf{a}\mathbf{a}^T -
+    \frac{\phi}{2} \mathbf{a}^\wedge, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.is_valid_matrix">
+<code class="descname">is_valid_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.is_valid_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a matrix is a valid rotation matrix.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.left_jacobian">
+<em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(3) left Jacobian.</p>
+<div class="math">
+\[\begin{split}\mathbf{J}(\boldsymbol{\phi}) =
+\begin{cases}
+    \mathbf{1} + \frac{1}{2} \boldsymbol{\phi}^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \frac{\sin \phi}{\phi} \mathbf{1} +
+    \left(1 - \frac{\sin \phi}{\phi} \right) \mathbf{a}\mathbf{a}^T +
+    \frac{1 - \cos \phi}{\phi} \mathbf{a}^\wedge, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.log">
+<code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithmic map for SO(3), which computes a tangent vector from a transformation:</p>
+<div class="math">
+\[\begin{split}\phi &amp;= \frac{1}{2} \left( \mathrm{Tr}(\mathbf{C}) - 1 \right) \\
+\boldsymbol{\phi}(\mathbf{C}) &amp;= 
+\ln(\mathbf{C})^\vee =
+\begin{cases}
+    \mathbf{1} - \boldsymbol{\phi}^\wedge, &amp; \text{if } \phi \text{ is small} \\
+    \left( \frac{1}{2} \frac{\phi}{\sin \phi} \left( \mathbf{C} - \mathbf{C}^T \right) \right)^\vee, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO3.log" title="liegroups.SO3.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the rotation matrix to ensure it is valid and
+negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.perturb">
+<code class="descname">perturb</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.perturb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturb the rotation in-place on the left by a vector in its local tangent space.</p>
+<div class="math">
+\[\mathbf{C} \gets \exp(\boldsymbol{\phi}^\wedge) \mathbf{C}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.rotx">
+<em class="property">classmethod </em><code class="descname">rotx</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.rotx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix given an angle in rad about the x-axis.</p>
+<div class="math">
+\[\begin{split}\mathbf{C}_x(\phi) = 
+\begin{bmatrix}
+    1 &amp; 0 &amp; 0 \\
+    0 &amp; \cos \phi &amp; -\sin \phi \\
+    0 &amp; \sin \phi &amp; \cos \phi
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.roty">
+<em class="property">classmethod </em><code class="descname">roty</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.roty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix given an angle in rad about the y-axis.</p>
+<div class="math">
+\[\begin{split}\mathbf{C}_y(\phi) = 
+\begin{bmatrix}
+    \cos \phi &amp; 0 &amp; \sin \phi \\
+    0 &amp; 1 &amp; 0 \\
+    \sin \phi &amp; 0 &amp; \cos \phi
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.rotz">
+<em class="property">classmethod </em><code class="descname">rotz</code><span class="sig-paren">(</span><em>angle_in_radians</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.rotz" title="Permalink to this definition">¶</a></dt>
+<dd><p>Form a rotation matrix given an angle in rad about the z-axis.</p>
+<div class="math">
+\[\begin{split}\mathbf{C}_z(\phi) = 
+\begin{bmatrix}
+    \cos \phi &amp; -\sin \phi &amp; 0 \\
+    \sin \phi  &amp; \cos \phi &amp; 0 \\
+    0 &amp; 0 &amp; 1
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.to_quaternion">
+<code class="descname">to_quaternion</code><span class="sig-paren">(</span><em>ordering='wxyz'</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.to_quaternion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a rotation matrix to a unit length quaternion.</p>
+<p>Valid orderings are ‘xyzw’ and ‘wxyz’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SO3.to_rpy">
+<code class="descname">to_rpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.to_rpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a rotation matrix to RPY Euler angles <span class="math">\((\alpha, \beta, \gamma)\)</span>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.vee">
+<em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.vee" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(3) vee operator as defined by Barfoot.</p>
+<div class="math">
+\[\phi = \boldsymbol{\Phi}^\vee\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO3.wedge" title="liegroups.SO3.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SO3.wedge">
+<em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.wedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>SO(3) wedge operator as defined by Barfoot.</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\Phi} =
+\boldsymbol{\phi}^\wedge =
+\begin{bmatrix}
+    0 &amp; -\phi_3 &amp; \phi_2 \\
+    \phi_3 &amp; 0 &amp; -\phi_1 \\
+    -\phi_2 &amp; \phi_1 &amp; 0
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO3.vee" title="liegroups.SO3.vee"><code class="xref py py-meth docutils literal"><span class="pre">vee()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="se-3">
+<h2>SE(3)<a class="headerlink" href="#se-3" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="liegroups.SE3">
+<em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Homogeneous transformation matrix in SE(3) using active (alibi) transformations.</p>
+<div class="math">
+\[\begin{split}SE(3) &amp;= \left\{ \mathbf{T}=
+        \begin{bmatrix}
+            \mathbf{C} &amp; \mathbf{r} \\
+            \mathbf{0}^T &amp; 1
+        \end{bmatrix} \in \mathbb{R}^{4 \times 4} ~\middle|~ \mathbf{C} \in SO(3), \mathbf{r} \in \mathbb{R}^3 \right\} \\
+\mathfrak{se}(3) &amp;= \left\{ \boldsymbol{\Xi} =
+\boldsymbol{\xi}^\wedge \in \mathbb{R}^{4 \times 4} ~\middle|~
+ \boldsymbol{\xi}=
+    \begin{bmatrix}
+        \boldsymbol{\rho} \\ \boldsymbol{\phi}
+    \end{bmatrix} \in \mathbb{R}^6, \boldsymbol{\rho} \in \mathbb{R}^3, \boldsymbol{\phi} \in \mathbb{R}^3 \right\}\end{split}\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="#liegroups.SE2.dim" title="liegroups.SE2.dim"><strong>dim</strong></a> – Dimension of the rotation matrix.</li>
+<li><a class="reference internal" href="#liegroups.SE2.dof" title="liegroups.SE2.dof"><strong>dof</strong></a> – Underlying degrees of freedom (i.e., dimension of the tangent space).</li>
+<li><strong>rot</strong> – Storage for the rotation matrix <span class="math">\(\mathbf{C}\)</span>.</li>
+<li><strong>trans</strong> – Storage for the translation vector <span class="math">\(\mathbf{r}\)</span>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="liegroups.SE3.RotationType">
+<code class="descname">RotationType</code><a class="headerlink" href="#liegroups.SE3.RotationType" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SO3</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.adjoint">
+<code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.adjoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjoint matrix of the transformation.</p>
+<div class="math">
+\[\begin{split}\mathbf{\mathcal{T}} = 
+\text{Ad}(\mathbf{T}) = 
+\begin{bmatrix}
+    \mathbf{C} &amp; \mathbf{r}^\wedge\mathbf{C} \\
+    \mathbf{0} &amp; \mathbf{C}
+\end{bmatrix}
+\in \mathbb{R}^{6 \times 6}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.as_matrix">
+<code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.as_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SE3.dim">
+<code class="descname">dim</code><em class="property"> = 4</em><a class="headerlink" href="#liegroups.SE3.dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dimension of the transformation matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="liegroups.SE3.dof">
+<code class="descname">dof</code><em class="property"> = 6</em><a class="headerlink" href="#liegroups.SE3.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underlying degrees of freedom (i.e., dimension of the tangent space).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.dot">
+<code class="descname">dot</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply another rotation or one or more vectors on the left.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.exp">
+<em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.exp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exponential map for SE(3), which computes a transformation from a tangent vector:</p>
+<div class="math">
+\[\begin{split}\mathbf{T}(\boldsymbol{\xi}) =
+\exp(\boldsymbol{\xi}^\wedge) =
+\begin{bmatrix}
+    \exp(\boldsymbol{\phi}^\wedge) &amp; \mathbf{J} \boldsymbol{\rho}  \\
+    \mathbf{0} ^ T &amp; 1
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.log" title="liegroups.SE3.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.from_matrix">
+<code class="descname">from_matrix</code><span class="sig-paren">(</span><em>mat</em>, <em>normalize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.from_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a transformation from a matrix (safe, but slower).</p>
+<p>Throws an error if mat is invalid and normalize=False.
+If normalize=True invalid matrices will be normalized to be valid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.identity">
+<code class="descname">identity</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the identity transformation.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.inv">
+<code class="descname">inv</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.inv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inverse transformation:</p>
+<div class="math">
+\[\begin{split}\mathbf{T}^{-1} = 
+    \begin{bmatrix}
+        \mathbf{C}^T &amp; -\mathbf{C}^T\mathbf{r} \\
+        \mathbf{0}^T &amp; 1
+    \end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.inv_left_jacobian">
+<em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) inverse left Jacobian.</p>
+<div class="math">
+\[\mathcal{J}^{-1}(\boldsymbol{\xi})\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.is_valid_matrix">
+<code class="descname">is_valid_matrix</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.is_valid_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a matrix is a valid transformation matrix.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.left_jacobian">
+<em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.left_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) left Jacobian.</p>
+<div class="math">
+\[\mathcal{J}(\boldsymbol{\xi})\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.log">
+<code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithmic map for SE(3), which computes a tangent vector from a transformation:</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\xi}(\mathbf{T}) =
+\ln(\mathbf{T})^\vee =
+\begin{bmatrix}
+    \mathbf{J} ^ {-1} \mathbf{r} \\
+    \ln(\boldsymbol{C}) ^\vee
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.log" title="liegroups.SE3.log"><code class="xref py py-meth docutils literal"><span class="pre">log()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.normalize">
+<code class="descname">normalize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the transformation matrix to ensure it is valid and
+negate the effect of rounding errors.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.odot">
+<em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>directional=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.odot" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) odot operator as defined by Barfoot.</p>
+<p>This is the Jacobian of a vector</p>
+<div class="math">
+\[\begin{split}\mathbf{p} = 
+\begin{bmatrix}
+    sx \\ sy \\ sz \\ s
+\end{bmatrix} =
+\begin{bmatrix}
+    \boldsymbol{\epsilon} \\ \eta
+\end{bmatrix}\end{split}\]</div>
+<p>with respect to a perturbation in the underlying parameters of <span class="math">\(\mathbf{T}\)</span>.</p>
+<p>If <span class="math">\(\mathbf{p}\)</span> is given in Euclidean coordinates and directional=False, the missing scale value <span class="math">\(\eta\)</span> is assumed to be 1 and the Jacobian is 3x6. If directional=True, <span class="math">\(\eta\)</span> is assumed to be 0:</p>
+<div class="math">
+\[\mathbf{p}^\odot =
+\begin{bmatrix}
+    \eta \mathbf{1} &amp; -\boldsymbol{\epsilon}^\wedge
+\end{bmatrix}\]</div>
+<p>If <span class="math">\(\mathbf{p}\)</span> is given in Homogeneous coordinates, the Jacobian is 4x6:</p>
+<div class="math">
+\[\begin{split}\mathbf{p}^\odot =
+\begin{bmatrix}
+    \eta \mathbf{1} &amp; -\boldsymbol{\epsilon}^\wedge \\
+    \mathbf{0}^T &amp; \mathbf{0}^T
+\end{bmatrix}\end{split}\]</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="liegroups.SE3.perturb">
+<code class="descname">perturb</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.perturb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturb the transformation in-place on the left by a vector in its local tangent space.</p>
+<div class="math">
+\[\mathbf{T} \gets \exp(\boldsymbol{\xi}^\wedge) \mathbf{T}\]</div>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.vee">
+<em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.vee" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) vee operator as defined by Barfoot.</p>
+<div class="math">
+\[\boldsymbol{\xi} = \boldsymbol{\Xi} ^\vee\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.wedge" title="liegroups.SE3.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.wedge">
+<em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.wedge" title="Permalink to this definition">¶</a></dt>
+<dd><p>SE(3) wedge operator as defined by Barfoot.</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\Xi} =
+\boldsymbol{\xi} ^\wedge =
+\begin{bmatrix}
+    \boldsymbol{\phi} ^\wedge &amp; \boldsymbol{\rho} \\
+    \mathbf{0} ^ T &amp; 0
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.vee" title="liegroups.SE2.vee"><code class="xref py py-meth docutils literal"><span class="pre">vee()</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="torch.html" class="btn btn-neutral float-right" title="liegroups.torch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Lie Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Lee Clement.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.0.0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

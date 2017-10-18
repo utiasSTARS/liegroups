@@ -133,13 +133,20 @@ class SpecialOrthogonalBase(LieGroupBase, ABC):
     """Base class for Special Orthogonal groups SO(N)."""
 
     def __init__(self, mat):
+        """Create a transformation from a rotation matrix (unsafe, but faster)."""
         self.mat = mat
         """Storage for the transformation matrix."""
 
     def perturb(self, phi):
+        """Perturb the rotation in-place on the left by a vector in its local tangent space.
+
+        .. math::
+            \\mathbf{C} \\gets \\exp(\\boldsymbol{\\phi}^\\wedge) \\mathbf{C}
+        """
         self.mat = self.__class__.exp(phi).dot(self).mat
 
     def as_matrix(self):
+        """Return the matrix representation of the rotation."""
         return self.mat
 
 
@@ -160,6 +167,11 @@ class SpecialEuclideanBase(LieGroupBase, ABC):
         """Storage for the translation vector."""
 
     def perturb(self, xi):
+        """Perturb the transformation in-place on the left by a vector in its local tangent space.
+
+        .. math::
+            \\mathbf{T} \\gets \\exp(\\boldsymbol{\\xi}^\\wedge) \\mathbf{T}
+        """
         perturbed = self.__class__.exp(xi).dot(self)
         self.rot = perturbed.rot
         self.trans = perturbed.trans
@@ -167,5 +179,5 @@ class SpecialEuclideanBase(LieGroupBase, ABC):
     @classmethod
     @abstractmethod
     def odot(cls, p, directional=False):
-        """\odot operator as defined by Barfoot."""
+        """odot operator as defined by Barfoot."""
         pass

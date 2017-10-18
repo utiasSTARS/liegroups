@@ -5,16 +5,50 @@ from .so2 import SO2
 
 
 class SE2(base.SpecialEuclideanBase):
-    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations."""
+    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations.
+
+    .. math::
+        SE(2) &= \\left\\{ \\mathbf{T}=
+                \\begin{bmatrix}
+                    \\mathbf{C} & \\mathbf{r} \\\\
+                    \\mathbf{0}^T & 1
+                \\end{bmatrix} \\in \\mathbb{R}^{3 \\times 3} ~\\middle|~ \\mathbf{C} \\in SO(2), \\mathbf{r} \\in \\mathbb{R}^2 \\right\\} \\\\
+        \\mathfrak{se}(2) &= \\left\\{ \\boldsymbol{\\Xi} =
+        \\boldsymbol{\\xi}^\\wedge \\in \\mathbb{R}^{3 \\times 3} ~\\middle|~
+         \\boldsymbol{\\xi}=
+            \\begin{bmatrix}
+                \\boldsymbol{\\rho} \\\\ \\phi
+            \\end{bmatrix} \\in \\mathbb{R}^3, \\boldsymbol{\\rho} \\in \\mathbb{R}^2, \\phi \in \\mathbb{R} \\right\\}
+
+    :cvar ~liegroups.SE2.dim: Dimension of the rotation matrix.
+    :cvar ~liegroups.SE2.dof: Underlying degrees of freedom (i.e., dimension of the tangent space).
+    :ivar rot: Storage for the rotation matrix :math:`\mathbf{C}`.
+    :ivar trans: Storage for the translation vector :math:`\mathbf{r}`.
+    """
     dim = 3
+    """Dimension of the transformation matrix."""
     dof = 3
+    """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
     RotationType = SO2
 
     def __init__(self, rot, trans):
+        """Create a transformation from a rotation matrix(unsafe, but faster)."""
         super().__init__(rot, trans)
 
     @classmethod
     def wedge(cls, xi):
+        """SE(2) wedge operator as defined by Barfoot.
+
+        .. math::
+            \\boldsymbol{\\Xi} =
+            \\boldsymbol{\\xi} ^\\wedge =
+            \\begin{bmatrix}
+                \\phi ^\\wedge & \\boldsymbol{\\rho} \\\\
+                \\mathbf{0} ^ T & 0
+            \\end{bmatrix}
+
+        This is the inverse operation to :meth:`~liegroups.SE2.vee`.
+        """
         xi = np.atleast_2d(xi)
         if xi.shape[1] != cls.dof:
             raise ValueError(
@@ -28,6 +62,13 @@ class SE2(base.SpecialEuclideanBase):
 
     @classmethod
     def vee(cls, Xi):
+        """SE(2) vee operator as defined by Barfoot.
+
+        .. math::
+            \\boldsymbol{\\xi} = \\boldsymbol{\\Xi} ^\\vee
+
+        This is the inverse operation to :meth:`~liegroups.SE2.wedge`.
+        """
         if Xi.ndim < 3:
             Xi = np.expand_dims(Xi, axis=0)
 
@@ -42,14 +83,36 @@ class SE2(base.SpecialEuclideanBase):
 
     @classmethod
     def left_jacobian(cls, xi):
+        """SE(2) left Jacobian.
+
+        .. math::
+            \\mathcal{J}(\\boldsymbol{\\xi})
+        """
         raise NotImplementedError
 
     @classmethod
     def inv_left_jacobian(cls, xi):
+        """SE(2) inverse left Jacobian.
+
+        .. math::
+            \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
+        """
         raise NotImplementedError
 
     @classmethod
     def exp(cls, xi):
+        """Exponential map for SE(2), which computes a transformation from a tangent vector:
+
+        .. math::
+            \\mathbf{T}(\\boldsymbol{\\xi}) =
+            \\exp(\\boldsymbol{\\xi}^\\wedge) =
+            \\begin{bmatrix}
+                \\exp(\\phi ^\\wedge) & \\mathbf{J} \\boldsymbol{\\rho}  \\\\
+                \\mathbf{0} ^ T & 1
+            \\end{bmatrix}
+
+        This is the inverse operation to :meth:`~liegroups.SE2.log`.
+        """
         if len(xi) != cls.dof:
             raise ValueError("xi must have length {}".format(cls.dof))
 
@@ -59,11 +122,34 @@ class SE2(base.SpecialEuclideanBase):
                    cls.RotationType.left_jacobian(phi).dot(rho))
 
     def log(self):
+        """Logarithmic map for SE(2), which computes a tangent vector from a transformation:
+
+        .. math::
+            \\boldsymbol{\\xi}(\\mathbf{T}) =
+            \\ln(\\mathbf{T})^\\vee =
+            \\begin{bmatrix}
+                \\mathbf{J} ^ {-1} \\mathbf{r} \\\\
+                \\ln(\\boldsymbol{C}) ^\\vee
+            \\end{bmatrix}
+
+        This is the inverse operation to :meth:`~liegroups.SE2.log`.
+        """
         phi = self.rot.log()
         rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)
         return np.hstack([rho, phi])
 
     def adjoint(self):
+        """Adjoint matrix of the transformation.
+
+        .. math::
+            \\mathbf{\\mathcal{T}} = 
+            \\text{Ad}(\\mathbf{T}) = 
+            \\begin{bmatrix}
+                \\mathbf{C} & 1^\\wedge \\mathbf{r} \\\\
+                \\mathbf{0}^T & 1
+            \\end{bmatrix}
+            \\in \\mathbb{R}^{3 \\times 3}
+        """
         rot_part = self.rot.as_matrix()
         trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
         return np.vstack([np.hstack([rot_part, trans_part]),
@@ -71,6 +157,38 @@ class SE2(base.SpecialEuclideanBase):
 
     @classmethod
     def odot(cls, p, directional=False):
+        """SE(2) odot operator as defined by Barfoot. 
+
+        This is the Jacobian of a vector 
+
+        .. math::
+            \\mathbf{p} = 
+            \\begin{bmatrix}
+                sx \\\\ sy \\\\ sz \\\\ s
+            \\end{bmatrix} =
+            \\begin{bmatrix}
+                \\boldsymbol{\\epsilon} \\\\ \\eta
+            \\end{bmatrix}
+
+        with respect to a perturbation in the underlying parameters of :math:`\\mathbf{T}`.
+
+        If :math:`\\mathbf{p}` is given in Euclidean coordinates and directional=False, the missing scale value :math:`\\eta` is assumed to be 1 and the Jacobian is 2x3. If directional=True, :math:`\\eta` is assumed to be 0:
+
+        .. math::
+            \\mathbf{p}^\\odot =
+            \\begin{bmatrix}
+                \\eta \\mathbf{1} & 1^\\wedge \\boldsymbol{\\epsilon}
+            \\end{bmatrix}
+
+        If :math:`\\mathbf{p}` is given in Homogeneous coordinates, the Jacobian is 3x3:
+
+        .. math::
+            \\mathbf{p}^\\odot =
+            \\begin{bmatrix}
+                \\eta \\mathbf{1} & 1^\\wedge \\boldsymbol{\\epsilon} \\\\
+                \\mathbf{0}^T & 0
+            \\end{bmatrix}
+        """
         p = np.atleast_2d(p)
         result = np.zeros([p.shape[0], p.shape[1], cls.dof])
 

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; Lie Groups 0.1.0 documentation</title>
+  <title>Index &mdash; Lie Groups 1.0.0 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
         <link rel="index" title="Index"
               href="#"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lie Groups 0.1.0 documentation" href="index.html"/> 
+    <link rel="top" title="Lie Groups 1.0.0 documentation" href="index.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.0
+                1.0.0
               </div>
             
           
@@ -90,7 +90,8 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="liegroups.html">Lie Groups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="numpy.html">liegroups</a></li>
+<li class="toctree-l1"><a class="reference internal" href="torch.html">liegroups.torch</a></li>
 </ul>
 
             
@@ -157,12 +158,12 @@
 
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
+ | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
- | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
@@ -176,26 +177,54 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.adjoint">adjoint() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.adjoint">adjoint() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.adjoint">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.adjoint">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.adjoint">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.adjoint">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.adjoint">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.adjoint">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.as_matrix">as_matrix() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.as_matrix">as_matrix() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.as_matrix">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.as_matrix">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.as_matrix">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.as_matrix">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.as_matrix">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.as_matrix">(liegroups.SO3 method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="torch.html#liegroups.torch.SE2.cpu">cpu() (liegroups.torch.SE2 method)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SE3.cpu">(liegroups.torch.SE3 method)</a>
+</li>
+        <li><a href="torch.html#liegroups.torch.SO2.cpu">(liegroups.torch.SO2 method)</a>
+</li>
+        <li><a href="torch.html#liegroups.torch.SO3.cpu">(liegroups.torch.SO3 method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="torch.html#liegroups.torch.SE2.cuda">cuda() (liegroups.torch.SE2 method)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SE3.cuda">(liegroups.torch.SE3 method)</a>
+</li>
+        <li><a href="torch.html#liegroups.torch.SO2.cuda">(liegroups.torch.SO2 method)</a>
+</li>
+        <li><a href="torch.html#liegroups.torch.SO3.cuda">(liegroups.torch.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -204,36 +233,36 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.dim">dim (liegroups.se2.SE2 attribute)</a>
+      <li><a href="numpy.html#liegroups.SE2.dim">dim (liegroups.SE2 attribute)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.dim">(liegroups.se3.SE3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SE3.dim">(liegroups.SE3 attribute)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.dim">(liegroups.so2.SO2 attribute)</a>
+        <li><a href="numpy.html#liegroups.SO2.dim">(liegroups.SO2 attribute)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.dim">(liegroups.so3.SO3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SO3.dim">(liegroups.SO3 attribute)</a>
 </li>
       </ul></li>
-      <li><a href="liegroups.html#liegroups.se2.SE2.dof">dof (liegroups.se2.SE2 attribute)</a>
+      <li><a href="numpy.html#liegroups.SE2.dof">dof (liegroups.SE2 attribute)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.dof">(liegroups.se3.SE3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SE3.dof">(liegroups.SE3 attribute)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.dof">(liegroups.so2.SO2 attribute)</a>
+        <li><a href="numpy.html#liegroups.SO2.dof">(liegroups.SO2 attribute)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.dof">(liegroups.so3.SO3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SO3.dof">(liegroups.SO3 attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.dot">dot() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.dot">dot() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.dot">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.dot">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.dot">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.dot">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.dot">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.dot">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -242,14 +271,14 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.exp">exp() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.exp">exp() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.exp">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.exp">(liegroups.SE3 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.exp">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.exp">(liegroups.SO2 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.exp">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.exp">(liegroups.SO3 class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -258,21 +287,23 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2.from_angle">from_angle() (liegroups.so2.SO2 class method)</a>
+      <li><a href="numpy.html#liegroups.SO2.from_angle">from_angle() (liegroups.SO2 class method)</a>
 </li>
-      <li><a href="liegroups.html#liegroups.se2.SE2.from_matrix">from_matrix() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.from_matrix">from_matrix() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.from_matrix">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.from_matrix">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.from_matrix">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.from_matrix">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.from_matrix">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.from_matrix">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so3.SO3.from_rpy">from_rpy() (liegroups.so3.SO3 class method)</a>
+      <li><a href="numpy.html#liegroups.SO3.from_quaternion">from_quaternion() (liegroups.SO3 class method)</a>
+</li>
+      <li><a href="numpy.html#liegroups.SO3.from_rpy">from_rpy() (liegroups.SO3 class method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -280,42 +311,46 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.identity">identity() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.identity">identity() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.identity">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.identity">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.identity">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.identity">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.identity">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.identity">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
-      <li><a href="liegroups.html#liegroups.se2.SE2.inv">inv() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.inv">inv() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.inv">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.inv">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.inv">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.inv">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.inv">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.inv">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2.inv_left_jacobian">inv_left_jacobian() (liegroups.so2.SO2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.inv_left_jacobian">inv_left_jacobian() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.so3.SO3.inv_left_jacobian">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.inv_left_jacobian">(liegroups.SE3 class method)</a>
+</li>
+        <li><a href="numpy.html#liegroups.SO2.inv_left_jacobian">(liegroups.SO2 class method)</a>
+</li>
+        <li><a href="numpy.html#liegroups.SO3.inv_left_jacobian">(liegroups.SO3 class method)</a>
 </li>
       </ul></li>
-      <li><a href="liegroups.html#liegroups.se2.SE2.is_valid_matrix">is_valid_matrix() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.is_valid_matrix">is_valid_matrix() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.is_valid_matrix">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.is_valid_matrix">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.is_valid_matrix">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.is_valid_matrix">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.is_valid_matrix">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.is_valid_matrix">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -324,44 +359,26 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2.left_jacobian">left_jacobian() (liegroups.so2.SO2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.left_jacobian">left_jacobian() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.so3.SO3.left_jacobian">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.left_jacobian">(liegroups.SE3 class method)</a>
 </li>
-      </ul></li>
-      <li><a href="liegroups.html#module-liegroups">liegroups (module)</a>
+        <li><a href="numpy.html#liegroups.SO2.left_jacobian">(liegroups.SO2 class method)</a>
 </li>
-      <li><a href="liegroups.html#module-liegroups.se2">liegroups.se2 (module)</a>
-</li>
-      <li><a href="liegroups.html#module-liegroups.se3">liegroups.se3 (module)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#module-liegroups.so2">liegroups.so2 (module)</a>
-</li>
-      <li><a href="liegroups.html#module-liegroups.so3">liegroups.so3 (module)</a>
-</li>
-      <li><a href="liegroups.html#liegroups.se2.SE2.log">log() (liegroups.se2.SE2 method)</a>
-
-      <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.log">(liegroups.se3.SE3 method)</a>
-</li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.log">(liegroups.so2.SO2 method)</a>
-</li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.log">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.left_jacobian">(liegroups.SO3 class method)</a>
 </li>
       </ul></li>
   </ul></td>
-</tr></table>
-
-<h2 id="M">M</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2.mat">mat (liegroups.so2.SO2 attribute)</a>
+      <li><a href="numpy.html#liegroups.SE2.log">log() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.so3.SO3.mat">(liegroups.so3.SO3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SE3.log">(liegroups.SE3 method)</a>
+</li>
+        <li><a href="numpy.html#liegroups.SO2.log">(liegroups.SO2 method)</a>
+</li>
+        <li><a href="numpy.html#liegroups.SO3.log">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -370,14 +387,14 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.normalize">normalize() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.normalize">normalize() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.normalize">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.normalize">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.normalize">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.normalize">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.normalize">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.normalize">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -386,10 +403,10 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.odot">odot() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.odot">odot() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.odot">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.odot">(liegroups.SE3 class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -398,14 +415,14 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.perturb">perturb() (liegroups.se2.SE2 method)</a>
+      <li><a href="numpy.html#liegroups.SE2.perturb">perturb() (liegroups.SE2 method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.perturb">(liegroups.se3.SE3 method)</a>
+        <li><a href="numpy.html#liegroups.SE3.perturb">(liegroups.SE3 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.perturb">(liegroups.so2.SO2 method)</a>
+        <li><a href="numpy.html#liegroups.SO2.perturb">(liegroups.SO2 method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.perturb">(liegroups.so3.SO3 method)</a>
+        <li><a href="numpy.html#liegroups.SO3.perturb">(liegroups.SO3 method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -414,19 +431,19 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.rot">rot (liegroups.se2.SE2 attribute)</a>
+      <li><a href="numpy.html#liegroups.SE2.RotationType">RotationType (liegroups.SE2 attribute)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.rot">(liegroups.se3.SE3 attribute)</a>
+        <li><a href="numpy.html#liegroups.SE3.RotationType">(liegroups.SE3 attribute)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so3.SO3.rotx">rotx() (liegroups.so3.SO3 class method)</a>
+      <li><a href="numpy.html#liegroups.SO3.rotx">rotx() (liegroups.SO3 class method)</a>
 </li>
-      <li><a href="liegroups.html#liegroups.so3.SO3.roty">roty() (liegroups.so3.SO3 class method)</a>
+      <li><a href="numpy.html#liegroups.SO3.roty">roty() (liegroups.SO3 class method)</a>
 </li>
-      <li><a href="liegroups.html#liegroups.so3.SO3.rotz">rotz() (liegroups.so3.SO3 class method)</a>
+      <li><a href="numpy.html#liegroups.SO3.rotz">rotz() (liegroups.SO3 class method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -434,48 +451,60 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2">SE2 (class in liegroups.se2)</a>
+      <li><a href="numpy.html#liegroups.SE2">SE2 (class in liegroups)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SE2">(class in liegroups.torch)</a>
 </li>
-      <li><a href="liegroups.html#liegroups.se3.SE3">SE3 (class in liegroups.se3)</a>
+      </ul></li>
+      <li><a href="numpy.html#liegroups.SE3">SE3 (class in liegroups)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SE3">(class in liegroups.torch)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2">SO2 (class in liegroups.so2)</a>
+      <li><a href="numpy.html#liegroups.SO2">SO2 (class in liegroups)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SO2">(class in liegroups.torch)</a>
 </li>
-      <li><a href="liegroups.html#liegroups.so3.SO3">SO3 (class in liegroups.so3)</a>
+      </ul></li>
+      <li><a href="numpy.html#liegroups.SO3">SO3 (class in liegroups)</a>
+
+      <ul>
+        <li><a href="torch.html#liegroups.torch.SO3">(class in liegroups.torch)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.so2.SO2.to_angle">to_angle() (liegroups.so2.SO2 method)</a>
-</li>
-      <li><a href="liegroups.html#liegroups.so3.SO3.to_rpy">to_rpy() (liegroups.so3.SO3 method)</a>
+      <li><a href="numpy.html#liegroups.SO2.to_angle">to_angle() (liegroups.SO2 method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.trans">trans (liegroups.se2.SE2 attribute)</a>
-
-      <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.trans">(liegroups.se3.SE3 attribute)</a>
+      <li><a href="numpy.html#liegroups.SO3.to_quaternion">to_quaternion() (liegroups.SO3 method)</a>
 </li>
-      </ul></li>
+      <li><a href="numpy.html#liegroups.SO3.to_rpy">to_rpy() (liegroups.SO3 method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.vee">vee() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.vee">vee() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.vee">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.vee">(liegroups.SE3 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.vee">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.vee">(liegroups.SO2 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.vee">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.vee">(liegroups.SO3 class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -484,14 +513,14 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="liegroups.html#liegroups.se2.SE2.wedge">wedge() (liegroups.se2.SE2 class method)</a>
+      <li><a href="numpy.html#liegroups.SE2.wedge">wedge() (liegroups.SE2 class method)</a>
 
       <ul>
-        <li><a href="liegroups.html#liegroups.se3.SE3.wedge">(liegroups.se3.SE3 class method)</a>
+        <li><a href="numpy.html#liegroups.SE3.wedge">(liegroups.SE3 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so2.SO2.wedge">(liegroups.so2.SO2 class method)</a>
+        <li><a href="numpy.html#liegroups.SO2.wedge">(liegroups.SO2 class method)</a>
 </li>
-        <li><a href="liegroups.html#liegroups.so3.SO3.wedge">(liegroups.so3.SO3 class method)</a>
+        <li><a href="numpy.html#liegroups.SO3.wedge">(liegroups.SO3 class method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -533,7 +562,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0',
+            VERSION:'1.0.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -543,6 +572,7 @@
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
