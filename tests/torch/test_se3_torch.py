@@ -199,6 +199,18 @@ def test_wedge_vee_batch():
     assert (xis == SE3.vee(Xis)).all()
 
 
+def test_curlywedge_curlyvee():
+    xi = torch.Tensor([1, 2, 3, 4, 5, 6])
+    Psi = SE3.curlywedge(xi)
+    assert (xi == SE3.curlyvee(Psi)).all()
+
+
+def test_curlywedge_curlyvee_batch():
+    xis = torch.Tensor([[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12]])
+    Psis = SE3.curlywedge(xis)
+    assert (xis == SE3.curlyvee(Psis)).all()
+
+
 def test_odot():
     p1 = torch.Tensor([1, 2, 3])
     p2 = torch.Tensor([1, 2, 3, 1])
@@ -237,6 +249,29 @@ def test_exp_log_batch():
     T = SE3.exp(0.1 * torch.Tensor([[1, 2, 3, 4, 5, 6],
                                     [7, 8, 9, 10, 11, 12]]))
     assert utils.allclose(SE3.exp(SE3.log(T)).as_matrix(), T.as_matrix())
+
+
+def test_left_jacobian():
+    xi1 = torch.Tensor([1, 2, 3, 4, 5, 6])
+    assert utils.allclose(
+        torch.mm(SE3.left_jacobian(xi1), SE3.inv_left_jacobian(xi1)),
+        torch.eye(6)
+    )
+
+    xi2 = torch.Tensor([0, 0, 0, 0, 0, 0])
+    assert utils.allclose(
+        torch.mm(SE3.left_jacobian(xi2), SE3.inv_left_jacobian(xi2)),
+        torch.eye(6)
+    )
+
+
+def test_left_jacobian_batch():
+    xis = torch.Tensor([[1, 2, 3, 4, 5, 6],
+                        [0, 0, 0, 0, 0, 0]])
+    assert utils.allclose(
+        SE3.left_jacobian(xis).bmm(SE3.inv_left_jacobian(xis)),
+        torch.eye(6).unsqueeze_(dim=0).expand(2, 6, 6)
+    )
 
 
 def test_perturb():

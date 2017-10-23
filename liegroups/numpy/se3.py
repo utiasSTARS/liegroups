@@ -67,7 +67,7 @@ class SE3(_base.SpecialEuclideanBase):
             Psi = np.expand_dims(Psi, axis=0)
 
         if Psi.shape[1:3] != (cls.dof, cls.dof):
-            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
+            raise ValueError("Psi must have shape ({},{}) or (N,{},{})".format(
                 cls.dof, cls.dof, cls.dof, cls.dof))
 
         xi = np.empty([Psi.shape[0], cls.dof])
@@ -155,14 +155,14 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[0:3]  # translation part
         phi = xi[3:6]  # rotation part
 
+        rx = SO3.wedge(rho)
+        px = SO3.wedge(phi)
+
         ph = np.linalg.norm(phi)
         ph2 = ph * ph
         ph3 = ph2 * ph
         ph4 = ph3 * ph
         ph5 = ph4 * ph
-
-        rx = SO3.wedge(rho)
-        px = SO3.wedge(phi)
 
         cph = np.cos(ph)
         sph = np.sin(ph)
@@ -250,7 +250,7 @@ class SE3(_base.SpecialEuclideanBase):
                 \\ln(\\boldsymbol{C}) ^\\vee
             \\end{bmatrix}
 
-        This is the inverse operation to :meth:`~liegroups.SE3.log`.
+        This is the inverse operation to :meth:`~liegroups.SE3.exp`.
         """
         phi = self.RotationType.log(self.rot)
         rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)

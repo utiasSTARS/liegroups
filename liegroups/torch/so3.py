@@ -126,7 +126,7 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
@@ -134,7 +134,7 @@ class SO3(_base.SpecialOrthogonalBase):
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
-                torch.eye(cls.dim).expand_as(jac[small_angle_inds]) - \
+                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) - \
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
@@ -144,7 +144,7 @@ class SO3(_base.SpecialOrthogonalBase):
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             axis = phi[large_angle_inds] / \
-                angle.unsqueeze(dim=1).expand(len(angle), cls.dim)
+                angle.unsqueeze(dim=1).expand(len(angle), cls.dof)
 
             ha = 0.5 * angle       # half angle
             hacha = ha / ha.tan()  # half angle * cot(half angle)
@@ -155,7 +155,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 dim=2).expand_as(jac[large_angle_inds])
 
             A = hacha * \
-                torch.eye(cls.dim).unsqueeze_(
+                torch.eye(cls.dof).unsqueeze_(
                     dim=0).expand_as(jac[large_angle_inds])
             B = (1. - hacha) * utils.outer(axis, axis)
             C = -ha * cls.wedge(axis)
@@ -173,7 +173,7 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
@@ -181,7 +181,7 @@ class SO3(_base.SpecialOrthogonalBase):
         small_angle_inds = small_angle_mask.nonzero().squeeze_()
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
-                torch.eye(cls.dim).expand_as(jac[small_angle_inds]) + \
+                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) + \
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
@@ -191,13 +191,13 @@ class SO3(_base.SpecialOrthogonalBase):
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             axis = phi[large_angle_inds] / \
-                angle.unsqueeze(dim=1).expand(len(angle), cls.dim)
+                angle.unsqueeze(dim=1).expand(len(angle), cls.dof)
             s = angle.sin()
             c = angle.cos()
 
             A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+                torch.eye(cls.dof).unsqueeze_(dim=0).expand_as(
                 jac[large_angle_inds])
             B = (1. - s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
