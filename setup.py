@@ -7,6 +7,6 @@ setup(
     author='Lee Clement',
     author_email='lee.clement@robotics.utias.utoronto.ca',
     license='MIT',
-    packages=['liegroups'],
+    packages=['liegroups', 'liegroups.numpy', 'liegroups.torch'],
     install_requires=['numpy']
 )
