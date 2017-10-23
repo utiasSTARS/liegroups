@@ -1,14 +1,43 @@
 import numpy as np
 
-from .. import base
+from liegroups import _base
 
 
-class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
+class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using Numpy"""
 
     def __init__(self, mat):
         """Create a rotation from a matrix (unsafe, but faster)."""
         super().__init__(mat)
+
+    def dot(self, other):
+        """Multiply another rotation or one or more vectors on the left.
+        """
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            return self.__class__(np.dot(self.mat, other.mat))
+        else:
+            other = np.atleast_2d(other)
+
+            # Transform one or more 2-vectors or fail
+            if other.shape[1] == self.dim:
+                return np.squeeze(np.dot(self.mat, other.T).T)
+            else:
+                raise ValueError(
+                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
+
+    @classmethod
+    def identity(cls):
+        """Return the identity rotation."""
+        return cls(np.identity(cls.dim))
+
+    def inv(self):
+        """Return the inverse rotation:
+
+        .. math::
+            \\mathbf{C}^{-1} = \\mathbf{C}^T
+        """
+        return self.__class__(self.mat.T)
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
@@ -36,19 +65,6 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
             np.isclose(np.linalg.det(mat), 1.) and \
             np.allclose(mat.T.dot(mat), np.identity(cls.dim))
 
-    @classmethod
-    def identity(cls):
-        """Return the identity rotation."""
-        return cls(np.identity(cls.dim))
-
-    def inv(self):
-        """Return the inverse rotation:
-
-        .. math::
-            \\mathbf{C}^{-1} = \\mathbf{C}^T
-        """
-        return self.__class__(self.mat.T)
-
     def normalize(self):
         """Normalize the rotation matrix to ensure it is valid and
         negate the effect of rounding errors.
@@ -62,84 +78,13 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
 
         self.mat = U.dot(S).dot(V)
 
-    def dot(self, other):
-        """Multiply another rotation or one or more vectors on the left.
-        """
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(np.dot(self.mat, other.mat))
-        else:
-            other = np.atleast_2d(other)
 
-            # Transform one or more 2-vectors or fail
-            if other.shape[1] == self.dim:
-                return np.squeeze(np.dot(self.mat, other.T).T)
-            else:
-                raise ValueError(
-                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
-
-
-class SpecialEuclideanBase(base.SpecialEuclideanBase):
+class SpecialEuclideanBase(_base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using Numpy"""
 
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)."""
         super().__init__(rot, trans)
-
-    @classmethod
-    def from_matrix(cls, mat, normalize=False):
-        """Create a transformation from a matrix (safe, but slower).
-
-        Throws an error if mat is invalid and normalize=False.
-        If normalize=True invalid matrices will be normalized to be valid.
-        """
-        mat_is_valid = cls.is_valid_matrix(mat)
-
-        if mat_is_valid or normalize:
-            result = cls(
-                cls.RotationType(mat[0:cls.dim - 1, 0:cls.dim - 1]),
-                mat[0:cls.dim - 1, cls.dim - 1])
-            if not mat_is_valid and normalize:
-                result.normalize()
-        else:
-            raise ValueError(
-                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
-
-        return result
-
-    @classmethod
-    def is_valid_matrix(cls, mat):
-        """Check if a matrix is a valid transformation matrix."""
-        bottom_row = np.append(np.zeros(cls.dim - 1), 1.)
-
-        return mat.shape == (cls.dim, cls.dim) and \
-            np.array_equal(mat[cls.dim - 1, :], bottom_row) and \
-            cls.RotationType.is_valid_matrix(mat[0:cls.dim - 1, 0:cls.dim - 1])
-
-    @classmethod
-    def identity(cls):
-        """Return the identity transformation."""
-        return cls.from_matrix(np.identity(cls.dim))
-
-    def inv(self):
-        """Return the inverse transformation:
-
-        .. math::
-            \\mathbf{T}^{-1} = 
-                \\begin{bmatrix}
-                    \\mathbf{C}^T & -\\mathbf{C}^T\\mathbf{r} \\\\
-                    \\mathbf{0}^T & 1
-                \\end{bmatrix}
-        """
-        inv_rot = self.rot.inv()
-        inv_trans = -(inv_rot.dot(self.trans))
-        return self.__class__(inv_rot, inv_trans)
-
-    def normalize(self):
-        """Normalize the transformation matrix to ensure it is valid and
-        negate the effect of rounding errors.
-        """
-        self.rot.normalize()
 
     def as_matrix(self):
         """Return the matrix representation of the rotation."""
@@ -168,3 +113,58 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
             else:
                 raise ValueError("Vector must have shape ({},), ({},), (N,{}) or (N,{})".format(
                     self.dim - 1, self.dim, self.dim - 1, self.dim))
+
+    @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        """Create a transformation from a matrix (safe, but slower).
+
+        Throws an error if mat is invalid and normalize=False.
+        If normalize=True invalid matrices will be normalized to be valid.
+        """
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid or normalize:
+            result = cls(
+                cls.RotationType(mat[0:cls.dim - 1, 0:cls.dim - 1]),
+                mat[0:cls.dim - 1, cls.dim - 1])
+            if not mat_is_valid and normalize:
+                result.normalize()
+        else:
+            raise ValueError(
+                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
+
+        return result
+
+    @classmethod
+    def identity(cls):
+        """Return the identity transformation."""
+        return cls.from_matrix(np.identity(cls.dim))
+
+    def inv(self):
+        """Return the inverse transformation:
+
+        .. math::
+            \\mathbf{T}^{-1} = 
+                \\begin{bmatrix}
+                    \\mathbf{C}^T & -\\mathbf{C}^T\\mathbf{r} \\\\
+                    \\mathbf{0}^T & 1
+                \\end{bmatrix}
+        """
+        inv_rot = self.rot.inv()
+        inv_trans = -(inv_rot.dot(self.trans))
+        return self.__class__(inv_rot, inv_trans)
+
+    @classmethod
+    def is_valid_matrix(cls, mat):
+        """Check if a matrix is a valid transformation matrix."""
+        bottom_row = np.append(np.zeros(cls.dim - 1), 1.)
+
+        return mat.shape == (cls.dim, cls.dim) and \
+            np.array_equal(mat[cls.dim - 1, :], bottom_row) and \
+            cls.RotationType.is_valid_matrix(mat[0:cls.dim - 1, 0:cls.dim - 1])
+
+    def normalize(self):
+        """Normalize the transformation matrix to ensure it is valid and
+        negate the effect of rounding errors.
+        """
+        self.rot.normalize()

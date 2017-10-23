@@ -1,15 +1,53 @@
 import torch
 import numpy as np  # for matrix determinant and SVD
 
-from .. import base
-from . import utils
+from liegroups import _base
+from liegroups.torch import utils
 
 
-class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
+class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using PyTorch"""
 
     def __init__(self, mat):
         super().__init__(mat)
+
+    def cpu(self):
+        """Return a copy with the underlying tensor on the CPU."""
+        return self.__class__(self.mat.cpu())
+
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensor on the GPU."""
+        return self.__class__(self.mat.cuda(**kwargs))
+
+    def dot(self, other):
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            return self.__class__(torch.matmul(self.mat, other.mat))
+        else:
+            if other.dim() < 2:
+                other = other.unsqueeze(dim=0)  # vector --> matrix
+            if other.dim() < 3:
+                other = other.unsqueeze(dim=0)  # matrix --> batch
+
+            if self.mat.dim() < 3:
+                mat = self.mat.unsqueeze(dim=0).expand(
+                    other.shape[0], self.dim, self.dim)  # matrix --> batch
+            else:
+                mat = self.mat
+                if other.shape[0] == 1:
+                    other = other.expand(
+                        mat.shape[0], other.shape[1], other.shape[2])
+
+            # Transform one or more vectors or fail
+            if other.shape[0] != mat.shape[0]:
+                raise ValueError("Expected vector-batch batch size of {}, got {}".format(
+                    mat.shape[0], other.shape[0]))
+
+            if other.shape[2] == self.dim:
+                return torch.bmm(mat, other.transpose(2, 1)).transpose_(2, 1).squeeze_()
+            else:
+                raise ValueError(
+                    "Vector or vector-batch must have shape ({},), (N,{}), or ({},N,{})".format(self.dim, self.dim, mat.shape[0], self.dim))
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
@@ -25,6 +63,21 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
         else:
             raise ValueError(
                 "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
+
+    @classmethod
+    def identity(cls, batch_size=1, copy=False):
+        if copy:
+            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
+        else:
+            mat = torch.eye(cls.dim).expand(
+                batch_size, cls.dim, cls.dim).squeeze()
+        return cls(mat)
+
+    def inv(self):
+        if self.mat.dim() < 3:
+            return self.__class__(self.mat.transpose(1, 0))
+        else:
+            return self.__class__(self.mat.transpose(2, 1))
 
     @classmethod
     def is_valid_matrix(cls, mat):
@@ -52,21 +105,6 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
             == cls.dim * cls.dim
 
         return shape_check & det_check & inv_check
-
-    @classmethod
-    def identity(cls, batch_size=1, copy=False):
-        if copy:
-            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
-        else:
-            mat = torch.eye(cls.dim).expand(
-                batch_size, cls.dim, cls.dim).squeeze()
-        return cls(mat)
-
-    def inv(self):
-        if self.mat.dim() < 3:
-            return self.__class__(self.mat.transpose(1, 0))
-        else:
-            return self.__class__(self.mat.transpose(2, 1))
 
     def _normalize_one(self, mat):
         # U, S, V = torch.svd(A) returns the singular value
@@ -105,122 +143,12 @@ class SpecialOrthogonalBase(base.SpecialOrthogonalBase):
                 # Slicing is a copy operation?
                 self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
 
-    def dot(self, other):
-        if isinstance(other, self.__class__):
-            # Compound with another rotation
-            return self.__class__(torch.matmul(self.mat, other.mat))
-        else:
-            if other.dim() < 2:
-                other = other.unsqueeze(dim=0)  # vector --> matrix
-            if other.dim() < 3:
-                other = other.unsqueeze(dim=0)  # matrix --> batch
 
-            if self.mat.dim() < 3:
-                mat = self.mat.unsqueeze(dim=0).expand(
-                    other.shape[0], self.dim, self.dim)  # matrix --> batch
-            else:
-                mat = self.mat
-                if other.shape[0] == 1:
-                    other = other.expand(
-                        mat.shape[0], other.shape[1], other.shape[2])
-
-            # Transform one or more vectors or fail
-            if other.shape[0] != mat.shape[0]:
-                raise ValueError("Expected vector-batch batch size of {}, got {}".format(
-                    mat.shape[0], other.shape[0]))
-
-            if other.shape[2] == self.dim:
-                return torch.bmm(mat, other.transpose(2, 1)).transpose_(2, 1).squeeze_()
-            else:
-                raise ValueError(
-                    "Vector or vector-batch must have shape ({},), (N,{}), or ({},N,{})".format(self.dim, self.dim, mat.shape[0], self.dim))
-
-    def cuda(self, **kwargs):
-        """Return a copy with the underlying tensor on the GPU."""
-        return self.__class__(self.mat.cuda(**kwargs))
-
-    def cpu(self):
-        """Return a copy with the underlying tensor on the CPU."""
-        return self.__class__(self.mat.cpu())
-
-
-class SpecialEuclideanBase(base.SpecialEuclideanBase):
+class SpecialEuclideanBase(_base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using PyTorch"""
 
     def __init__(self, rot, trans):
         super().__init__(rot, trans)
-
-    @classmethod
-    def from_matrix(cls, mat, normalize=False):
-        if mat.dim() < 3:
-            mat = mat.unsqueeze(dim=0)
-
-        mat_is_valid = cls.is_valid_matrix(mat)
-
-        if mat_is_valid.all() or normalize:
-            rot = mat[:, 0:cls.dim - 1, 0:cls.dim - 1].squeeze()
-            trans = mat[:, 0:cls.dim - 1, cls.dim - 1].squeeze()
-            result = cls(cls.RotationType(rot), trans)
-
-            if normalize:
-                result.normalize(inds=(1 - mat_is_valid).nonzero())
-
-            return result
-        else:
-            raise ValueError(
-                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
-
-    @classmethod
-    def is_valid_matrix(cls, mat):
-        if mat.dim() < 3:
-            mat = mat.unsqueeze(dim=0)
-
-        # Check the shape
-        if mat.is_cuda:
-            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
-        else:
-            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
-
-        if mat.shape[1:3] != (cls.dim, cls.dim):
-            return shape_check
-        else:
-            shape_check.fill_(True)
-
-        # Bottom row should be [zeros, 1]
-        bottom_row = mat.__class__(cls.dim).zero_()
-        bottom_row[-1] = 1.
-        bottom_check = (mat[:, cls.dim - 1, :] == bottom_row.unsqueeze_(
-            dim=0).expand(mat.shape[0], cls.dim)).sum(dim=1) == cls.dim
-
-        # Check that the rotation part is valid
-        rot_check = cls.RotationType.is_valid_matrix(
-            mat[:, 0:cls.dim - 1, 0:cls.dim - 1])
-
-        return shape_check & bottom_check & rot_check
-
-    @classmethod
-    def identity(cls, batch_size=1, copy=False):
-        if copy:
-            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
-        else:
-            mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim)
-
-        return cls.from_matrix(mat.squeeze_())
-
-    def inv(self):
-        if self.trans.dim() == 2:
-            # vectorbatch --> matrixbatch (NxD --> Nx1xD)
-            trans = self.trans.unsqueeze(dim=1)
-        else:
-            # vector --> matrix (D --> 1xD)
-            trans = self.trans.unsqueeze(dim=0)
-
-        inv_rot = self.rot.inv()
-        inv_trans = -(inv_rot.dot(trans))
-        return self.__class__(inv_rot, inv_trans)
-
-    def normalize(self, inds=None):
-        self.rot.normalize(inds)
 
     def as_matrix(self):
         R = self.rot.as_matrix()
@@ -241,6 +169,14 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
 
         return torch.cat([torch.cat([R, t], dim=2),
                           bottom_row], dim=1).squeeze_()
+
+    def cpu(self):
+        """Return a copy with the underlying tensors on the CPU."""
+        return self.__class__(self.rot.cpu(), self.trans.cpu())
+
+    def cuda(self, **kwargs):
+        """Return a copy with the underlying tensors on the GPU."""
+        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
 
     def dot(self, other):
         if isinstance(other, self.__class__):
@@ -294,8 +230,6 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
 
             # Got homogeneous coordinates
             elif other.shape[2] == self.dim:
-                # import ipdb
-                # ipdb.set_trace()
                 mat = self.as_matrix()
 
                 if mat.dim() < 3:
@@ -322,10 +256,74 @@ class SpecialEuclideanBase(base.SpecialEuclideanBase):
                 raise ValueError(
                     "Vector or vector-batch must have shape ({},), ({},), (N,{}), (N,{}), ({},N,{}), or ({},N,{})".format(self.dim - 1, self.dim, self.dim - 1, self.dim, batch_size, self.dim - 1, batch_size, self.dim))
 
-    def cuda(self, **kwargs):
-        """Return a copy with the underlying tensors on the GPU."""
-        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
+    @classmethod
+    def from_matrix(cls, mat, normalize=False):
+        if mat.dim() < 3:
+            mat = mat.unsqueeze(dim=0)
 
-    def cpu(self):
-        """Return a copy with the underlying tensors on the CPU."""
-        return self.__class__(self.rot.cpu(), self.trans.cpu())
+        mat_is_valid = cls.is_valid_matrix(mat)
+
+        if mat_is_valid.all() or normalize:
+            rot = mat[:, 0:cls.dim - 1, 0:cls.dim - 1].squeeze()
+            trans = mat[:, 0:cls.dim - 1, cls.dim - 1].squeeze()
+            result = cls(cls.RotationType(rot), trans)
+
+            if normalize:
+                result.normalize(inds=(1 - mat_is_valid).nonzero())
+
+            return result
+        else:
+            raise ValueError(
+                "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
+
+    @classmethod
+    def identity(cls, batch_size=1, copy=False):
+        if copy:
+            mat = torch.eye(cls.dim).repeat(batch_size, 1, 1)
+        else:
+            mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim)
+
+        return cls.from_matrix(mat.squeeze_())
+
+    def inv(self):
+        if self.trans.dim() == 2:
+            # vectorbatch --> matrixbatch (NxD --> Nx1xD)
+            trans = self.trans.unsqueeze(dim=1)
+        else:
+            # vector --> matrix (D --> 1xD)
+            trans = self.trans.unsqueeze(dim=0)
+
+        inv_rot = self.rot.inv()
+        inv_trans = -(inv_rot.dot(trans))
+        return self.__class__(inv_rot, inv_trans)
+
+    @classmethod
+    def is_valid_matrix(cls, mat):
+        if mat.dim() < 3:
+            mat = mat.unsqueeze(dim=0)
+
+        # Check the shape
+        if mat.is_cuda:
+            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+        else:
+            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+
+        if mat.shape[1:3] != (cls.dim, cls.dim):
+            return shape_check
+        else:
+            shape_check.fill_(True)
+
+        # Bottom row should be [zeros, 1]
+        bottom_row = mat.__class__(cls.dim).zero_()
+        bottom_row[-1] = 1.
+        bottom_check = (mat[:, cls.dim - 1, :] == bottom_row.unsqueeze_(
+            dim=0).expand(mat.shape[0], cls.dim)).sum(dim=1) == cls.dim
+
+        # Check that the rotation part is valid
+        rot_check = cls.RotationType.is_valid_matrix(
+            mat[:, 0:cls.dim - 1, 0:cls.dim - 1])
+
+        return shape_check & bottom_check & rot_check
+
+    def normalize(self, inds=None):
+        self.rot.normalize(inds)

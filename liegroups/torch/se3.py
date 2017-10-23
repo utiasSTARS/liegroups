@@ -1,11 +1,11 @@
 import torch
 
-from . import base
-from . import utils
-from .so3 import SO3
+from liegroups.torch import _base
+from liegroups.torch import utils
+from liegroups.torch.so3 import SO3
 
 
-class SE3(base.SpecialEuclideanBase):
+class SE3(_base.SpecialEuclideanBase):
     """See :mod:`liegroups.SE3` """
     dim = 4
     dof = 6
@@ -14,43 +14,27 @@ class SE3(base.SpecialEuclideanBase):
     def __init__(self, rot, trans):
         super().__init__(rot, trans)
 
-    @classmethod
-    def wedge(cls, xi):
-        if xi.dim() < 2:
-            xi = xi.unsqueeze(dim=0)
+    def adjoint(self):
+        rot = self.rot.as_matrix()
+        if rot.dim() < 3:
+            rot = rot.unsqueeze(dim=0)  # matrix --> batch
 
-        if xi.shape[1] != cls.dof:
-            raise ValueError(
-                "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+        trans = self.trans
+        if trans.dim() < 2:
+            # vector --> vectorbatch
+            trans = trans.unsqueeze(dim=0)
 
-        Xi = xi.__class__(xi.shape[0], cls.dim, cls.dim).zero_()
-        Xi[:, :3, :3] = cls.RotationType.wedge(xi[:, 3:])
-        Xi[:, :3, 3] = xi[:, :3]
+        trans_wedge = self.RotationType.wedge(trans)
+        if trans_wedge.dim() < 3:
+            trans_wedge.unsqueeze_(dim=0)  # matrix --> batch
 
-        return Xi.squeeze_()
+        trans_wedge_dot_rot = torch.bmm(trans_wedge, rot)
 
-    @classmethod
-    def vee(cls, Xi):
-        if Xi.dim() < 3:
-            Xi = Xi.unsqueeze(dim=0)
+        zero_block = trans.__class__(rot.shape).zero_()
 
-        if Xi.shape[1:3] != (cls.dim, cls.dim):
-            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
-                cls.dim, cls.dim, cls.dim, cls.dim))
-
-        xi = Xi.__class__(Xi.shape[0], cls.dof)
-        xi[:, :3] = Xi[:, :3, 3]
-        xi[:, 3:] = cls.RotationType.vee(Xi[:, :3, :3])
-
-        return xi.squeeze_()
-
-    @classmethod
-    def left_jacobian(cls, xi):
-        raise NotImplementedError
-
-    @classmethod
-    def inv_left_jacobian(cls, xi):
-        raise NotImplementedError
+        return torch.cat([torch.cat([rot, trans_wedge_dot_rot], dim=2),
+                          torch.cat([zero_block, rot], dim=2)], dim=1
+                         ).squeeze_()
 
     @classmethod
     def exp(cls, xi):
@@ -76,6 +60,18 @@ class SE3(base.SpecialEuclideanBase):
 
         return cls(rot, trans)
 
+    @classmethod
+    def left_jacobian_Q_matrix(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
+    def inv_left_jacobian(cls, xi):
+        raise NotImplementedError
+
+    @classmethod
+    def left_jacobian(cls, xi):
+        raise NotImplementedError
+
     def log(self):
         phi = self.rot.log()
         inv_rot_jac = self.RotationType.inv_left_jacobian(phi)
@@ -97,28 +93,6 @@ class SE3(base.SpecialEuclideanBase):
             phi.unsqueeze_(dim=0)
 
         return torch.cat([rho, phi], dim=1).squeeze_()
-
-    def adjoint(self):
-        rot = self.rot.as_matrix()
-        if rot.dim() < 3:
-            rot = rot.unsqueeze(dim=0)  # matrix --> batch
-
-        trans = self.trans
-        if trans.dim() < 2:
-            # vector --> vectorbatch
-            trans = trans.unsqueeze(dim=0)
-
-        trans_wedge = self.RotationType.wedge(trans)
-        if trans_wedge.dim() < 3:
-            trans_wedge.unsqueeze_(dim=0)  # matrix --> batch
-
-        trans_wedge_dot_rot = torch.bmm(trans_wedge, rot)
-
-        zero_block = trans.__class__(rot.shape).zero_()
-
-        return torch.cat([torch.cat([rot, trans_wedge_dot_rot], dim=2),
-                          torch.cat([zero_block, rot], dim=2)], dim=1
-                         ).squeeze_()
 
     @classmethod
     def odot(cls, p, directional=False):
@@ -152,3 +126,33 @@ class SE3(base.SpecialEuclideanBase):
                 cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
 
         return result.squeeze_()
+
+    @classmethod
+    def vee(cls, Xi):
+        if Xi.dim() < 3:
+            Xi = Xi.unsqueeze(dim=0)
+
+        if Xi.shape[1:3] != (cls.dim, cls.dim):
+            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
+                cls.dim, cls.dim, cls.dim, cls.dim))
+
+        xi = Xi.__class__(Xi.shape[0], cls.dof)
+        xi[:, :3] = Xi[:, :3, 3]
+        xi[:, 3:] = cls.RotationType.vee(Xi[:, :3, :3])
+
+        return xi.squeeze_()
+
+    @classmethod
+    def wedge(cls, xi):
+        if xi.dim() < 2:
+            xi = xi.unsqueeze(dim=0)
+
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
+        Xi = xi.__class__(xi.shape[0], cls.dim, cls.dim).zero_()
+        Xi[:, :3, :3] = cls.RotationType.wedge(xi[:, 3:])
+        Xi[:, :3, 3] = xi[:, :3]
+
+        return Xi.squeeze_()

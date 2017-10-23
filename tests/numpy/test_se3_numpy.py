@@ -29,6 +29,15 @@ def test_wedge_vee():
     assert np.array_equal(xis, SE3.vee(Xis))
 
 
+def test_curlywedge_curlyvee():
+    xi = [1, 2, 3, 4, 5, 6]
+    Psi = SE3.curlywedge(xi)
+    xis = np.array([[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12]])
+    Psis = SE3.curlywedge(xis)
+    assert np.array_equal(xi, SE3.curlyvee(Psi))
+    assert np.array_equal(xis, SE3.curlyvee(Psis))
+
+
 def test_odot():
     p1 = [1, 2, 3]
     p2 = [1, 2, 3, 1]
@@ -59,6 +68,20 @@ def test_odot_vectorized():
 def test_exp_log():
     T = SE3.exp([1, 2, 3, 4, 5, 6])
     assert np.allclose(SE3.exp(SE3.log(T)).as_matrix(), T.as_matrix())
+
+
+def test_left_jacobian():
+    xi1 = [1, 2, 3, 4, 5, 6]
+    assert np.allclose(
+        SE3.left_jacobian(xi1).dot(SE3.inv_left_jacobian(xi1)),
+        np.identity(6)
+    )
+
+    xi2 = [0, 0, 0, 0, 0, 0]
+    assert np.allclose(
+        SE3.left_jacobian(xi2).dot(SE3.inv_left_jacobian(xi2)),
+        np.identity(6)
+    )
 
 
 def test_perturb():

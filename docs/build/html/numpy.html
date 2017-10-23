@@ -170,7 +170,7 @@
 <dl class="class">
 <dt id="liegroups.SO2">
 <em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SO2</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotation matrix in SO(2) using active (alibi) transformations.</p>
+<dd><p>Rotation matrix in <span class="math">\(SO(2)\)</span> using active (alibi) transformations.</p>
 <div class="math">
 \[\begin{split}SO(2) &amp;= \left\{ \mathbf{C} \in \mathbb{R}^{2 \times 2} ~\middle|~ \mathbf{C}\mathbf{C}^T = \mathbf{1}, \det \mathbf{C} = 1 \right\} \\
 \mathfrak{so}(2) &amp;= \left\{ \boldsymbol{\Phi} = \phi^\wedge \in \mathbb{R}^{2 \times 2} ~\middle|~ \phi \in \mathbb{R} \right\}\end{split}\]</div>
@@ -192,8 +192,7 @@
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.adjoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint matrix of the transformation.</p>
 <div class="math">
-\[\mathbf{\mathcal{C}} = 
-\text{Ad}(\mathbf{C}) = 1 \in \mathbb{R}\]</div>
+\[\text{Ad}(\mathbf{C}) = 1\]</div>
 </dd></dl>
 
 <dl class="method">
@@ -223,7 +222,7 @@
 <dl class="classmethod">
 <dt id="liegroups.SO2.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.exp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exponential map for SO(2), which computes a transformation from a tangent vector:</p>
+<dd><p>Exponential map for <span class="math">\(SO(2)\)</span>, which computes a transformation from a tangent vector:</p>
 <div class="math">
 \[\begin{split}\mathbf{C}(\phi) = 
 \exp(\phi^\wedge) =
@@ -267,7 +266,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO2.inv_left_jacobian">
 <em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(2) inverse left Jacobian.</p>
+<dd><p><span class="math">\(SO(2)\)</span> inverse left Jacobian.</p>
 <div class="math">
 \[\begin{split}\mathbf{J}^{-1}(\phi) = 
 \begin{cases}
@@ -286,7 +285,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO2.left_jacobian">
 <em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(2) left Jacobian.</p>
+<dd><p><span class="math">\(SO(2)\)</span> left Jacobian.</p>
 <div class="math">
 \[\begin{split}\mathbf{J}(\phi) = 
 \begin{cases}
@@ -299,7 +298,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="method">
 <dt id="liegroups.SO2.log">
 <code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithmic map for SO(2), which computes a tangent vector from a transformation:</p>
+<dd><p>Logarithmic map for <span class="math">\(SO(2)\)</span>, which computes a tangent vector from a transformation:</p>
 <div class="math">
 \[\phi(\mathbf{C}) = 
 \ln(\mathbf{C})^\vee =
@@ -332,7 +331,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO2.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.vee" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(2) vee operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SO(2)\)</span> vee operator as defined by Barfoot.</p>
 <div class="math">
 \[\phi = \boldsymbol{\Phi}^\vee\]</div>
 <p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO2.wedge" title="liegroups.SO2.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
@@ -341,7 +340,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO2.wedge">
 <em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO2.wedge" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(2) wedge operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SO(2)\)</span> wedge operator as defined by Barfoot.</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\Phi} = 
 \phi^\wedge = 
@@ -360,7 +359,7 @@ negate the effect of rounding errors.</p>
 <dl class="class">
 <dt id="liegroups.SE2">
 <em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homogeneous transformation matrix in SE(2) using active (alibi) transformations.</p>
+<dd><p>Homogeneous transformation matrix in <span class="math">\(SE(2)\)</span> using active (alibi) transformations.</p>
 <div class="math">
 \[\begin{split}SE(2) &amp;= \left\{ \mathbf{T}=
         \begin{bmatrix}
@@ -398,8 +397,7 @@ negate the effect of rounding errors.</p>
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.adjoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint matrix of the transformation.</p>
 <div class="math">
-\[\begin{split}\mathbf{\mathcal{T}} = 
-\text{Ad}(\mathbf{T}) = 
+\[\begin{split}\text{Ad}(\mathbf{T}) = 
 \begin{bmatrix}
     \mathbf{C} &amp; 1^\wedge \mathbf{r} \\
     \mathbf{0}^T &amp; 1
@@ -434,7 +432,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.exp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exponential map for SE(2), which computes a transformation from a tangent vector:</p>
+<dd><p>Exponential map for <span class="math">\(SE(2)\)</span>, which computes a transformation from a tangent vector:</p>
 <div class="math">
 \[\begin{split}\mathbf{T}(\boldsymbol{\xi}) =
 \exp(\boldsymbol{\xi}^\wedge) =
@@ -474,7 +472,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.inv_left_jacobian">
 <em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(2) inverse left Jacobian.</p>
+<dd><p><span class="math">\(SE(2)\)</span> inverse left Jacobian.</p>
 <div class="math">
 \[\mathcal{J}^{-1}(\boldsymbol{\xi})\]</div>
 </dd></dl>
@@ -488,7 +486,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.left_jacobian">
 <em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(2) left Jacobian.</p>
+<dd><p><span class="math">\(SE(2)\)</span> left Jacobian.</p>
 <div class="math">
 \[\mathcal{J}(\boldsymbol{\xi})\]</div>
 </dd></dl>
@@ -496,7 +494,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="method">
 <dt id="liegroups.SE2.log">
 <code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithmic map for SE(2), which computes a tangent vector from a transformation:</p>
+<dd><p>Logarithmic map for <span class="math">\(SE(2)\)</span>, which computes a tangent vector from a transformation:</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\xi}(\mathbf{T}) =
 \ln(\mathbf{T})^\vee =
@@ -517,7 +515,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.odot">
 <em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>directional=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.odot" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(2) odot operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(2)\)</span> odot operator as defined by Barfoot.</p>
 <p>This is the Jacobian of a vector</p>
 <div class="math">
 \[\begin{split}\mathbf{p} = 
@@ -554,7 +552,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.vee" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(2) vee operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(2)\)</span> vee operator as defined by Barfoot.</p>
 <div class="math">
 \[\boldsymbol{\xi} = \boldsymbol{\Xi} ^\vee\]</div>
 <p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE2.wedge" title="liegroups.SE2.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
@@ -563,7 +561,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE2.wedge">
 <em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE2.wedge" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(2) wedge operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(2)\)</span> wedge operator as defined by Barfoot.</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\Xi} =
 \boldsymbol{\xi} ^\wedge =
@@ -582,7 +580,7 @@ negate the effect of rounding errors.</p>
 <dl class="class">
 <dt id="liegroups.SO3">
 <em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SO3</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotation matrix in SO(3) using active (alibi) transformations.</p>
+<dd><p>Rotation matrix in <span class="math">\(SO(3)\)</span> using active (alibi) transformations.</p>
 <div class="math">
 \[\begin{split}SO(3) &amp;= \left\{ \mathbf{C} \in \mathbb{R}^{3 \times 3} ~\middle|~ \mathbf{C}\mathbf{C}^T = \mathbf{1}, \det \mathbf{C} = 1 \right\} \\
 \mathfrak{so}(3) &amp;= \left\{ \boldsymbol{\Phi} = \boldsymbol{\phi}^\wedge \in \mathbb{R}^{3 \times 3} ~\middle|~ \boldsymbol{\phi} = \phi \mathbf{a} \in \mathbb{R}^3, \phi = \Vert \boldsymbol{\phi} \Vert \right\}\end{split}\]</div>
@@ -604,8 +602,7 @@ negate the effect of rounding errors.</p>
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.adjoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint matrix of the transformation.</p>
 <div class="math">
-\[\mathbf{\mathcal{C}} = 
-\text{Ad}(\mathbf{C}) = \mathbf{1}
+\[\text{Ad}(\mathbf{C}) = \mathbf{C}
 \in \mathbb{R}^{3 \times 3}\]</div>
 </dd></dl>
 
@@ -636,7 +633,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO3.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.exp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exponential map for SO(3), which computes a transformation from a tangent vector:</p>
+<dd><p>Exponential map for <span class="math">\(SO(3)\)</span>, which computes a transformation from a tangent vector:</p>
 <div class="math">
 \[\begin{split}\mathbf{C}(\boldsymbol{\phi}) =
 \exp(\boldsymbol{\phi}^\wedge) =
@@ -696,7 +693,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO3.inv_left_jacobian">
 <em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(3) inverse left Jacobian.</p>
+<dd><p><span class="math">\(SO(3)\)</span> inverse left Jacobian.</p>
 <div class="math">
 \[\begin{split}\mathbf{J}^{-1}(\boldsymbol{\phi}) =
 \begin{cases}
@@ -716,7 +713,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO3.left_jacobian">
 <em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(3) left Jacobian.</p>
+<dd><p><span class="math">\(SO(3)\)</span> left Jacobian.</p>
 <div class="math">
 \[\begin{split}\mathbf{J}(\boldsymbol{\phi}) =
 \begin{cases}
@@ -730,7 +727,7 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="method">
 <dt id="liegroups.SO3.log">
 <code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithmic map for SO(3), which computes a tangent vector from a transformation:</p>
+<dd><p>Logarithmic map for <span class="math">\(SO(3)\)</span>, which computes a tangent vector from a transformation:</p>
 <div class="math">
 \[\begin{split}\phi &amp;= \frac{1}{2} \left( \mathrm{Tr}(\mathbf{C}) - 1 \right) \\
 \boldsymbol{\phi}(\mathbf{C}) &amp;= 
@@ -812,7 +809,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO3.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.vee" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(3) vee operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SO(3)\)</span> vee operator as defined by Barfoot.</p>
 <div class="math">
 \[\phi = \boldsymbol{\Phi}^\vee\]</div>
 <p>This is the inverse operation to <a class="reference internal" href="#liegroups.SO3.wedge" title="liegroups.SO3.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
@@ -821,7 +818,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SO3.wedge">
 <em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>phi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SO3.wedge" title="Permalink to this definition">¶</a></dt>
-<dd><p>SO(3) wedge operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SO(3)\)</span> wedge operator as defined by Barfoot.</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\Phi} =
 \boldsymbol{\phi}^\wedge =
@@ -841,7 +838,7 @@ negate the effect of rounding errors.</p>
 <dl class="class">
 <dt id="liegroups.SE3">
 <em class="property">class </em><code class="descclassname">liegroups.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Homogeneous transformation matrix in SE(3) using active (alibi) transformations.</p>
+<dd><p>Homogeneous transformation matrix in <span class="math">\(SE(3)\)</span> using active (alibi) transformations.</p>
 <div class="math">
 \[\begin{split}SE(3) &amp;= \left\{ \mathbf{T}=
         \begin{bmatrix}
@@ -879,8 +876,7 @@ negate the effect of rounding errors.</p>
 <code class="descname">adjoint</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.adjoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adjoint matrix of the transformation.</p>
 <div class="math">
-\[\begin{split}\mathbf{\mathcal{T}} = 
-\text{Ad}(\mathbf{T}) = 
+\[\begin{split}\text{Ad}(\mathbf{T}) =
 \begin{bmatrix}
     \mathbf{C} &amp; \mathbf{r}^\wedge\mathbf{C} \\
     \mathbf{0} &amp; \mathbf{C}
@@ -892,6 +888,30 @@ negate the effect of rounding errors.</p>
 <dt id="liegroups.SE3.as_matrix">
 <code class="descname">as_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.as_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the matrix representation of the rotation.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.curlyvee">
+<em class="property">classmethod </em><code class="descname">curlyvee</code><span class="sig-paren">(</span><em>Psi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.curlyvee" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(SE(3)\)</span> curlyvee operator as defined by Barfoot.</p>
+<div class="math">
+\[\boldsymbol{\xi} = 
+\boldsymbol{\Psi}^\curlyvee\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.curlywedge" title="liegroups.SE3.curlywedge"><code class="xref py py-meth docutils literal"><span class="pre">curlywedge()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.curlywedge">
+<em class="property">classmethod </em><code class="descname">curlywedge</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.curlywedge" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(SE(3)\)</span> curlywedge operator as defined by Barfoot.</p>
+<div class="math">
+\[\begin{split}\boldsymbol{\Psi} = 
+\boldsymbol{\xi}^\curlywedge = 
+\begin{bmatrix}
+    \boldsymbol{\phi}^\wedge &amp; \boldsymbol{\rho}^\wedge \\
+    \mathbf{0} &amp; \boldsymbol{\phi}^\wedge
+\end{bmatrix}\end{split}\]</div>
+<p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.curlyvee" title="liegroups.SE3.curlyvee"><code class="xref py py-meth docutils literal"><span class="pre">curlyvee()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -915,7 +935,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.exp">
 <em class="property">classmethod </em><code class="descname">exp</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.exp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exponential map for SE(3), which computes a transformation from a tangent vector:</p>
+<dd><p>Exponential map for <span class="math">\(SE(3)\)</span>, which computes a transformation from a tangent vector:</p>
 <div class="math">
 \[\begin{split}\mathbf{T}(\boldsymbol{\xi}) =
 \exp(\boldsymbol{\xi}^\wedge) =
@@ -955,9 +975,14 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.inv_left_jacobian">
 <em class="property">classmethod </em><code class="descname">inv_left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.inv_left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(3) inverse left Jacobian.</p>
+<dd><p><span class="math">\(SE(3)\)</span> inverse left Jacobian.</p>
 <div class="math">
-\[\mathcal{J}^{-1}(\boldsymbol{\xi})\]</div>
+\[\begin{split}\mathcal{J}^{-1}(\boldsymbol{\xi}) = 
+\begin{bmatrix}
+    \mathbf{J}^{-1} &amp; -\mathbf{J}^{-1} \mathbf{Q} \mathbf{J}^{-1} \\
+    \mathbf{0} &amp; \mathbf{J}^{-1}
+\end{bmatrix}\end{split}\]</div>
+<p>with <span class="math">\(\mathbf{J}^{-1}\)</span> as in <a class="reference internal" href="#liegroups.SO3.inv_left_jacobian" title="liegroups.SO3.inv_left_jacobian"><code class="xref py py-meth docutils literal"><span class="pre">liegroups.SO3.inv_left_jacobian()</span></code></a> and <span class="math">\(\mathbf{Q}\)</span> as in <a class="reference internal" href="#liegroups.SE3.left_jacobian_Q_matrix" title="liegroups.SE3.left_jacobian_Q_matrix"><code class="xref py py-meth docutils literal"><span class="pre">left_jacobian_Q_matrix()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -969,15 +994,46 @@ If normalize=True invalid matrices will be normalized to be valid.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.left_jacobian">
 <em class="property">classmethod </em><code class="descname">left_jacobian</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.left_jacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(3) left Jacobian.</p>
+<dd><p><span class="math">\(SE(3)\)</span> left Jacobian.</p>
 <div class="math">
-\[\mathcal{J}(\boldsymbol{\xi})\]</div>
+\[\begin{split}\mathcal{J}(\boldsymbol{\xi}) = 
+\begin{bmatrix}
+    \mathbf{J} &amp; \mathbf{Q} \\
+    \mathbf{0} &amp; \mathbf{J}
+\end{bmatrix}\end{split}\]</div>
+<p>with <span class="math">\(\mathbf{J}\)</span> as in <a class="reference internal" href="#liegroups.SO3.left_jacobian" title="liegroups.SO3.left_jacobian"><code class="xref py py-meth docutils literal"><span class="pre">liegroups.SO3.left_jacobian()</span></code></a> and <span class="math">\(\mathbf{Q}\)</span> as in <a class="reference internal" href="#liegroups.SE3.left_jacobian_Q_matrix" title="liegroups.SE3.left_jacobian_Q_matrix"><code class="xref py py-meth docutils literal"><span class="pre">left_jacobian_Q_matrix()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="liegroups.SE3.left_jacobian_Q_matrix">
+<em class="property">classmethod </em><code class="descname">left_jacobian_Q_matrix</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.left_jacobian_Q_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <span class="math">\(\mathbf{Q}\)</span> matrix used to compute <span class="math">\(\mathcal{J}\)</span> in <a class="reference internal" href="#liegroups.SE3.left_jacobian" title="liegroups.SE3.left_jacobian"><code class="xref py py-meth docutils literal"><span class="pre">left_jacobian()</span></code></a> and <span class="math">\(\mathcal{J}^{-1}\)</span> in <a class="reference internal" href="#liegroups.SE3.inv_left_jacobian" title="liegroups.SE3.inv_left_jacobian"><code class="xref py py-meth docutils literal"><span class="pre">inv_left_jacobian()</span></code></a>.</p>
+<div class="math">
+\[\begin{split}\mathbf{Q}(\boldsymbol{\xi}) =
+\frac{1}{2}\boldsymbol{\rho}^\wedge &amp;+ 
+\left( \frac{\phi - \sin \phi}{\phi^3} \right)
+    \left( 
+        \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge + 
+        \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge + 
+        \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge
+    \right) \\ &amp;+
+\left( \frac{\phi^2 + 2 \cos \phi - 2}{2 \phi^4} \right)
+    \left( 
+        \boldsymbol{\phi}^\wedge \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge + 
+        \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge \boldsymbol{\phi}^\wedge - 
+        3 \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge
+    \right) \\ &amp;+
+\left( \frac{2 \phi - 3 \sin \phi + \phi \cos \phi}{2 \phi^5} \right)
+    \left( 
+        \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge \boldsymbol{\phi}^\wedge + 
+        \boldsymbol{\phi}^\wedge \boldsymbol{\phi}^\wedge \boldsymbol{\rho}^\wedge \boldsymbol{\phi}^\wedge
+    \right)\end{split}\]</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="liegroups.SE3.log">
 <code class="descname">log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithmic map for SE(3), which computes a tangent vector from a transformation:</p>
+<dd><p>Logarithmic map for <span class="math">\(SE(3)\)</span>, which computes a tangent vector from a transformation:</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\xi}(\mathbf{T}) =
 \ln(\mathbf{T})^\vee =
@@ -998,10 +1054,10 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.odot">
 <em class="property">classmethod </em><code class="descname">odot</code><span class="sig-paren">(</span><em>p</em>, <em>directional=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.odot" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(3) odot operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(3)\)</span> odot operator as defined by Barfoot.</p>
 <p>This is the Jacobian of a vector</p>
 <div class="math">
-\[\begin{split}\mathbf{p} = 
+\[\begin{split}\mathbf{p} =
 \begin{bmatrix}
     sx \\ sy \\ sz \\ s
 \end{bmatrix} =
@@ -1035,7 +1091,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.vee">
 <em class="property">classmethod </em><code class="descname">vee</code><span class="sig-paren">(</span><em>Xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.vee" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(3) vee operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(3)\)</span> vee operator as defined by Barfoot.</p>
 <div class="math">
 \[\boldsymbol{\xi} = \boldsymbol{\Xi} ^\vee\]</div>
 <p>This is the inverse operation to <a class="reference internal" href="#liegroups.SE3.wedge" title="liegroups.SE3.wedge"><code class="xref py py-meth docutils literal"><span class="pre">wedge()</span></code></a>.</p>
@@ -1044,7 +1100,7 @@ negate the effect of rounding errors.</p>
 <dl class="classmethod">
 <dt id="liegroups.SE3.wedge">
 <em class="property">classmethod </em><code class="descname">wedge</code><span class="sig-paren">(</span><em>xi</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.SE3.wedge" title="Permalink to this definition">¶</a></dt>
-<dd><p>SE(3) wedge operator as defined by Barfoot.</p>
+<dd><p><span class="math">\(SE(3)\)</span> wedge operator as defined by Barfoot.</p>
 <div class="math">
 \[\begin{split}\boldsymbol{\Xi} =
 \boldsymbol{\xi} ^\wedge =

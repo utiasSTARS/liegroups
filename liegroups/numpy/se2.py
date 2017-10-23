@@ -1,11 +1,11 @@
 import numpy as np
 
-from . import base
-from .so2 import SO2
+from liegroups.numpy import _base
+from liegroups.numpy.so2 import SO2
 
 
-class SE2(base.SpecialEuclideanBase):
-    """Homogeneous transformation matrix in SE(2) using active (alibi) transformations.
+class SE2(_base.SpecialEuclideanBase):
+    """Homogeneous transformation matrix in :math:`SE(2)` using active (alibi) transformations.
 
     .. math::
         SE(2) &= \\left\\{ \\mathbf{T}=
@@ -35,73 +35,25 @@ class SE2(base.SpecialEuclideanBase):
         """Create a transformation from a rotation matrix(unsafe, but faster)."""
         super().__init__(rot, trans)
 
-    @classmethod
-    def wedge(cls, xi):
-        """SE(2) wedge operator as defined by Barfoot.
+    def adjoint(self):
+        """Adjoint matrix of the transformation.
 
         .. math::
-            \\boldsymbol{\\Xi} =
-            \\boldsymbol{\\xi} ^\\wedge =
+            \\text{Ad}(\\mathbf{T}) = 
             \\begin{bmatrix}
-                \\phi ^\\wedge & \\boldsymbol{\\rho} \\\\
-                \\mathbf{0} ^ T & 0
+                \\mathbf{C} & 1^\\wedge \\mathbf{r} \\\\
+                \\mathbf{0}^T & 1
             \\end{bmatrix}
-
-        This is the inverse operation to :meth:`~liegroups.SE2.vee`.
+            \\in \\mathbb{R}^{3 \\times 3}
         """
-        xi = np.atleast_2d(xi)
-        if xi.shape[1] != cls.dof:
-            raise ValueError(
-                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
-
-        Xi = np.zeros([xi.shape[0], cls.dof, cls.dof])
-        Xi[:, 0:2, 0:2] = cls.RotationType.wedge(xi[:, 2])
-        Xi[:, 0:2, 2] = xi[:, 0:2]
-
-        return np.squeeze(Xi)
-
-    @classmethod
-    def vee(cls, Xi):
-        """SE(2) vee operator as defined by Barfoot.
-
-        .. math::
-            \\boldsymbol{\\xi} = \\boldsymbol{\\Xi} ^\\vee
-
-        This is the inverse operation to :meth:`~liegroups.SE2.wedge`.
-        """
-        if Xi.ndim < 3:
-            Xi = np.expand_dims(Xi, axis=0)
-
-        if Xi.shape[1:3] != (cls.dof, cls.dof):
-            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
-                cls.dof, cls.dof, cls.dof, cls.dof))
-
-        xi = np.empty([Xi.shape[0], cls.dof])
-        xi[:, 0:2] = Xi[:, 0:2, 2]
-        xi[:, 2] = cls.RotationType.vee(Xi[:, 0:2, 0:2])
-        return np.squeeze(xi)
-
-    @classmethod
-    def left_jacobian(cls, xi):
-        """SE(2) left Jacobian.
-
-        .. math::
-            \\mathcal{J}(\\boldsymbol{\\xi})
-        """
-        raise NotImplementedError
-
-    @classmethod
-    def inv_left_jacobian(cls, xi):
-        """SE(2) inverse left Jacobian.
-
-        .. math::
-            \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
-        """
-        raise NotImplementedError
+        rot_part = self.rot.as_matrix()
+        trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
+        return np.vstack([np.hstack([rot_part, trans_part]),
+                          [0, 0, 1]])
 
     @classmethod
     def exp(cls, xi):
-        """Exponential map for SE(2), which computes a transformation from a tangent vector:
+        """Exponential map for :math:`SE(2)`, which computes a transformation from a tangent vector:
 
         .. math::
             \\mathbf{T}(\\boldsymbol{\\xi}) =
@@ -121,8 +73,26 @@ class SE2(base.SpecialEuclideanBase):
         return cls(cls.RotationType.exp(phi),
                    cls.RotationType.left_jacobian(phi).dot(rho))
 
+    @classmethod
+    def inv_left_jacobian(cls, xi):
+        """:math:`SE(2)` inverse left Jacobian.
+
+        .. math::
+            \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def left_jacobian(cls, xi):
+        """:math:`SE(2)` left Jacobian.
+
+        .. math::
+            \\mathcal{J}(\\boldsymbol{\\xi})
+        """
+        raise NotImplementedError
+
     def log(self):
-        """Logarithmic map for SE(2), which computes a tangent vector from a transformation:
+        """Logarithmic map for :math:`SE(2)`, which computes a tangent vector from a transformation:
 
         .. math::
             \\boldsymbol{\\xi}(\\mathbf{T}) =
@@ -138,26 +108,9 @@ class SE2(base.SpecialEuclideanBase):
         rho = self.RotationType.inv_left_jacobian(phi).dot(self.trans)
         return np.hstack([rho, phi])
 
-    def adjoint(self):
-        """Adjoint matrix of the transformation.
-
-        .. math::
-            \\mathbf{\\mathcal{T}} = 
-            \\text{Ad}(\\mathbf{T}) = 
-            \\begin{bmatrix}
-                \\mathbf{C} & 1^\\wedge \\mathbf{r} \\\\
-                \\mathbf{0}^T & 1
-            \\end{bmatrix}
-            \\in \\mathbb{R}^{3 \\times 3}
-        """
-        rot_part = self.rot.as_matrix()
-        trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
-        return np.vstack([np.hstack([rot_part, trans_part]),
-                          [0, 0, 1]])
-
     @classmethod
     def odot(cls, p, directional=False):
-        """SE(2) odot operator as defined by Barfoot. 
+        """:math:`SE(2)` odot operator as defined by Barfoot. 
 
         This is the Jacobian of a vector 
 
@@ -209,3 +162,49 @@ class SE2(base.SpecialEuclideanBase):
                 cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
 
         return np.squeeze(result)
+
+    @classmethod
+    def vee(cls, Xi):
+        """:math:`SE(2)` vee operator as defined by Barfoot.
+
+        .. math::
+            \\boldsymbol{\\xi} = \\boldsymbol{\\Xi} ^\\vee
+
+        This is the inverse operation to :meth:`~liegroups.SE2.wedge`.
+        """
+        if Xi.ndim < 3:
+            Xi = np.expand_dims(Xi, axis=0)
+
+        if Xi.shape[1:3] != (cls.dof, cls.dof):
+            raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
+                cls.dof, cls.dof, cls.dof, cls.dof))
+
+        xi = np.empty([Xi.shape[0], cls.dof])
+        xi[:, 0:2] = Xi[:, 0:2, 2]
+        xi[:, 2] = cls.RotationType.vee(Xi[:, 0:2, 0:2])
+        return np.squeeze(xi)
+
+    @classmethod
+    def wedge(cls, xi):
+        """:math:`SE(2)` wedge operator as defined by Barfoot.
+
+        .. math::
+            \\boldsymbol{\\Xi} =
+            \\boldsymbol{\\xi} ^\\wedge =
+            \\begin{bmatrix}
+                \\phi ^\\wedge & \\boldsymbol{\\rho} \\\\
+                \\mathbf{0} ^ T & 0
+            \\end{bmatrix}
+
+        This is the inverse operation to :meth:`~liegroups.SE2.vee`.
+        """
+        xi = np.atleast_2d(xi)
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
+        Xi = np.zeros([xi.shape[0], cls.dof, cls.dof])
+        Xi[:, 0:2, 0:2] = cls.RotationType.wedge(xi[:, 2])
+        Xi[:, 0:2, 2] = xi[:, 0:2]
+
+        return np.squeeze(Xi)

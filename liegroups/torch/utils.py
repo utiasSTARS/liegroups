@@ -1,20 +1,20 @@
 import torch
 
 
-def isclose(mat1, mat2, tol=1e-6):
-    """Check element-wise if two tensors are close within some tolerance.
-
-    Either tensor can be replaced by a scalar.
-    """
-    return (mat1 - mat2).abs_().lt(tol)
-
-
 def allclose(mat1, mat2, tol=1e-6):
     """Check if all elements of two tensors are close within some tolerance.
 
     Either tensor can be replaced by a scalar.
     """
     return isclose(mat1, mat2, tol).all()
+
+
+def isclose(mat1, mat2, tol=1e-6):
+    """Check element-wise if two tensors are close within some tolerance.
+
+    Either tensor can be replaced by a scalar.
+    """
+    return (mat1 - mat2).abs_().lt(tol)
 
 
 def outer(vecs1, vecs2):
