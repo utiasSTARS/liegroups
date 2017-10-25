@@ -31,10 +31,6 @@ class SE3(_base.SpecialEuclideanBase):
     """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
     RotationType = SO3
 
-    def __init__(self, rot, trans):
-        """Create a transformation from a rotation matrix(unsafe, but faster)."""
-        super().__init__(rot, trans)
-
     def adjoint(self):
         """Adjoint matrix of the transformation.
 

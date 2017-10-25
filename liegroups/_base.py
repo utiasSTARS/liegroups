@@ -134,6 +134,8 @@ class SpecialOrthogonalBase(LieGroupBase, ABC):
 
     def __init__(self, mat):
         """Create a transformation from a rotation matrix (unsafe, but faster)."""
+        super().__init__()
+
         self.mat = mat
         """Storage for the transformation matrix."""
 
@@ -155,6 +157,8 @@ class SpecialEuclideanBase(LieGroupBase, ABC):
 
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)"""
+        super().__init__()
+
         self.rot = rot
         """Storage for the rotation matrix."""
         self.trans = trans

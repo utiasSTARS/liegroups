@@ -6,10 +6,6 @@ from liegroups import _base
 class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using Numpy"""
 
-    def __init__(self, mat):
-        """Create a rotation from a matrix (unsafe, but faster)."""
-        super().__init__(mat)
-
     def dot(self, other):
         """Multiply another rotation or one or more vectors on the left.
         """
@@ -81,10 +77,6 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
 
 class SpecialEuclideanBase(_base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using Numpy"""
-
-    def __init__(self, rot, trans):
-        """Create a transformation from a translation and a rotation (unsafe, but faster)."""
-        super().__init__(rot, trans)
 
     def as_matrix(self):
         """Return the matrix representation of the rotation."""

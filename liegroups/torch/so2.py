@@ -9,9 +9,6 @@ class SO2(_base.SpecialOrthogonalBase):
     dim = 2
     dof = 1
 
-    def __init__(self, mat):
-        super().__init__(mat)
-
     def adjoint(self):
         if self.mat.dim() < 3:
             return self.mat.__class__([1.])

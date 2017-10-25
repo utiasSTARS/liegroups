@@ -8,9 +8,6 @@ from liegroups.torch import utils
 class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
     """Implementation of methods common to SO(N) using PyTorch"""
 
-    def __init__(self, mat):
-        super().__init__(mat)
-
     def cpu(self):
         """Return a copy with the underlying tensor on the CPU."""
         return self.__class__(self.mat.cpu())

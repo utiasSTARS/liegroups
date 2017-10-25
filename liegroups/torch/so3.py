@@ -10,9 +10,6 @@ class SO3(_base.SpecialOrthogonalBase):
     dim = 3
     dof = 3
 
-    def __init__(self, mat):
-        super().__init__(mat)
-
     def adjoint(self):
         return self.mat
 

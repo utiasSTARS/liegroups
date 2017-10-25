@@ -11,9 +11,6 @@ class SE2(_base.SpecialEuclideanBase):
     dof = 3
     RotationType = SO2
 
-    def __init__(self, rot, trans):
-        super().__init__(rot, trans)
-
     def adjoint(self):
         rot_part = self.rot.as_matrix()
         if rot_part.dim() < 3:

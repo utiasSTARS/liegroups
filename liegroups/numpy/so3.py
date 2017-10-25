@@ -19,10 +19,6 @@ class SO3(_base.SpecialOrthogonalBase):
     dof = 3
     """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
 
-    def __init__(self, mat):
-        """Create a transformation from a rotation matrix (unsafe, but faster)."""
-        super().__init__(mat)
-
     def adjoint(self):
         """Adjoint matrix of the transformation.
 
