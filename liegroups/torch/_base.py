@@ -322,7 +322,7 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
 
     def is_cuda(self):
         """Returns true if the underlying tensors are CUDA tensors"""
-        return self.rot.is_cuda
+        return self.rot.is_cuda()
 
     def is_pinned(self):
         """Returns true if the underlying tensors reside in pinned memory"""
