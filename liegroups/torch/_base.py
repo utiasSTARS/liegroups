@@ -81,6 +81,14 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
         else:
             return self.__class__(self.mat.transpose(2, 1))
 
+    def is_cuda(self):
+        """Returns true if the underlying tensor is a CUDA tensor"""
+        return self.mat.is_cuda
+
+    def is_pinned(self):
+        """Returns true if the underlying tensor resides in pinned memory"""
+        return self.mat.is_pinned()
+
     @classmethod
     def is_valid_matrix(cls, mat):
         if mat.dim() < 3:
@@ -144,6 +152,13 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
             for batch_ind in inds:
                 # Slicing is a copy operation?
                 self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
+
+    def pin_memory(self):
+        """Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.
+
+        See: http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned
+        """
+        return self.__class__(self.mat.pin_memory())
 
 
 class SpecialEuclideanBase(_base.SpecialEuclideanBase):
@@ -305,6 +320,14 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
         inv_trans = -(inv_rot.dot(trans))
         return self.__class__(inv_rot, inv_trans)
 
+    def is_cuda(self):
+        """Returns true if the underlying tensors are CUDA tensors"""
+        return self.rot.is_cuda
+
+    def is_pinned(self):
+        """Returns true if the underlying tensors reside in pinned memory"""
+        return self.rot.is_pinned()
+
     @classmethod
     def is_valid_matrix(cls, mat):
         if mat.dim() < 3:
@@ -335,3 +358,10 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
 
     def normalize(self, inds=None):
         self.rot.normalize(inds)
+
+    def pin_memory(self):
+        """Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.
+
+        See: http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned
+        """
+        return self.__class__(self.rot.pin_memory(), self.trans.pin_memory())

@@ -1,5 +1,0 @@
-------------
-Introduction
-------------
-
-.. minclude:: ../../README.md
