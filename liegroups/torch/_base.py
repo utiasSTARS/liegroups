@@ -62,9 +62,13 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
                 "Invalid rotation matrix. Use normalize=True to handle rounding errors.")
 
     @classmethod
-    def from_numpy(cls, other):
+    def from_numpy(cls, other, pin_memory=False):
         """Create a torch-based copy of a numpy-based rotation."""
-        return cls(torch.Tensor(other.mat))
+        mat = torch.Tensor(other.mat)
+        if pin_memory:
+            mat = mat.pin_memory()
+
+        return cls(mat)
 
     @classmethod
     def identity(cls, batch_size=1, copy=False):
@@ -294,10 +298,15 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
                 "Invalid transformation matrix. Use normalize=True to handle rounding errors.")
 
     @classmethod
-    def from_numpy(cls, other):
+    def from_numpy(cls, other, pin_memory=False):
         """Create a torch-based copy of a numpy-based transformation."""
-        return cls(cls.RotationType.from_numpy(other.rot),
-                   torch.Tensor(other.trans))
+        rot = cls.RotationType.from_numpy(other.rot, pin_memory)
+
+        trans = torch.Tensor(other.trans)
+        if pin_memory:
+            trans = torch.Tensor(other.trans).pin_memory
+
+        return cls(rot, trans)
 
     @classmethod
     def identity(cls, batch_size=1, copy=False):
