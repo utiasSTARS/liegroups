@@ -120,7 +120,7 @@ class SE3(_base.SpecialEuclideanBase):
         m1 = 0.5
         m2 = (ph - sph) / ph3
         m3 = (0.5 * ph2 + cph - 1.) / ph4
-        m4 = (ph - 1.5 * sph + ph * cph) / ph5
+        m4 = (ph - 1.5 * sph + 0.5 * ph * cph) / ph5
 
         m2 = m2.unsqueeze_(dim=1).unsqueeze_(dim=2).expand_as(rx)
         m3 = m3.unsqueeze_(dim=1).unsqueeze_(dim=2).expand_as(rx)
@@ -163,7 +163,7 @@ class SE3(_base.SpecialEuclideanBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_()
 
         if len(large_angle_inds) > 0:
-            so3_inv_jac = SO3.inv_left_jacobian(rho[large_angle_inds])
+            so3_inv_jac = SO3.inv_left_jacobian(phi[large_angle_inds])
             if so3_inv_jac.dim() < 3:
                 so3_inv_jac.unsqueeze_(dim=0)
 
@@ -208,7 +208,7 @@ class SE3(_base.SpecialEuclideanBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_()
 
         if len(large_angle_inds) > 0:
-            so3_jac = SO3.left_jacobian(rho[large_angle_inds])
+            so3_jac = SO3.left_jacobian(phi[large_angle_inds])
             if so3_jac.dim() < 3:
                 so3_jac.unsqueeze_(dim=0)
 

@@ -166,7 +166,7 @@ class SE3(_base.SpecialEuclideanBase):
         m1 = 0.5
         m2 = (ph - sph) / ph3
         m3 = (0.5 * ph2 + cph - 1.) / ph4
-        m4 = (ph - 1.5 * sph + ph * cph) / ph5
+        m4 = (ph - 1.5 * sph + 0.5 * ph * cph) / ph5
 
         t1 = rx
         t2 = px.dot(rx) + rx.dot(px) + px.dot(rx).dot(px)
@@ -195,7 +195,7 @@ class SE3(_base.SpecialEuclideanBase):
         if np.isclose(np.linalg.norm(phi), 0.):
             return np.identity(cls.dof) - 0.5 * cls.curlywedge(xi)
 
-        so3_inv_jac = SO3.inv_left_jacobian(rho)
+        so3_inv_jac = SO3.inv_left_jacobian(phi)
         Q_mat = cls.left_jacobian_Q_matrix(xi)
 
         jac = np.zeros([cls.dof, cls.dof])
@@ -225,7 +225,7 @@ class SE3(_base.SpecialEuclideanBase):
         if np.isclose(np.linalg.norm(phi), 0.):
             return np.identity(cls.dof) + 0.5 * cls.curlywedge(xi)
 
-        so3_jac = SO3.left_jacobian(rho)
+        so3_jac = SO3.left_jacobian(phi)
         Q_mat = cls.left_jacobian_Q_matrix(xi)
 
         jac = np.zeros([cls.dof, cls.dof])
