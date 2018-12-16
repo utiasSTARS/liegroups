@@ -27,7 +27,7 @@ class SE3(_base.SpecialEuclideanBase):
 
         trans_wedge_bmm_rot = torch.bmm(trans_wedge, rot)
 
-        zero_block = trans.__class__(rot.shape).zero_()
+        zero_block = trans.new_empty(rot.shape).zero_()
 
         return torch.cat([torch.cat([rot, trans_wedge_bmm_rot], dim=2),
                           torch.cat([zero_block, rot], dim=2)], dim=1
@@ -42,7 +42,7 @@ class SE3(_base.SpecialEuclideanBase):
             raise ValueError("Psi must have shape ({},{}) or (N,{},{})".format(
                 cls.dof, cls.dof, cls.dof, cls.dof))
 
-        xi = Psi.__class__(Psi.shape[0], cls.dof)
+        xi = Psi.new_empty(Psi.shape[0], cls.dof)
         xi[:, :3] = cls.RotationType.vee(Psi[:, :3, 3:])
         xi[:, 3:] = cls.RotationType.vee(Psi[:, :3, :3])
 
@@ -57,7 +57,7 @@ class SE3(_base.SpecialEuclideanBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Psi = xi.__class__(xi.shape[0], cls.dof, cls.dof).zero_()
+        Psi = xi.new_empty(xi.shape[0], cls.dof, cls.dof).zero_()
         Psi[:, :3, :3] = cls.RotationType.wedge(xi[:, 3:])
         Psi[:, :3, 3:] = cls.RotationType.wedge(xi[:, :3])
         Psi[:, 3:, 3:] = Psi[:, :3, :3]
@@ -147,20 +147,25 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[:, :3]  # translation part
         phi = xi[:, 3:]  # rotation part
 
-        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
+        jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
+            
+            #Create an identity matrix with a tensor type that matches the input
+            I = phi.new_empty(cls.dof, cls.dof)
+            torch.eye(cls.dof, out=I)
+
             jac[small_angle_inds] = \
-                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) - \
+                I.expand_as(jac[small_angle_inds]) - \
                 0.5 * cls.curlywedge(xi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             so3_inv_jac = SO3.inv_left_jacobian(phi[large_angle_inds])
@@ -171,7 +176,7 @@ class SE3(_base.SpecialEuclideanBase):
             if Q_mat.dim() < 3:
                 Q_mat.unsqueeze_(dim=0)
 
-            zero_block = phi.__class__(Q_mat.shape).zero_()
+            zero_block = phi.new_empty(Q_mat.shape).zero_()
             inv_jac_Q_inv_jac = so3_inv_jac.bmm(Q_mat).bmm(so3_inv_jac)
 
             jac[large_angle_inds] = torch.cat(
@@ -192,20 +197,24 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[:, :3]  # translation part
         phi = xi[:, 3:]  # rotation part
 
-        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
+        jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
+            #Create an identity matrix with a tensor type that matches the input
+            I = phi.new_empty(cls.dof, cls.dof)
+            torch.eye(cls.dof, out=I)
+
             jac[small_angle_inds] = \
-                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) + \
+                I.expand_as(jac[small_angle_inds]) + \
                 0.5 * cls.curlywedge(xi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             so3_jac = SO3.left_jacobian(phi[large_angle_inds])
@@ -216,7 +225,7 @@ class SE3(_base.SpecialEuclideanBase):
             if Q_mat.dim() < 3:
                 Q_mat.unsqueeze_(dim=0)
 
-            zero_block = phi.__class__(Q_mat.shape).zero_()
+            zero_block = phi.new_empty(Q_mat.shape).zero_()
 
             jac[large_angle_inds] = torch.cat(
                 [torch.cat([so3_jac, Q_mat], dim=2),
@@ -251,14 +260,14 @@ class SE3(_base.SpecialEuclideanBase):
         if p.dim() < 2:
             p = p.unsqueeze(dim=0)  # vector --> vectorbatch
 
-        result = p.__class__(p.shape[0], p.shape[1], cls.dof).zero_()
+        result = p.new_empty(p.shape[0], p.shape[1], cls.dof).zero_()
 
         # Got euclidean coordinates
         if p.shape[1] == cls.dim - 1:
             # Assume scale parameter is 1 unless p is a direction
             # vector, in which case the scale is 0
             if not directional:
-                result[:, :3, :3] = torch.eye(3).unsqueeze_(dim=0).expand(
+                result[:, :3, :3] = torch.eye(3, dtype=p.dtype).unsqueeze_(dim=0).expand(
                     p.shape[0], 3, 3)
 
             result[:, :3, 3:] = cls.RotationType.wedge(-p)
@@ -267,7 +276,7 @@ class SE3(_base.SpecialEuclideanBase):
         elif p.shape[1] == cls.dim:
             result[:, :3, :3] = \
                 p[:, 3].unsqueeze_(dim=1).unsqueeze_(dim=2) * \
-                torch.eye(3).unsqueeze_(dim=0).repeat(
+                torch.eye(3, dtype=p.dtype).unsqueeze_(dim=0).repeat(
                 p.shape[0], 1, 1)
 
             result[:, :3, 3:] = cls.RotationType.wedge(-p[:, :3])
@@ -288,7 +297,7 @@ class SE3(_base.SpecialEuclideanBase):
             raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
                 cls.dim, cls.dim, cls.dim, cls.dim))
 
-        xi = Xi.__class__(Xi.shape[0], cls.dof)
+        xi = Xi.new_empty(Xi.shape[0], cls.dof)
         xi[:, :3] = Xi[:, :3, 3]
         xi[:, 3:] = cls.RotationType.vee(Xi[:, :3, :3])
 
@@ -303,7 +312,7 @@ class SE3(_base.SpecialEuclideanBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Xi = xi.__class__(xi.shape[0], cls.dim, cls.dim).zero_()
+        Xi = xi.new_empty(xi.shape[0], cls.dim, cls.dim).zero_()
         Xi[:, :3, :3] = cls.RotationType.wedge(xi[:, 3:])
         Xi[:, :3, 3] = xi[:, :3]
 

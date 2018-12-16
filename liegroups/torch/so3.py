@@ -22,21 +22,22 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        mat = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        mat = phi.new_empty(phi.shape[0], cls.dim, cls.dim)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        
         if len(small_angle_inds) > 0:
             mat[small_angle_inds] = \
-                torch.eye(cls.dim).expand_as(mat[small_angle_inds]) + \
+                torch.eye(cls.dim, dtype=phi.dtype).expand_as(mat[small_angle_inds]) + \
                 cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
-
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             axis = phi[large_angle_inds] / \
@@ -46,7 +47,7 @@ class SO3(_base.SpecialOrthogonalBase):
             c = angle.cos().unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(mat[large_angle_inds])
 
-            A = c * torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+            A = c * torch.eye(cls.dim, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
                 mat[large_angle_inds])
             B = (1. - c) * utils.outer(axis, axis)
             C = s * cls.wedge(axis)
@@ -82,7 +83,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
 
         # Form the matrix
-        mat = quat.__class__(quat.shape[0], cls.dim, cls.dim)
+        mat = quat.new_empty(quat.shape[0], cls.dim, cls.dim)
 
         qw2 = qw * qw
         qx2 = qx * qx
@@ -123,20 +124,20 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
+        jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
-                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) - \
+                torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) - \
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -152,7 +153,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 dim=2).expand_as(jac[large_angle_inds])
 
             A = hacha * \
-                torch.eye(cls.dof).unsqueeze_(
+                torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(
                     dim=0).expand_as(jac[large_angle_inds])
             B = (1. - hacha) * utils.outer(axis, axis)
             C = -ha * cls.wedge(axis)
@@ -170,20 +171,20 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        jac = phi.__class__(phi.shape[0], cls.dof, cls.dof)
+        jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = \
-                torch.eye(cls.dof).expand_as(jac[small_angle_inds]) + \
+                torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) + \
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -194,7 +195,7 @@ class SO3(_base.SpecialOrthogonalBase):
 
             A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                torch.eye(cls.dof).unsqueeze_(dim=0).expand_as(
+                torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
                 jac[large_angle_inds])
             B = (1. - s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
@@ -213,7 +214,7 @@ class SO3(_base.SpecialOrthogonalBase):
         else:
             mat = self.mat
 
-        phi = mat.__class__(mat.shape[0], self.dof)
+        phi = mat.new_empty(mat.shape[0], self.dof)
 
         # The cosine of the rotation angle is related to the utils.trace of C
         # Clamp to its proper domain to avoid NaNs from rounding errors
@@ -222,16 +223,17 @@ class SO3(_base.SpecialOrthogonalBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+
         if len(small_angle_inds) > 0:
             phi[small_angle_inds, :] = \
                 self.vee(mat[small_angle_inds] -
-                         torch.eye(self.dim).expand_as(mat[small_angle_inds]))
+                         torch.eye(self.dim, dtype=mat.dtype).expand_as(mat[small_angle_inds]))
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
-
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             sin_angle = angle.sin()
@@ -249,7 +251,7 @@ class SO3(_base.SpecialOrthogonalBase):
         s = angle_in_radians.sin()
         c = angle_in_radians.cos()
 
-        mat = angle_in_radians.__class__(
+        mat = angle_in_radians.new_empty(
             angle_in_radians.shape[0], cls.dim, cls.dim).zero_()
         mat[:, 0, 0] = 1.
         mat[:, 1, 1] = c
@@ -265,7 +267,7 @@ class SO3(_base.SpecialOrthogonalBase):
         s = angle_in_radians.sin()
         c = angle_in_radians.cos()
 
-        mat = angle_in_radians.__class__(
+        mat = angle_in_radians.new_empty(
             angle_in_radians.shape[0], cls.dim, cls.dim).zero_()
         mat[:, 1, 1] = 1.
         mat[:, 0, 0] = c
@@ -281,7 +283,7 @@ class SO3(_base.SpecialOrthogonalBase):
         s = angle_in_radians.sin()
         c = angle_in_radians.cos()
 
-        mat = angle_in_radians.__class__(
+        mat = angle_in_radians.new_empty(
             angle_in_radians.shape[0], cls.dim, cls.dim).zero_()
         mat[:, 2, 2] = 1.
         mat[:, 0, 0] = c
@@ -302,9 +304,9 @@ class SO3(_base.SpecialOrthogonalBase):
             R = self.mat
 
         qw = 0.5 * torch.sqrt(1. + R[:, 0, 0] + R[:, 1, 1] + R[:, 2, 2])
-        qx = qw.__class__(qw.shape)
-        qy = qw.__class__(qw.shape)
-        qz = qw.__class__(qw.shape)
+        qx = qw.new_empty(qw.shape)
+        qy = qw.new_empty(qw.shape)
+        qz = qw.new_empty(qw.shape)
 
         near_zero_mask = utils.isclose(qw, 0.)
 
@@ -312,7 +314,7 @@ class SO3(_base.SpecialOrthogonalBase):
             cond1_mask = near_zero_mask & \
                 (R[:, 0, 0] > R[:, 1, 1]).squeeze_() & \
                 (R[:, 0, 0] > R[:, 2, 2]).squeeze_()
-            cond1_inds = cond1_mask.nonzero().squeeze_()
+            cond1_inds = cond1_mask.nonzero().squeeze_(dim=1)
 
             if len(cond1_inds) > 0:
                 R_cond1 = R[cond1_inds]
@@ -324,7 +326,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 qz[cond1_inds] = (R_cond1[:, 0, 2] + R_cond1[:, 2, 0]) / d
 
             cond2_mask = near_zero_mask & (R[:, 1, 1] > R[:, 2, 2]).squeeze_()
-            cond2_inds = cond2_mask.nonzero().squeeze_()
+            cond2_inds = cond2_mask.nonzero().squeeze_(dim=1)
 
             if len(cond2_inds) > 0:
                 R_cond2 = R[cond2_inds]
@@ -336,7 +338,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 qz[cond2_inds] = (R_cond2[:, 2, 1] + R_cond2[:, 1, 2]) / d
 
             cond3_mask = near_zero_mask & (1 - cond1_mask) & (1 - cond2_mask)
-            cond3_inds = cond3_mask.nonzero().squeeze_()
+            cond3_inds = cond3_mask.nonzero().squeeze_(dim=1)
 
             if len(cond3_inds) > 0:
                 R_cond3 = R[cond3_inds]
@@ -349,7 +351,7 @@ class SO3(_base.SpecialOrthogonalBase):
                 qz[cond3_inds] = 0.25 * d
 
         far_zero_mask = 1 - near_zero_mask
-        far_zero_inds = far_zero_mask.nonzero().squeeze_()
+        far_zero_inds = far_zero_mask.nonzero().squeeze_(dim=1)
         if len(far_zero_inds) > 0:
             R_fz = R[far_zero_inds]
             d = 4. * qw[far_zero_inds]
@@ -383,17 +385,17 @@ class SO3(_base.SpecialOrthogonalBase):
 
         pitch = torch.atan2(-mat[:, 2, 0],
                             torch.sqrt(mat[:, 0, 0]**2 + mat[:, 1, 0]**2))
-        yaw = pitch.__class__(pitch.shape)
-        roll = pitch.__class__(pitch.shape)
+        yaw = pitch.new_empty(pitch.shape)
+        roll = pitch.new_empty(pitch.shape)
 
         near_pi_over_two_mask = utils.isclose(pitch, np.pi / 2.)
-        near_pi_over_two_inds = near_pi_over_two_mask.nonzero().squeeze_()
+        near_pi_over_two_inds = near_pi_over_two_mask.nonzero().squeeze_(dim=1)
 
         near_neg_pi_over_two_mask = utils.isclose(pitch, -np.pi / 2.)
-        near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero().squeeze_()
+        near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero().squeeze_(dim=1)
 
         remainder_inds = (1 - (near_pi_over_two_mask |
-                               near_neg_pi_over_two_mask)).nonzero().squeeze_()
+                               near_neg_pi_over_two_mask)).nonzero().squeeze_(dim=1)
 
         if len(near_pi_over_two_inds) > 0:
             yaw[near_pi_over_two_inds] = 0.
@@ -428,7 +430,7 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError("Phi must have shape ({},{}) or (N,{},{})".format(
                 cls.dim, cls.dim, cls.dim, cls.dim))
 
-        phi = Phi.__class__(Phi.shape[0], cls.dim)
+        phi = Phi.new_empty(Phi.shape[0], cls.dim)
         phi[:, 0] = Phi[:, 2, 1]
         phi[:, 1] = Phi[:, 0, 2]
         phi[:, 2] = Phi[:, 1, 0]
@@ -443,7 +445,7 @@ class SO3(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Phi = phi.__class__(phi.shape[0], cls.dim, cls.dim).zero_()
+        Phi = phi.new_empty(phi.shape[0], cls.dim, cls.dim).zero_()
         Phi[:, 0, 1] = -phi[:, 2]
         Phi[:, 1, 0] = phi[:, 2]
         Phi[:, 0, 2] = phi[:, 1]

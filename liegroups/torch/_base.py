@@ -115,7 +115,7 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
 
         # The transpose of each matrix in the batch should be its inverse
         inv_check = utils.isclose(mat.transpose(2, 1).bmm(mat),
-                                  torch.eye(cls.dim)).sum(dim=1).sum(dim=1) \
+                                  torch.eye(cls.dim, dtype=mat.dtype)).sum(dim=1).sum(dim=1) \
             == cls.dim * cls.dim
 
         return shape_check & det_check & inv_check
@@ -183,7 +183,7 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
 
         t = t.unsqueeze(dim=2)  # N x self.dim-1 x 1
 
-        bottom_row = self.trans.__class__(self.dim).zero_()
+        bottom_row = self.trans.new_zeros(self.dim)
         bottom_row[-1] = 1.
         bottom_row = bottom_row.unsqueeze_(dim=0).unsqueeze_(
             dim=1).expand(R.shape[0], 1, self.dim)
@@ -354,7 +354,7 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
             shape_check.fill_(True)
 
         # Bottom row should be [zeros, 1]
-        bottom_row = mat.__class__(cls.dim).zero_()
+        bottom_row = mat.new_zeros(cls.dim)
         bottom_row[-1] = 1.
         bottom_check = (mat[:, cls.dim - 1, :] == bottom_row.unsqueeze_(
             dim=0).expand(mat.shape[0], cls.dim)).sum(dim=1) == cls.dim

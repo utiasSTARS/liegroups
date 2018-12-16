@@ -40,7 +40,7 @@ class SO2(_base.SpecialOrthogonalBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = torch.eye(cls.dim).expand(
@@ -49,7 +49,7 @@ class SO2(_base.SpecialOrthogonalBase):
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
@@ -77,7 +77,7 @@ class SO2(_base.SpecialOrthogonalBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_()
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = torch.eye(cls.dim).expand(
@@ -86,7 +86,7 @@ class SO2(_base.SpecialOrthogonalBase):
 
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
-        large_angle_inds = large_angle_mask.nonzero().squeeze_()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
@@ -140,7 +140,7 @@ class SO2(_base.SpecialOrthogonalBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Phi = phi.__class__(phi.shape[0], cls.dim, cls.dim).zero_()
+        Phi = phi.new_zeros(phi.shape[0], cls.dim, cls.dim)
         Phi[:, 0, 1] = -phi
         Phi[:, 1, 0] = phi
-        return Phi.squeeze_()
+        return Phi

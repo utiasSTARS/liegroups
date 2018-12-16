@@ -22,11 +22,11 @@ class SE2(_base.SpecialEuclideanBase):
         else:
             trans = self.trans
 
-        trans_part = trans.__class__(trans.shape[0], trans.shape[1], 1)
+        trans_part = trans.new_empty(trans.shape[0], trans.shape[1], 1)
         trans_part[:, 0, :] = trans[:, 1]
         trans_part[:, 1, :] = -trans[:, 0]
 
-        bottom_row = trans.__class__(self.dof).zero_()
+        bottom_row = trans.new_zeros(self.dof)
         bottom_row[-1] = 1.
         bottom_row = bottom_row.unsqueeze_(dim=0).unsqueeze_(
             dim=0).expand(trans.shape[0], 1, self.dof)
@@ -136,7 +136,7 @@ class SE2(_base.SpecialEuclideanBase):
             raise ValueError("Xi must have shape ({},{}) or (N,{},{})".format(
                 cls.dim, cls.dim, cls.dim, cls.dim))
 
-        xi = Xi.__class__(Xi.shape[0], cls.dof)
+        xi = Xi.new_empty(Xi.shape[0], cls.dof)
         xi[:, 0:2] = Xi[:, 0:2, 2]
         xi[:, 2] = cls.RotationType.vee(Xi[:, 0:2, 0:2])
 
@@ -151,7 +151,7 @@ class SE2(_base.SpecialEuclideanBase):
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
-        Xi = xi.__class__(xi.shape[0], cls.dim, cls.dim).zero_()
+        Xi = xi.new_zeros(xi.shape[0], cls.dim, cls.dim)
         Xi[:, 0:2, 0:2] = cls.RotationType.wedge(xi[:, 2])
         Xi[:, 0:2, 2] = xi[:, 0:2]
 
