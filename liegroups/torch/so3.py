@@ -237,7 +237,6 @@ class SO3(_base.SpecialOrthogonalBase):
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             sin_angle = angle.sin()
-
             phi[large_angle_inds, :] = \
                 self.vee(
                     (0.5 * angle / sin_angle).unsqueeze_(dim=1).unsqueeze_(dim=1).expand_as(mat[large_angle_inds]) *
@@ -357,7 +356,7 @@ class SO3(_base.SpecialOrthogonalBase):
             d = 4. * qw[far_zero_inds]
             qx[far_zero_inds] = (R_fz[:, 2, 1] - R_fz[:, 1, 2]) / d
             qy[far_zero_inds] = (R_fz[:, 0, 2] - R_fz[:, 2, 0]) / d
-            qz[far_zero_inds] = (R_fz[:, 2, 1] - R_fz[:, 1, 2]) / d
+            qz[far_zero_inds] = (R_fz[:, 1, 0] - R_fz[:, 0, 1]) / d
 
         # Check ordering last
         if ordering is 'xyzw':
