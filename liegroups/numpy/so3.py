@@ -292,7 +292,7 @@ class SO3(_base.SpecialOrthogonalBase):
             d = 4. * qw
             qx = (R[2, 1] - R[1, 2]) / d
             qy = (R[0, 2] - R[2, 0]) / d
-            qz = (R[2, 1] - R[1, 2]) / d
+            qz = (R[1, 0] - R[0, 1]) / d
 
         # Check ordering last
         if ordering is 'xyzw':
