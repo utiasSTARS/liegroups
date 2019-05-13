@@ -1,4 +1,8 @@
-from abc import ABC, abstractmethod
+try:
+    from abc import ABC, abstractmethod
+except ImportError:  # support for python 2.7
+    from abc import ABCMeta as ABC
+    from abc import abstractmethod
 
 
 class LieGroupBase(ABC):
