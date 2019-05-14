@@ -169,7 +169,7 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
     """Implementation of methods common to SE(N) using PyTorch"""
 
     def __init__(self, rot, trans):
-        super().__init__(rot, trans)
+        super(SpecialEuclideanBase, self).__init__(rot, trans)
 
     def as_matrix(self):
         R = self.rot.as_matrix()
