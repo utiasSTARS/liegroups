@@ -135,7 +135,6 @@ class LieGroupBase(with_metaclass(ABC)):
         pass
 
 
-# class SpecialOrthogonalBase(LieGroupBase, ABC):
 class SpecialOrthogonalBase(LieGroupBase, with_metaclass(ABC)):
     """Common abstract _base class for Special Orthogonal groups SO(N)."""
     def __init__(self, mat):
