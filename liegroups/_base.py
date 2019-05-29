@@ -1,8 +1,14 @@
-from abc import ABC, abstractmethod
+from abc import ABCMeta as ABC
+from abc import abstractmethod
+
+# support for both python 2 and 3
+from future.utils import with_metaclass
 
 
-class LieGroupBase(ABC):
+# class LieGroupBase(ABC):
+class LieGroupBase(with_metaclass(ABC)):
     """Common abstract _base class for Lie groups."""
+
     @abstractmethod
     def __init__(self):
         pass
@@ -129,12 +135,11 @@ class LieGroupBase(ABC):
         pass
 
 
-class SpecialOrthogonalBase(LieGroupBase, ABC):
+class SpecialOrthogonalBase(LieGroupBase, with_metaclass(ABC)):
     """Common abstract _base class for Special Orthogonal groups SO(N)."""
-
     def __init__(self, mat):
         """Create a transformation from a rotation matrix (unsafe, but faster)."""
-        super().__init__()
+        super(SpecialOrthogonalBase, self).__init__()
 
         self.mat = mat
         """Storage for the transformation matrix."""
@@ -152,12 +157,11 @@ class SpecialOrthogonalBase(LieGroupBase, ABC):
         self.mat = self.__class__.exp(phi).dot(self).mat
 
 
-class SpecialEuclideanBase(LieGroupBase, ABC):
+class SpecialEuclideanBase(LieGroupBase, with_metaclass(ABC)):
     """Common abstract _base class for Special Euclidean groups SE(N)."""
-
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)"""
-        super().__init__()
+        super(SpecialEuclideanBase, self).__init__()
 
         self.rot = rot
         """Storage for the rotation matrix."""
