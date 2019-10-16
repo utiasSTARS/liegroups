@@ -118,7 +118,57 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[0:3]
         phi = xi[3:6]
         return cls(cls.RotationType.exp(phi),
-                   cls.RotationType.left_jacobian(phi).dot(rho))
+                   cls.RotationType.left_jacobian(phi).dot(rho))@classmethod
+
+    @classmethod
+    def from_dual_quaternion(cls, dual_quat, ordering='wxyz'):
+        """Form a transformation matrix from a dual quaternion.
+
+        Valid orderings are 'xyzw' and 'wxyz'.
+
+        .. math::
+            \\mathbf{C} =
+            \\begin{bmatrix}
+                1 - 2 (y^2 + z^2) & 2 (xy - wz) & 2 (wy + xz) & 2d_x\\\\
+                2 (wz + xy) & 1 - 2 (x^2 + z^2) & 2 (yz - wx) & 2d_y\\\\
+                2 (xz - wy) & 2 (wx + yz) & 1 - 2 (x^2 + y^2) & 2d_z\\\\
+                0 & 0 & 0 & 1
+            \\end{bmatrix}
+        """
+        if ordering is 'xyzw':
+            dx, dy, dz, dw = dual_quat[4:]
+        elif ordering is 'wxyz':
+            dw, dx, dy, dz = dual_quat[4:]
+        else:
+            raise ValueError(
+                "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+        # Form the transformation matrix matrix
+        t = 2.*np.array([dx, dy, dz])
+        R = SO3.from_quaternion(dual_quat[0:4], ordering=ordering).as_matrix()
+        return cls(R, t)
+
+    @classmethod
+    def from_study_parameters(cls, study, ordering='wxyz'):
+        """Form a transformation matrix from Study parameters.
+        Assumes 'wxyz' ordering and that this is not the 'exceptional generator' (i.e. at least 1 of the four rotation
+        elements is nonzero).
+        """
+        delta = sum(study[0:4]**2)
+        if delta <= 0.:
+            raise ValueError("First four elements cannot be uniformly zero.")
+        if ordering=='wxyz':
+            x0, x1, x2, x3 = study[0:4]
+            y0, y1, y2, y3 = study[4:]
+        else:
+            raise ValueError(
+                "Valid ordering is 'wxyz'. Got '{}'.".format(ordering))
+        q = study[0:4]
+        R = SO3.from_quaternion(q, ordering=ordering).as_matrix()/delta
+        p = -x0*y1 + x1*y0 - x2*y3 + x3*y2
+        q = -x0*y2 + x1*y3 + x2*y0 - x3*y1
+        r = -x0*y3 - x1*y2 + x2*y1 + x3*y0
+        t = 2.*np.array([p, q, r])/delta
+        return cls(R, t)
 
     @classmethod
     def left_jacobian_Q_matrix(cls, xi):
