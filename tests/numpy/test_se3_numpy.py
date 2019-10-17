@@ -127,3 +127,11 @@ def test_transform_vectorized():
     assert np.allclose(Tpt2, Tpts12[1])
     assert np.allclose(Tpt3, Tpts34[0])
     assert np.allclose(Tpt4, Tpts34[1])
+
+
+def test_dual_quaternion():
+    T = SE3.exp([1, 2, 3, 4, 5, 6])
+    q = T.to_dual_quaternion()
+    T2 = SE3.from_dual_quaternion(q)
+    assert np.allclose(T2.as_matrix(), T.as_matrix())
+

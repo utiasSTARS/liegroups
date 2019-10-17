@@ -118,7 +118,7 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[0:3]
         phi = xi[3:6]
         return cls(cls.RotationType.exp(phi),
-                   cls.RotationType.left_jacobian(phi).dot(rho))@classmethod
+                   cls.RotationType.left_jacobian(phi).dot(rho))
 
     @classmethod
     def from_dual_quaternion(cls, dual_quat, ordering='wxyz'):
@@ -144,7 +144,7 @@ class SE3(_base.SpecialEuclideanBase):
                 "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
         # Form the transformation matrix matrix
         t = 2.*np.array([dx, dy, dz])
-        R = SO3.from_quaternion(dual_quat[0:4], ordering=ordering).as_matrix()
+        R = SO3.from_quaternion(dual_quat[0:4], ordering=ordering)
         return cls(R, t)
 
     @classmethod
@@ -162,8 +162,11 @@ class SE3(_base.SpecialEuclideanBase):
         else:
             raise ValueError(
                 "Valid ordering is 'wxyz'. Got '{}'.".format(ordering))
-        q = study[0:4]
-        R = SO3.from_quaternion(q, ordering=ordering).as_matrix()/delta
+        study_quadric_constraint = x0*y0 + x1*y1 + x2*y2 + x3*y3
+        if not np.isclose(study_quadric_constraint, 0.):
+            raise ValueError("Study quadric constraint must be satsified")
+        q = study[0:4]/np.sqrt(delta)
+        R = SO3.from_quaternion(q, ordering=ordering).as_matrix()
         p = -x0*y1 + x1*y0 - x2*y3 + x3*y2
         q = -x0*y2 + x1*y3 + x2*y0 - x3*y1
         r = -x0*y3 - x1*y2 + x2*y1 + x3*y0
@@ -357,6 +360,35 @@ class SE3(_base.SpecialEuclideanBase):
                 cls.dim - 1, cls.dim, cls.dim - 1, cls.dim))
 
         return np.squeeze(result)
+
+    def to_dual_quaternion(self, ordering='wxyz'):
+        """Convert a transformation matrix to a dual quaternion.
+
+           Valid orderings are 'xyzw' and 'wxyz'.
+        """
+        so3_obj = SO3(self.rot.as_matrix())
+        q = so3_obj.to_quaternion(ordering)
+        dx, dy, dz = 0.5*self.trans
+        # Check ordering
+        if ordering is 'xyzw':
+            if np.abs(q[3]) > 0:
+                dw = -np.dot(q[0:3], np.array([dx, dy, dz])) / q[3]
+                dual_part = np.array([dx, dy, dz, dw])
+            else:
+                raise ValueError(
+                    "Quaternion real part must be non-zero (i.e. no rotations by pi rad)")
+        elif ordering is 'wxyz':
+            if np.abs(q[0]) > 0:
+                dw = -np.dot(q[1:4], np.array([dx, dy, dz])) / q[0]
+                dual_part = np.array([dw, dx, dy, dz])
+            else:
+                raise ValueError(
+                    "Quaternion real part must be non-zero (i.e. no rotations by pi rad)")
+        else:
+            raise ValueError(
+                "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+        dual_quat = np.append(q, dual_part)
+        return dual_quat
 
     @classmethod
     def vee(cls, Xi):
