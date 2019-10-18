@@ -48,9 +48,24 @@ def matrix_to_quaternion(R, ordering='wxyz'):
 def quaternion_to_matrix(q, ordering='wxyz'):
     """Convert a unit quaternion to a rotation matrix.
 
-    Valid orderings are 'xyzw' and 'wxyz'.
+       Valid orderings are 'xyzw' and 'wxyz'.
     """
     return SO3.from_quaternion(q, ordering).as_matrix()
+
+def quat_conj(q, ordering='wxyz'):
+    """Conjugate of a quaternion.
+
+       Valid orderings are 'xyzw' and 'wxyz'.
+    """
+    q_out = q.copy()
+    if ordering is 'xyzw':
+        q_out[0:3] = -q_out[0:3]
+    elif ordering is 'wxyz':
+        q_out[1:] = -q_out[1:]
+    else:
+        raise ValueError(
+            "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+    return q_out
 
 
 def quat_mult(q1, q2, ordering='wxyz'):
@@ -182,7 +197,7 @@ def quat_right_mult_matrix(q, ordering='wxyz'):
 
     return Q_right
 
-def quat_rotate(q, v, ordering):
+def quat_rotate(q, v, ordering='wxyz'):
     """Rotate a 3 dim vector with a quaternion.
 
         Valid orderings are 'xyzw' and 'wxyz'.
@@ -203,4 +218,9 @@ def quat_rotate(q, v, ordering):
         return v_rot[1:4]
 
 if __name__ == '__main__':
-    pass
+    q = np.random.rand(4)
+    q = q/np.linalg.norm(q)
+
+    print(q)
+    print(quat_conj(q))
+    print(q)

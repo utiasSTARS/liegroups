@@ -377,8 +377,6 @@ class SE3(_base.SpecialEuclideanBase):
             raise ValueError(
                 "Valid ordering is 'wxyz'. Got '{}'.".format(ordering))
 
-
-
     def to_dual_quaternion(self, ordering='wxyz'):
         """Convert a transformation matrix to a dual quaternion.
 
