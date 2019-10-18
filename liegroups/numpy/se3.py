@@ -361,6 +361,24 @@ class SE3(_base.SpecialEuclideanBase):
 
         return np.squeeze(result)
 
+    @classmethod
+    def quat_mult(cls, q1, q2, ordering='wxyz'):
+        """Multiply two quaternions.
+
+           Valid orderings are 'xyzw' and 'wxyz'.
+        """
+        if ordering is 'xyzw':
+            x1, y1, z1, w1 = q1
+            x2, y2, z2, w2 = q2
+        elif ordering is 'wxyz':
+            w1, x1, y1, z1 = q1
+            w2, x2, y2, z2 = q2
+        else:
+            raise ValueError(
+                "Valid ordering is 'wxyz'. Got '{}'.".format(ordering))
+
+
+
     def to_dual_quaternion(self, ordering='wxyz'):
         """Convert a transformation matrix to a dual quaternion.
 

@@ -130,6 +130,7 @@ def test_transform_vectorized():
 
 
 def test_dual_quaternion():
+    # TODO: Fix implementation of to/from_dual_quaternion()!!!
     T = SE3.exp([1, 2, 3, 4, 5, 6])
     q = T.to_dual_quaternion()
     T2 = SE3.from_dual_quaternion(q)
