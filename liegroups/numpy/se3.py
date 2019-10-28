@@ -1,10 +1,10 @@
 import numpy as np
 
-from liegroups.numpy import _base
-from liegroups.numpy.so3 import SO3
+from . import _base
+from .so3 import SO3Matrix
 
 
-class SE3(_base.SpecialEuclideanBase):
+class SE3Matrix(_base.SEMatrixBase):
     """Homogeneous transformation matrix in :math:`SE(3)` using active (alibi) transformations.
 
     .. math::
@@ -18,18 +18,18 @@ class SE3(_base.SpecialEuclideanBase):
          \\boldsymbol{\\xi}=
             \\begin{bmatrix}
                 \\boldsymbol{\\rho} \\\\ \\boldsymbol{\\phi}
-            \\end{bmatrix} \\in \\mathbb{R}^6, \\boldsymbol{\\rho} \\in \\mathbb{R}^3, \\boldsymbol{\\phi} \in \\mathbb{R}^3 \\right\\}
+            \\end{bmatrix} \\in \\mathbb{R}^6, \\boldsymbol{\\rho} \\in \\mathbb{R}^3, \\boldsymbol{\\phi} \\in \\mathbb{R}^3 \\right\\}
 
     :cvar ~liegroups.SE2.dim: Dimension of the rotation matrix.
     :cvar ~liegroups.SE2.dof: Underlying degrees of freedom (i.e., dimension of the tangent space).
-    :ivar rot: Storage for the rotation matrix :math:`\mathbf{C}`.
-    :ivar trans: Storage for the translation vector :math:`\mathbf{r}`.
+    :ivar rot: Storage for the rotation matrix :math:`\\mathbf{C}`.
+    :ivar trans: Storage for the translation vector :math:`\\mathbf{r}`.
     """
     dim = 4
     """Dimension of the transformation matrix."""
     dof = 6
     """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
-    RotationType = SO3
+    RotationType = SO3Matrix
 
     def adjoint(self):
         """Adjoint matrix of the transformation.
@@ -151,8 +151,8 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[0:3]  # translation part
         phi = xi[3:6]  # rotation part
 
-        rx = SO3.wedge(rho)
-        px = SO3.wedge(phi)
+        rx = cls.RotationType.wedge(rho)
+        px = cls.RotationType.wedge(phi)
 
         ph = np.linalg.norm(phi)
         ph2 = ph * ph
@@ -195,7 +195,7 @@ class SE3(_base.SpecialEuclideanBase):
         if np.isclose(np.linalg.norm(phi), 0.):
             return np.identity(cls.dof) - 0.5 * cls.curlywedge(xi)
 
-        so3_inv_jac = SO3.inv_left_jacobian(phi)
+        so3_inv_jac = cls.RotationType.inv_left_jacobian(phi)
         Q_mat = cls.left_jacobian_Q_matrix(xi)
 
         jac = np.zeros([cls.dof, cls.dof])
@@ -225,7 +225,7 @@ class SE3(_base.SpecialEuclideanBase):
         if np.isclose(np.linalg.norm(phi), 0.):
             return np.identity(cls.dof) + 0.5 * cls.curlywedge(xi)
 
-        so3_jac = SO3.left_jacobian(phi)
+        so3_jac = cls.RotationType.left_jacobian(phi)
         Q_mat = cls.left_jacobian_Q_matrix(xi)
 
         jac = np.zeros([cls.dof, cls.dof])

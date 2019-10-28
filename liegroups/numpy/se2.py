@@ -1,10 +1,10 @@
 import numpy as np
 
-from liegroups.numpy import _base
-from liegroups.numpy.so2 import SO2
+from . import _base
+from .so2 import SO2Matrix
 
 
-class SE2(_base.SpecialEuclideanBase):
+class SE2Matrix(_base.SEMatrixBase):
     """Homogeneous transformation matrix in :math:`SE(2)` using active (alibi) transformations.
 
     .. math::
@@ -29,7 +29,7 @@ class SE2(_base.SpecialEuclideanBase):
     """Dimension of the transformation matrix."""
     dof = 3
     """Underlying degrees of freedom (i.e., dimension of the tangent space)."""
-    RotationType = SO2
+    RotationType = SO2Matrix
 
     def adjoint(self):
         """Adjoint matrix of the transformation.

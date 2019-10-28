@@ -1,15 +1,15 @@
 import torch
 
-from liegroups.torch import _base
-from liegroups.torch import utils
-from liegroups.torch.so3 import SO3
+from . import _base
+from . import utils
+from .so3 import SO3Matrix
 
 
-class SE3(_base.SpecialEuclideanBase):
+class SE3Matrix(_base.SEMatrixBase):
     """See :mod:`liegroups.SE3` """
     dim = 4
     dof = 6
-    RotationType = SO3
+    RotationType = SO3Matrix
 
     def adjoint(self):
         rot = self.rot.as_matrix()
@@ -100,11 +100,11 @@ class SE3(_base.SpecialEuclideanBase):
         rho = xi[:, :3]  # translation part
         phi = xi[:, 3:]  # rotation part
 
-        rx = SO3.wedge(rho)
+        rx = cls.RotationType.wedge(rho)
         if rx.dim() < 3:
             rx.unsqueeze_(dim=0)
 
-        px = SO3.wedge(phi)
+        px = cls.RotationType.wedge(phi)
         if px.dim() < 3:
             px.unsqueeze_(dim=0)
 
@@ -154,8 +154,8 @@ class SE3(_base.SpecialEuclideanBase):
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
-            
-            #Create an identity matrix with a tensor type that matches the input
+
+            # Create an identity matrix with a tensor type that matches the input
             I = phi.new_empty(cls.dof, cls.dof)
             torch.eye(cls.dof, out=I)
 
@@ -168,7 +168,8 @@ class SE3(_base.SpecialEuclideanBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
-            so3_inv_jac = SO3.inv_left_jacobian(phi[large_angle_inds])
+            so3_inv_jac = cls.RotationType.inv_left_jacobian(
+                phi[large_angle_inds])
             if so3_inv_jac.dim() < 3:
                 so3_inv_jac.unsqueeze_(dim=0)
 
@@ -204,7 +205,7 @@ class SE3(_base.SpecialEuclideanBase):
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
         if len(small_angle_inds) > 0:
-            #Create an identity matrix with a tensor type that matches the input
+            # Create an identity matrix with a tensor type that matches the input
             I = phi.new_empty(cls.dof, cls.dof)
             torch.eye(cls.dof, out=I)
 
@@ -217,7 +218,7 @@ class SE3(_base.SpecialEuclideanBase):
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
-            so3_jac = SO3.left_jacobian(phi[large_angle_inds])
+            so3_jac = cls.RotationType.left_jacobian(phi[large_angle_inds])
             if so3_jac.dim() < 3:
                 so3_jac.unsqueeze_(dim=0)
 

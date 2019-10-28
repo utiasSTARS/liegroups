@@ -1,37 +1,25 @@
-from abc import ABCMeta as ABC
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 
 # support for both python 2 and 3
 from future.utils import with_metaclass
 
 
-# class LieGroupBase(ABC):
-class LieGroupBase(with_metaclass(ABC)):
-    """Common abstract _base class for Lie groups."""
+class LieGroupBase(with_metaclass(ABCMeta)):
+    """Common abstract base class for Lie groups."""
 
     @abstractmethod
     def __init__(self):
         pass
 
+    @abstractmethod
     def __repr__(self):
-        """Return a string representation of the transformation."""
-        return "<{}.{}>\n{}".format(self.__class__.__module__, self.__class__.__name__, self.as_matrix()).replace("\n", "\n| ")
-
-    @abstractmethod
-    def adjoint(self):
-        """Return the adjoint matrix of the transformation."""
-        pass
-
-    @abstractmethod
-    def as_matrix(self):
-        """Return the matrix representation of the transformation."""
         pass
 
     @property
     @classmethod
     @abstractmethod
     def dim(cls):
-        """Dimension of the transformation matrix."""
+        """Dimension of the underlying representation."""
         pass
 
     @property
@@ -60,12 +48,6 @@ class LieGroupBase(with_metaclass(ABC)):
 
     @classmethod
     @abstractmethod
-    def from_matrix(cls, mat, normalize=False):
-        """Create a transformation from a matrix (safe, but slower)."""
-        pass
-
-    @classmethod
-    @abstractmethod
     def identity(cls):
         """Return the identity transformation."""
         pass
@@ -73,6 +55,53 @@ class LieGroupBase(with_metaclass(ABC)):
     @abstractmethod
     def inv(self):
         """Return the inverse transformation."""
+        pass
+
+    @abstractmethod
+    def log(self):
+        """Logarithmic map for the group.
+
+        Computes a tangent vector from a transformation.
+
+        This is the inverse operation to exp.
+        """
+        pass
+
+    @abstractmethod
+    def normalize(self):
+        """Normalize the group element to ensure it is valid and
+        negate the effect of rounding errors.
+        """
+        pass
+
+    @abstractmethod
+    def perturb(self, vec):
+        """Perturb the group element on the left by a vector in its local tangent space.
+        """
+        pass
+
+
+class MatrixLieGroupBase(LieGroupBase, with_metaclass(ABCMeta)):
+    """Common abstract base class for Matrix Lie Groups."""
+
+    def __repr__(self):
+        """Return a string representation of the transformation."""
+        return "<{}.{}>\n{}".format(self.__class__.__module__, self.__class__.__name__, self.as_matrix()).replace("\n", "\n| ")
+
+    @abstractmethod
+    def adjoint(self):
+        """Return the adjoint matrix of the transformation."""
+        pass
+
+    @abstractmethod
+    def as_matrix(self):
+        """Return the matrix representation of the transformation."""
+        pass
+
+    @classmethod
+    @abstractmethod
+    def from_matrix(cls, mat, normalize=False):
+        """Create a transformation from a matrix (safe, but slower)."""
         pass
 
     @classmethod
@@ -91,29 +120,6 @@ class LieGroupBase(with_metaclass(ABC)):
     @abstractmethod
     def left_jacobian(cls, vec):
         """Left Jacobian for the group."""
-        pass
-
-    @abstractmethod
-    def log(self):
-        """Logarithmic map for the group.
-
-        Computes a tangent vector from a transformation.
-
-        This is the inverse operation to exp.
-        """
-        pass
-
-    @abstractmethod
-    def normalize(self):
-        """Normalize the transformation matrix to ensure it is valid and
-        negate the effect of rounding errors.
-        """
-        pass
-
-    @abstractmethod
-    def perturb(self, vec):
-        """Perturb the transformation on the left by a vector in its local tangent space.
-        """
         pass
 
     @classmethod
@@ -135,14 +141,15 @@ class LieGroupBase(with_metaclass(ABC)):
         pass
 
 
-class SpecialOrthogonalBase(LieGroupBase, with_metaclass(ABC)):
-    """Common abstract _base class for Special Orthogonal groups SO(N)."""
+class SOMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
+    """Common abstract base class for Special Orthogonal Matrix Lie Groups SO(N)."""
+
     def __init__(self, mat):
         """Create a transformation from a rotation matrix (unsafe, but faster)."""
-        super(SpecialOrthogonalBase, self).__init__()
+        super(SOMatrixBase, self).__init__()
 
         self.mat = mat
-        """Storage for the transformation matrix."""
+        """Storage for the rotation matrix."""
 
     def as_matrix(self):
         """Return the matrix representation of the rotation."""
@@ -157,11 +164,12 @@ class SpecialOrthogonalBase(LieGroupBase, with_metaclass(ABC)):
         self.mat = self.__class__.exp(phi).dot(self).mat
 
 
-class SpecialEuclideanBase(LieGroupBase, with_metaclass(ABC)):
-    """Common abstract _base class for Special Euclidean groups SE(N)."""
+class SEMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
+    """Common abstract base class for Special Euclidean Matrix Lie Groups SE(N)."""
+
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)"""
-        super(SpecialEuclideanBase, self).__init__()
+        super(SEMatrixBase, self).__init__()
 
         self.rot = rot
         """Storage for the rotation matrix."""
@@ -190,3 +198,17 @@ class SpecialEuclideanBase(LieGroupBase, with_metaclass(ABC)):
     def RotationType(cls):
         """Rotation type."""
         pass
+
+
+class VectorLieGroupBase(LieGroupBase, with_metaclass(ABCMeta)):
+    """Common abstract base class for Lie Groups with vector parametrizations 
+    (complex, quaternions, dual quaternions)."""
+
+    def __init__(self, data):
+        super(VectorLieGroupBase, self).__init__()
+
+        self.data = data
+
+    def __repr__(self):
+        """Return a string representation of the transformation."""
+        return "<{}.{}>\n{}".format(self.__class__.__module__, self.__class__.__name__, self.data).replace("\n", "\n| ")

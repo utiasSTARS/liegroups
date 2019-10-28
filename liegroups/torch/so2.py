@@ -1,10 +1,10 @@
 import torch
 
-from liegroups.torch import _base
-from liegroups.torch import utils
+from . import _base
+from . import utils
 
 
-class SO2(_base.SpecialOrthogonalBase):
+class SO2Matrix(_base.SOMatrixBase):
     """See :mod:`liegroups.SO2`"""
     dim = 2
     dof = 1

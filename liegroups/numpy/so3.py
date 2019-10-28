@@ -1,9 +1,9 @@
 import numpy as np
 
-from liegroups.numpy import _base
+from . import _base
 
 
-class SO3(_base.SpecialOrthogonalBase):
+class SO3Matrix(_base.SOMatrixBase):
     """Rotation matrix in :math:`SO(3)` using active (alibi) transformations.
 
     .. math::
@@ -12,7 +12,7 @@ class SO3(_base.SpecialOrthogonalBase):
 
     :cvar ~liegroups.SO3.dim: Dimension of the rotation matrix.
     :cvar ~liegroups.SO3.dof: Underlying degrees of freedom (i.e., dimension of the tangent space).
-    :ivar mat: Storage for the rotation matrix :math:`\mathbf{C}`.
+    :ivar mat: Storage for the rotation matrix :math:`\\mathbf{C}`.
     """
     dim = 3
     """Dimension of the transformation matrix."""
@@ -34,9 +34,9 @@ class SO3(_base.SpecialOrthogonalBase):
 
         .. math::
             \\mathbf{C}(\\boldsymbol{\\phi}) =
-            \\exp(\\boldsymbol{\\phi}^\wedge) =
+            \\exp(\\boldsymbol{\\phi}^\\wedge) =
             \\begin{cases}
-                \\mathbf{1} + \\boldsymbol{\\phi}^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} + \\boldsymbol{\\phi}^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\cos \\phi \\mathbf{1} +
                 (1 - \\cos \\phi) \\mathbf{a}\\mathbf{a}^T +
                 \\sin \\phi \\mathbf{a}^\\wedge, & \\text{otherwise}
@@ -124,7 +124,7 @@ class SO3(_base.SpecialOrthogonalBase):
         .. math::
             \\mathbf{J}^{-1}(\\boldsymbol{\\phi}) =
             \\begin{cases}
-                \\mathbf{1} - \\frac{1}{2} \\boldsymbol{\\phi}^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} - \\frac{1}{2} \\boldsymbol{\\phi}^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\frac{\\phi}{2} \\cot \\frac{\\phi}{2} \\mathbf{1} +
                 \\left( 1 - \\frac{\\phi}{2} \\cot \\frac{\\phi}{2} \\right) \\mathbf{a}\\mathbf{a}^T -
                 \\frac{\\phi}{2} \\mathbf{a}^\\wedge, & \\text{otherwise}
@@ -154,7 +154,7 @@ class SO3(_base.SpecialOrthogonalBase):
         .. math::
             \\mathbf{J}(\\boldsymbol{\\phi}) =
             \\begin{cases}
-                \\mathbf{1} + \\frac{1}{2} \\boldsymbol{\\phi}^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} + \\frac{1}{2} \\boldsymbol{\\phi}^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\frac{\\sin \\phi}{\\phi} \\mathbf{1} +
                 \\left(1 - \\frac{\\sin \\phi}{\\phi} \\right) \\mathbf{a}\\mathbf{a}^T +
                 \\frac{1 - \\cos \\phi}{\\phi} \\mathbf{a}^\\wedge, & \\text{otherwise}
@@ -185,7 +185,7 @@ class SO3(_base.SpecialOrthogonalBase):
             \\boldsymbol{\\phi}(\\mathbf{C}) &= 
             \\ln(\\mathbf{C})^\\vee =
             \\begin{cases}
-                \\mathbf{1} - \\boldsymbol{\\phi}^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} - \\boldsymbol{\\phi}^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\left( \\frac{1}{2} \\frac{\\phi}{\\sin \\phi} \\left( \\mathbf{C} - \\mathbf{C}^T \\right) \\right)^\\vee, & \\text{otherwise}
             \\end{cases}
 
@@ -375,3 +375,8 @@ class SO3(_base.SpecialOrthogonalBase):
         Phi[:, 1, 2] = -phi[:, 0]
         Phi[:, 2, 1] = phi[:, 0]
         return np.squeeze(Phi)
+
+
+class SO3Quaternion(_base.VectorLieGroupBase):
+    """Rotation in SO(3) using unit-length quaternions."""
+    pass

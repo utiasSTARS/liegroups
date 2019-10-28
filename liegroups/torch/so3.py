@@ -1,11 +1,11 @@
 import torch
 import numpy as np
 
-from liegroups.torch import _base
-from liegroups.torch import utils
+from . import _base
+from . import utils
 
 
-class SO3(_base.SpecialOrthogonalBase):
+class SO3Matrix(_base.SOMatrixBase):
     """See :mod:`liegroups.SO3`"""
     dim = 3
     dof = 3
@@ -28,7 +28,7 @@ class SO3(_base.SpecialOrthogonalBase):
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
-        
+
         if len(small_angle_inds) > 0:
             mat[small_angle_inds] = \
                 torch.eye(cls.dim, dtype=phi.dtype).expand_as(mat[small_angle_inds]) + \
@@ -37,7 +37,7 @@ class SO3(_base.SpecialOrthogonalBase):
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
-        
+
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             axis = phi[large_angle_inds] / \
@@ -233,7 +233,7 @@ class SO3(_base.SpecialOrthogonalBase):
         # Otherwise...
         large_angle_mask = 1 - small_angle_mask  # element-wise not
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
-        
+
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
             sin_angle = angle.sin()

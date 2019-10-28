@@ -1,12 +1,13 @@
 """Special Euclidean and Special Orthogonal Lie groups."""
 
-from liegroups.numpy import SO2
-from liegroups.numpy import SE2
-from liegroups.numpy import SO3
-from liegroups.numpy import SE3
+from .numpy import SO2 as SO2
+from .numpy import SE2 as SE2
+from .numpy import SO3 as SO3
+from .numpy import SE3 as SE3
+
 
 try:
-    import liegroups.torch
+    from . import torch
 except:
     pass
 

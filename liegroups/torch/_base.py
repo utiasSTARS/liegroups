@@ -1,12 +1,12 @@
 import torch
 import numpy as np  # for matrix determinant and SVD
 
-from liegroups import _base
-from liegroups.torch import utils
+from .. import _base
+from . import utils
 
 
-class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
-    """Implementation of methods common to SO(N) using PyTorch"""
+class SOMatrixBase(_base.SOMatrixBase):
+    """Implementation of methods common to SO(N) matrix lie groups using PyTorch"""
 
     def cpu(self):
         """Return a copy with the underlying tensor on the CPU."""
@@ -165,11 +165,11 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
         return self.__class__(self.mat.pin_memory())
 
 
-class SpecialEuclideanBase(_base.SpecialEuclideanBase):
-    """Implementation of methods common to SE(N) using PyTorch"""
+class SEMatrixBase(_base.SEMatrixBase):
+    """Implementation of methods common to SE(N) matrix lie groups using PyTorch"""
 
     def __init__(self, rot, trans):
-        super(SpecialEuclideanBase, self).__init__(rot, trans)
+        super(SEMatrixBase, self).__init__(rot, trans)
 
     def as_matrix(self):
         R = self.rot.as_matrix()

@@ -1,15 +1,15 @@
 import torch
 
-from liegroups.torch import _base
-from liegroups.torch import utils
-from liegroups.torch.so2 import SO2
+from . import _base
+from . import utils
+from .so2 import SO2Matrix
 
 
-class SE2(_base.SpecialEuclideanBase):
+class SE2Matrix(_base.SEMatrixBase):
     """See :mod:`liegroups.SE2`"""
     dim = 3
     dof = 3
-    RotationType = SO2
+    RotationType = SO2Matrix
 
     def adjoint(self):
         rot_part = self.rot.as_matrix()

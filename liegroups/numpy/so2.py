@@ -1,9 +1,9 @@
 import numpy as np
 
-from liegroups.numpy import _base
+from . import _base
 
 
-class SO2(_base.SpecialOrthogonalBase):
+class SO2Matrix(_base.SOMatrixBase):
     """Rotation matrix in :math:`SO(2)` using active (alibi) transformations.
 
     .. math::

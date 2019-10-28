@@ -1,10 +1,10 @@
 import numpy as np
 
-from liegroups import _base
+from .. import _base
 
 
-class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
-    """Implementation of methods common to SO(N) using Numpy"""
+class SOMatrixBase(_base.SOMatrixBase):
+    """Implementation of methods common to SO(N) matrix lie groups using Numpy"""
 
     def dot(self, other):
         """Multiply another rotation or one or more vectors on the left.
@@ -75,8 +75,8 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
         self.mat = U.dot(S).dot(V)
 
 
-class SpecialEuclideanBase(_base.SpecialEuclideanBase):
-    """Implementation of methods common to SE(N) using Numpy"""
+class SEMatrixBase(_base.SEMatrixBase):
+    """Implementation of methods common to SE(N) matrix lie groups using Numpy"""
 
     def as_matrix(self):
         """Return the matrix representation of the rotation."""
@@ -160,3 +160,8 @@ class SpecialEuclideanBase(_base.SpecialEuclideanBase):
         negate the effect of rounding errors.
         """
         self.rot.normalize()
+
+
+class VectorLieGroupBase(_base.VectorLieGroupBase):
+    """Implementation of methods common to vector-parametrized lie groups using Numpy"""
+    pass
