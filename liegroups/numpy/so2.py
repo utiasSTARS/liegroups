@@ -12,7 +12,7 @@ class SO2Matrix(_base.SOMatrixBase):
 
     :cvar ~liegroups.SO2.dim: Dimension of the rotation matrix.
     :cvar ~liegroups.SO2.dof: Underlying degrees of freedom (i.e., dimension of the tangent space).
-    :ivar mat: Storage for the rotation matrix :math:`\mathbf{C}`.
+    :ivar mat: Storage for the rotation matrix :math:`\\mathbf{C}`.
     """
     dim = 2
     """Dimension of the transformation matrix."""
@@ -63,7 +63,7 @@ class SO2Matrix(_base.SOMatrixBase):
         .. math::
             \\mathbf{J}^{-1}(\\phi) = 
             \\begin{cases}
-                \\mathbf{1} - \\frac{1}{2} \\phi^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} - \\frac{1}{2} \\phi^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\frac{\\phi}{2} \\cot \\frac{\\phi}{2} \\mathbf{1} -
                 \\frac{\\phi}{2} 1^\\wedge, & \\text{otherwise}
             \\end{cases}
@@ -84,7 +84,7 @@ class SO2Matrix(_base.SOMatrixBase):
         .. math::
             \\mathbf{J}(\\phi) = 
             \\begin{cases}
-                \\mathbf{1} + \\frac{1}{2} \\phi^\wedge, & \\text{if } \\phi \\text{ is small} \\\\
+                \\mathbf{1} + \\frac{1}{2} \\phi^\\wedge, & \\text{if } \\phi \\text{ is small} \\\\
                 \\frac{\\sin \\phi}{\\phi} \\mathbf{1} - 
                 \\frac{1 - \\cos \\phi}{\\phi} 1^\\wedge, & \\text{otherwise}
             \\end{cases}

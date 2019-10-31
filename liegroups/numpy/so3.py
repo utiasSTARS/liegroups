@@ -379,4 +379,52 @@ class SO3Matrix(_base.SOMatrixBase):
 
 class SO3Quaternion(_base.VectorLieGroupBase):
     """Rotation in SO(3) using unit-length quaternions (wxyz ordering)."""
-    pass
+
+    dim = 4
+    dof = 3
+
+    def from_array(self, arr, ordering='wxyz'):
+        if ordering is 'xyzw':
+            self.data = arr[[3, 0, 1, 2]]
+        elif ordering is 'wxyz':
+            self.data = arr
+        else:
+            raise ValueError(
+                "Valid orderings are 'xyzw' and 'wxyz'. Got '{}'.".format(ordering))
+
+    def dot(self, other):
+        """Multiply another rotation or one or more vectors on the left.
+        """
+        if isinstance(other, self.__class__):
+            # Compound with another rotation
+            pv = p[1:]
+            qv = q[1:]
+
+            r = np.hstack([p[0]*q[0] - np.dot(pv, qv),
+                           p[0]*qv + q[0]*pv + np.dot(skew(pv), qv)])
+            return 0
+        else:
+            other = np.atleast_2d(other)
+
+            # Transform one or more 2-vectors or fail
+            if other.shape[1] == self.dim:
+                return 0
+            else:
+                raise ValueError(
+                    "Vector must have shape ({},) or (N,{})".format(self.dim, self.dim))
+
+    @classmethod
+    def identity(cls):
+        """Return the identity rotation."""
+        return cls(np.array([1, 0, 0, 0]))
+
+    def inv(self):
+        """Return the inverse rotation:
+
+        .. math::
+            \\mathbf{C}^{-1} = \\mathbf{C}^T
+        """
+        inv = self.conjugate()
+        inv.data = inv.data / np.dot(inv.data, inv.data)
+
+        return inv

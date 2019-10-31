@@ -18,12 +18,12 @@ class SE2Matrix(_base.SEMatrixBase):
          \\boldsymbol{\\xi}=
             \\begin{bmatrix}
                 \\boldsymbol{\\rho} \\\\ \\phi
-            \\end{bmatrix} \\in \\mathbb{R}^3, \\boldsymbol{\\rho} \\in \\mathbb{R}^2, \\phi \in \\mathbb{R} \\right\\}
+            \\end{bmatrix} \\in \\mathbb{R}^3, \\boldsymbol{\\rho} \\in \\mathbb{R}^2, \\phi \\in \\mathbb{R} \\right\\}
 
     :cvar ~liegroups.SE2.dim: Dimension of the rotation matrix.
     :cvar ~liegroups.SE2.dof: Underlying degrees of freedom (i.e., dimension of the tangent space).
-    :ivar rot: Storage for the rotation matrix :math:`\mathbf{C}`.
-    :ivar trans: Storage for the translation vector :math:`\mathbf{r}`.
+    :ivar rot: Storage for the rotation matrix :math:`\\mathbf{C}`.
+    :ivar trans: Storage for the translation vector :math:`\\mathbf{r}`.
     """
     dim = 3
     """Dimension of the transformation matrix."""
