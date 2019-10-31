@@ -164,4 +164,9 @@ class SEMatrixBase(_base.SEMatrixBase):
 
 class VectorLieGroupBase(_base.VectorLieGroupBase):
     """Implementation of methods common to vector-parametrized lie groups using Numpy"""
-    pass
+
+    def normalize(self):
+        self.data = self.data / np.linalg.norm(self.data)
+
+    def conjugate(self):
+        return self.__class__(np.hstack([self.data[0], -self.data[1:]]))

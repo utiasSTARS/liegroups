@@ -17,6 +17,9 @@ class SO2Matrix(_base.SOMatrixBase):
 
     @classmethod
     def exp(cls, phi):
+        if phi.dim() < 1:
+            phi = phi.unsqueeze(dim=0)
+
         s = phi.sin()
         c = phi.cos()
 
@@ -36,6 +39,9 @@ class SO2Matrix(_base.SOMatrixBase):
     @classmethod
     def inv_left_jacobian(cls, phi):
         """(see Barfoot/Eade)."""
+        if phi.dim() < 1:
+            phi = phi.unsqueeze(dim=0)
+
         jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
 
         # Near phi==0, use first order Taylor expansion
@@ -48,7 +54,7 @@ class SO2Matrix(_base.SOMatrixBase):
                 - 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -73,6 +79,9 @@ class SO2Matrix(_base.SOMatrixBase):
     @classmethod
     def left_jacobian(cls, phi):
         """(see Barfoot/Eade)."""
+        if phi.dim() < 1:
+            phi = phi.unsqueeze(dim=0)
+
         jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
 
         # Near phi==0, use first order Taylor expansion
@@ -85,7 +94,7 @@ class SO2Matrix(_base.SOMatrixBase):
                 + 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -133,6 +142,8 @@ class SO2Matrix(_base.SOMatrixBase):
 
     @classmethod
     def wedge(cls, phi):
+        if phi.dim() < 1:
+            phi = phi.unsqueeze(dim=0)  # scalar --> vector
         if phi.dim() < 2:
             phi = phi.unsqueeze(dim=1)  # vector --> matrix (N --> Nx1)
 
@@ -141,6 +152,6 @@ class SO2Matrix(_base.SOMatrixBase):
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
 
         Phi = phi.new_zeros(phi.shape[0], cls.dim, cls.dim)
-        Phi[:, 0, 1] = -phi
-        Phi[:, 1, 0] = phi
-        return Phi
+        Phi[:, 0, 1] = -phi[:, 0]
+        Phi[:, 1, 0] = phi[:, 0]
+        return Phi.squeeze_()

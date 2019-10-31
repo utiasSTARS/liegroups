@@ -35,7 +35,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -136,7 +136,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -183,7 +183,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -231,7 +231,7 @@ class SO3Matrix(_base.SOMatrixBase):
                          torch.eye(self.dim, dtype=mat.dtype).expand_as(mat[small_angle_inds]))
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -336,7 +336,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 qy[cond2_inds] = 0.25 * d
                 qz[cond2_inds] = (R_cond2[:, 2, 1] + R_cond2[:, 1, 2]) / d
 
-            cond3_mask = near_zero_mask & (1 - cond1_mask) & (1 - cond2_mask)
+            cond3_mask = near_zero_mask & cond1_mask.logical_not() & cond2_mask.logical_not()
             cond3_inds = cond3_mask.nonzero().squeeze_(dim=1)
 
             if len(cond3_inds) > 0:
@@ -349,7 +349,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 qy[cond3_inds] = (R_cond3[:, 2, 1] + R_cond3[:, 1, 2]) / d
                 qz[cond3_inds] = 0.25 * d
 
-        far_zero_mask = 1 - near_zero_mask
+        far_zero_mask = near_zero_mask.logical_not()
         far_zero_inds = far_zero_mask.nonzero().squeeze_(dim=1)
         if len(far_zero_inds) > 0:
             R_fz = R[far_zero_inds]
@@ -393,8 +393,8 @@ class SO3Matrix(_base.SOMatrixBase):
         near_neg_pi_over_two_mask = utils.isclose(pitch, -np.pi / 2.)
         near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero().squeeze_(dim=1)
 
-        remainder_inds = (1 - (near_pi_over_two_mask |
-                               near_neg_pi_over_two_mask)).nonzero().squeeze_(dim=1)
+        remainder_inds = (near_pi_over_two_mask |
+                          near_neg_pi_over_two_mask).logical_not().nonzero().squeeze_(dim=1)
 
         if len(near_pi_over_two_inds) > 0:
             yaw[near_pi_over_two_inds] = 0.
@@ -452,3 +452,7 @@ class SO3Matrix(_base.SOMatrixBase):
         Phi[:, 1, 2] = -phi[:, 0]
         Phi[:, 2, 1] = phi[:, 0]
         return Phi.squeeze_()
+
+
+class SO3Quaternion(_base.VectorLieGroupBase):
+    pass

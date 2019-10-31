@@ -7,6 +7,7 @@ from .numpy import SE3 as SE3
 
 
 try:
+    from . import numpy
     from . import torch
 except:
     pass

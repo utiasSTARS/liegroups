@@ -378,5 +378,5 @@ class SO3Matrix(_base.SOMatrixBase):
 
 
 class SO3Quaternion(_base.VectorLieGroupBase):
-    """Rotation in SO(3) using unit-length quaternions."""
+    """Rotation in SO(3) using unit-length quaternions (wxyz ordering)."""
     pass

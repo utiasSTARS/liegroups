@@ -16,15 +16,15 @@ class SE2Matrix(_base.SEMatrixBase):
         if rot_part.dim() < 3:
             rot_part = rot_part.unsqueeze(dim=0)  # matrix --> batch
 
-        if self.trans.dim() < 2:
+        trans = self.trans
+        if trans.dim() < 2:
             # vector --> vectorbatch
-            trans = self.trans.unsqueeze(dim=0)
-        else:
-            trans = self.trans
+            trans = trans.unsqueeze(dim=0)
 
-        trans_part = trans.new_empty(trans.shape[0], trans.shape[1], 1)
-        trans_part[:, 0, :] = trans[:, 1]
-        trans_part[:, 1, :] = -trans[:, 0]
+        trans_part = trans.new_empty(
+            trans.shape[0], trans.shape[1], 1)
+        trans_part[:, 0, 0] = trans[:, 1]
+        trans_part[:, 1, 0] = -trans[:, 0]
 
         bottom_row = trans.new_zeros(self.dof)
         bottom_row[-1] = 1.
@@ -75,6 +75,8 @@ class SE2Matrix(_base.SEMatrixBase):
         else:
             trans = self.trans
 
+        if phi.dim() < 1:
+            phi.unsqueeze_(dim=0)
         phi.unsqueeze_(dim=1)  # because phi is 1-dimensional for SE2
 
         if inv_rot_jac.dim() < 3:

@@ -12,9 +12,9 @@ class SOMatrixBase(_base.SOMatrixBase):
         """Return a copy with the underlying tensor on the CPU."""
         return self.__class__(self.mat.cpu())
 
-    def cuda(self, **kwargs):
+    def cuda(self, device=None, non_blocking=False):
         """Return a copy with the underlying tensor on the GPU."""
-        return self.__class__(self.mat.cuda(**kwargs))
+        return self.__class__(self.mat.cuda(device=device, non_blocking=non_blocking))
 
     def dot(self, other):
         if isinstance(other, self.__class__):
@@ -54,7 +54,7 @@ class SOMatrixBase(_base.SOMatrixBase):
             result = cls(mat)
 
             if normalize:
-                result.normalize(inds=(1 - mat_is_valid).nonzero())
+                result.normalize(inds=mat_is_valid.logical_not().nonzero())
 
             return result
         else:
@@ -100,9 +100,9 @@ class SOMatrixBase(_base.SOMatrixBase):
 
         # Check the shape
         if mat.is_cuda:
-            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False)
         else:
-            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.BoolTensor(mat.shape[0]).fill_(False)
 
         if mat.shape[1:3] != (cls.dim, cls.dim):
             return shape_check
@@ -195,9 +195,10 @@ class SEMatrixBase(_base.SEMatrixBase):
         """Return a copy with the underlying tensors on the CPU."""
         return self.__class__(self.rot.cpu(), self.trans.cpu())
 
-    def cuda(self, **kwargs):
+    def cuda(self, device=None, non_blocking=False):
         """Return a copy with the underlying tensors on the GPU."""
-        return self.__class__(self.rot.cuda(**kwargs), self.trans.cuda(**kwargs))
+        return self.__class__(self.rot.cuda(device=device, non_blocking=non_blocking),
+                              self.trans.cuda(device=device, non_blocking=non_blocking))
 
     def dot(self, other):
         if isinstance(other, self.__class__):
@@ -290,7 +291,7 @@ class SEMatrixBase(_base.SEMatrixBase):
             result = cls(cls.RotationType(rot), trans)
 
             if normalize:
-                result.normalize(inds=(1 - mat_is_valid).nonzero())
+                result.normalize(inds=mat_is_valid.logical_not().nonzero())
 
             return result
         else:
@@ -344,9 +345,9 @@ class SEMatrixBase(_base.SEMatrixBase):
 
         # Check the shape
         if mat.is_cuda:
-            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False)
         else:
-            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.BoolTensor(mat.shape[0]).fill_(False)
 
         if mat.shape[1:3] != (cls.dim, cls.dim):
             return shape_check
@@ -374,3 +375,8 @@ class SEMatrixBase(_base.SEMatrixBase):
         See: http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned
         """
         return self.__class__(self.rot.pin_memory(), self.trans.pin_memory())
+
+
+class VectorLieGroupBase(_base.VectorLieGroupBase):
+    """Implementation of methods common to vector-parametrized lie groups using PyTorch"""
+    pass

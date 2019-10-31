@@ -5,14 +5,11 @@ from future.utils import with_metaclass
 
 
 class LieGroupBase(with_metaclass(ABCMeta)):
-    """Common abstract base class for Lie groups."""
+    """ Common abstract base class defining basic interface for Lie groups.
+        Does not depend on any specific linear algebra library.
+    """
 
-    @abstractmethod
     def __init__(self):
-        pass
-
-    @abstractmethod
-    def __repr__(self):
         pass
 
     @property
@@ -81,8 +78,10 @@ class LieGroupBase(with_metaclass(ABCMeta)):
         pass
 
 
-class MatrixLieGroupBase(LieGroupBase, with_metaclass(ABCMeta)):
-    """Common abstract base class for Matrix Lie Groups."""
+class MatrixLieGroupBase(LieGroupBase):
+    """Common abstract base class defining basic interface for Matrix Lie Groups.
+       Does not depend on any specific linear algebra library.
+    """
 
     def __repr__(self):
         """Return a string representation of the transformation."""
@@ -141,13 +140,13 @@ class MatrixLieGroupBase(LieGroupBase, with_metaclass(ABCMeta)):
         pass
 
 
-class SOMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
-    """Common abstract base class for Special Orthogonal Matrix Lie Groups SO(N)."""
+class SOMatrixBase(MatrixLieGroupBase):
+    """Common abstract base class for Special Orthogonal Matrix Lie Groups SO(N).
+       Does not depend on any specific linear algebra library.
+    """
 
     def __init__(self, mat):
         """Create a transformation from a rotation matrix (unsafe, but faster)."""
-        super(SOMatrixBase, self).__init__()
-
         self.mat = mat
         """Storage for the rotation matrix."""
 
@@ -164,13 +163,13 @@ class SOMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
         self.mat = self.__class__.exp(phi).dot(self).mat
 
 
-class SEMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
-    """Common abstract base class for Special Euclidean Matrix Lie Groups SE(N)."""
+class SEMatrixBase(MatrixLieGroupBase):
+    """Common abstract base class for Special Euclidean Matrix Lie Groups SE(N).
+       Does not depend on any specific linear algebra library.
+    """
 
     def __init__(self, rot, trans):
         """Create a transformation from a translation and a rotation (unsafe, but faster)"""
-        super(SEMatrixBase, self).__init__()
-
         self.rot = rot
         """Storage for the rotation matrix."""
         self.trans = trans
@@ -200,15 +199,20 @@ class SEMatrixBase(MatrixLieGroupBase, with_metaclass(ABCMeta)):
         pass
 
 
-class VectorLieGroupBase(LieGroupBase, with_metaclass(ABCMeta)):
+class VectorLieGroupBase(LieGroupBase):
     """Common abstract base class for Lie Groups with vector parametrizations 
-    (complex, quaternions, dual quaternions)."""
+       (complex, quaternions, dual quaternions). Does not depend on any  
+       specific linear algebra library.
+    """
 
     def __init__(self, data):
-        super(VectorLieGroupBase, self).__init__()
-
         self.data = data
 
     def __repr__(self):
         """Return a string representation of the transformation."""
         return "<{}.{}>\n{}".format(self.__class__.__module__, self.__class__.__name__, self.data).replace("\n", "\n| ")
+
+    @abstractmethod
+    def conjugate(self):
+        """Return the conjugate of the vector"""
+        pass

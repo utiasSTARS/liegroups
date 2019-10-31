@@ -164,7 +164,7 @@ class SE3Matrix(_base.SEMatrixBase):
                 0.5 * cls.curlywedge(xi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
@@ -214,7 +214,7 @@ class SE3Matrix(_base.SEMatrixBase):
                 0.5 * cls.curlywedge(xi[small_angle_inds])
 
         # Otherwise...
-        large_angle_mask = 1 - small_angle_mask  # element-wise not
+        large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
