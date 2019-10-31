@@ -9,11 +9,23 @@ This version provides sensible options for batching the transformations themselv
 .. autoclass:: liegroups.torch.SO2
     :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
 
+.. autoclass:: liegroups.torch.so2.SO2Matrix
+    :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
+
 .. autoclass:: liegroups.torch.SE2
+    :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
+
+.. autoclass:: liegroups.torch.se2.SE2Matrix
     :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
 
 .. autoclass:: liegroups.torch.SO3
     :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
 
+.. autoclass:: liegroups.torch.so3.SO3Matrix
+    :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
+
 .. autoclass:: liegroups.torch.SE3
+    :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
+
+.. autoclass:: liegroups.torch.se3.SE3Matrix
     :members: cpu, cuda, from_numpy, is_cuda, is_pinned, pin_memory
