@@ -48,6 +48,7 @@ class SOMatrixBase(_base.SOMatrixBase):
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
+
         mat_is_valid = cls.is_valid_matrix(mat)
 
         if mat_is_valid.all() or normalize:
