@@ -48,6 +48,7 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
 
     @classmethod
     def from_matrix(cls, mat, normalize=False):
+
         mat_is_valid = cls.is_valid_matrix(mat)
 
         if mat_is_valid.all() or normalize:
@@ -100,9 +101,9 @@ class SpecialOrthogonalBase(_base.SpecialOrthogonalBase):
 
         # Check the shape
         if mat.is_cuda:
-            shape_check = torch.cuda.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False)
         else:
-            shape_check = torch.ByteTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.BoolTensor(mat.shape[0]).fill_(False)
 
         if mat.shape[1:3] != (cls.dim, cls.dim):
             return shape_check
