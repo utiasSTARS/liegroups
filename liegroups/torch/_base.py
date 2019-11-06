@@ -112,7 +112,7 @@ class SOMatrixBase(_base.SOMatrixBase):
 
         # Determinants of each matrix in the batch should be 1
         det_check = utils.isclose(mat.__class__(
-            np.linalg.det(mat.cpu().numpy())), 1.)
+            np.linalg.det(mat.detach().cpu().numpy())), 1.)
 
         # The transpose of each matrix in the batch should be its inverse
         inv_check = utils.isclose(mat.transpose(2, 1).bmm(mat),
@@ -137,7 +137,7 @@ class SOMatrixBase(_base.SOMatrixBase):
         # mat_normalized = U.mm(S).mm(V.t_())
 
         # pytorch SVD seems to be inaccurate, so just move to numpy immediately
-        mat_cpu = mat.cpu().numpy().squeeze()
+        mat_cpu = mat.detach().cpu().numpy().squeeze()
         U, _, V = np.linalg.svd(mat_cpu, full_matrices=False)
         S = np.eye(self.dim)
         S[self.dim - 1, self.dim - 1] = np.linalg.det(U) * np.linalg.det(V)

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>liegroups.torch &mdash; Lie Groups 1.0.0 documentation</title>
+  <title>liegroups.torch &mdash; Lie Groups 1.1.0 documentation</title>
   
 
   
@@ -17,41 +17,36 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="Lie Groups 1.0.0 documentation" href="index.html"/>
-        <link rel="prev" title="liegroups" href="numpy.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="liegroups" href="numpy.html" /> 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -65,7 +60,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.1.0
               </div>
             
           
@@ -103,7 +98,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">Lie Groups</a>
@@ -111,9 +106,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -159,172 +155,196 @@
 <h1>liegroups.torch<a class="headerlink" href="#liegroups-torch" title="Permalink to this headline">¶</a></h1>
 <p>The PyTorch implementation uses torch.Tensor as the backend linear algebra library, which allows the user to on the GPU or CPU and integrate with other aspects of PyTorch.</p>
 <p>This version provides sensible options for batching the transformations themselves, as well as anything they might operate on, and is generally agnostic to the specific Tensor type (e.g., given a torch.cuda.FloatTensor as input, the output will also be a torch.cuda.FloatTensor).</p>
-<dl class="class">
+<dl class="attribute">
 <dt id="liegroups.torch.SO2">
-<em class="property">class </em><code class="descclassname">liegroups.torch.</code><code class="descname">SO2</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SO2" title="liegroups.SO2"><code class="xref py py-mod docutils literal"><span class="pre">liegroups.SO2</span></code></a></p>
+<code class="sig-prename descclassname">liegroups.torch.</code><code class="sig-name descname">SO2</code><a class="headerlink" href="#liegroups.torch.SO2" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#liegroups.torch.so2.SO2Matrix" title="liegroups.torch.so2.SO2Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">liegroups.torch.so2.SO2Matrix</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="liegroups.torch.so2.SO2Matrix">
+<em class="property">class </em><code class="sig-prename descclassname">liegroups.torch.so2.</code><code class="sig-name descname">SO2Matrix</code><span class="sig-paren">(</span><em class="sig-param">mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SO2" title="liegroups.SO2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">liegroups.SO2</span></code></a></p>
 <dl class="method">
-<dt id="liegroups.torch.SO2.cpu">
-<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.cpu" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.cpu">
+<code class="sig-name descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.cpu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor on the CPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO2.cuda">
-<code class="descname">cuda</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.cuda">
+<code class="sig-name descname">cuda</code><span class="sig-paren">(</span><em class="sig-param">device=None</em>, <em class="sig-param">non_blocking=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor on the GPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO2.from_numpy">
-<code class="descname">from_numpy</code><span class="sig-paren">(</span><em>other</em>, <em>pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.from_numpy" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.from_numpy">
+<em class="property">classmethod </em><code class="sig-name descname">from_numpy</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.from_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a torch-based copy of a numpy-based rotation.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO2.is_cuda">
-<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.is_cuda">
+<code class="sig-name descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.is_cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensor is a CUDA tensor</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO2.is_pinned">
-<code class="descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.is_pinned" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.is_pinned">
+<code class="sig-name descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.is_pinned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensor resides in pinned memory</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO2.pin_memory">
-<code class="descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO2.pin_memory" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so2.SO2Matrix.pin_memory">
+<code class="sig-name descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so2.SO2Matrix.pin_memory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.</p>
 <p>See: <a class="reference external" href="http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned">http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned</a></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="attribute">
 <dt id="liegroups.torch.SE2">
-<em class="property">class </em><code class="descclassname">liegroups.torch.</code><code class="descname">SE2</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SE2" title="liegroups.SE2"><code class="xref py py-mod docutils literal"><span class="pre">liegroups.SE2</span></code></a></p>
+<code class="sig-prename descclassname">liegroups.torch.</code><code class="sig-name descname">SE2</code><a class="headerlink" href="#liegroups.torch.SE2" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#liegroups.torch.se2.SE2Matrix" title="liegroups.torch.se2.SE2Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">liegroups.torch.se2.SE2Matrix</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="liegroups.torch.se2.SE2Matrix">
+<em class="property">class </em><code class="sig-prename descclassname">liegroups.torch.se2.</code><code class="sig-name descname">SE2Matrix</code><span class="sig-paren">(</span><em class="sig-param">rot</em>, <em class="sig-param">trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SE2" title="liegroups.SE2"><code class="xref py py-mod docutils literal notranslate"><span class="pre">liegroups.SE2</span></code></a></p>
 <dl class="method">
-<dt id="liegroups.torch.SE2.cpu">
-<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.cpu" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.cpu">
+<code class="sig-name descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.cpu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensors on the CPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE2.cuda">
-<code class="descname">cuda</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.cuda">
+<code class="sig-name descname">cuda</code><span class="sig-paren">(</span><em class="sig-param">device=None</em>, <em class="sig-param">non_blocking=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensors on the GPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE2.from_numpy">
-<code class="descname">from_numpy</code><span class="sig-paren">(</span><em>other</em>, <em>pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.from_numpy" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.from_numpy">
+<em class="property">classmethod </em><code class="sig-name descname">from_numpy</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.from_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a torch-based copy of a numpy-based transformation.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE2.is_cuda">
-<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.is_cuda">
+<code class="sig-name descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.is_cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensors are CUDA tensors</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE2.is_pinned">
-<code class="descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.is_pinned" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.is_pinned">
+<code class="sig-name descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.is_pinned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensors reside in pinned memory</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE2.pin_memory">
-<code class="descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE2.pin_memory" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se2.SE2Matrix.pin_memory">
+<code class="sig-name descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se2.SE2Matrix.pin_memory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.</p>
 <p>See: <a class="reference external" href="http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned">http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned</a></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="attribute">
 <dt id="liegroups.torch.SO3">
-<em class="property">class </em><code class="descclassname">liegroups.torch.</code><code class="descname">SO3</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SO3" title="liegroups.SO3"><code class="xref py py-mod docutils literal"><span class="pre">liegroups.SO3</span></code></a></p>
+<code class="sig-prename descclassname">liegroups.torch.</code><code class="sig-name descname">SO3</code><a class="headerlink" href="#liegroups.torch.SO3" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#liegroups.torch.so3.SO3Matrix" title="liegroups.torch.so3.SO3Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">liegroups.torch.so3.SO3Matrix</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="liegroups.torch.so3.SO3Matrix">
+<em class="property">class </em><code class="sig-prename descclassname">liegroups.torch.so3.</code><code class="sig-name descname">SO3Matrix</code><span class="sig-paren">(</span><em class="sig-param">mat</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SO3" title="liegroups.SO3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">liegroups.SO3</span></code></a></p>
 <dl class="method">
-<dt id="liegroups.torch.SO3.cpu">
-<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.cpu" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.cpu">
+<code class="sig-name descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.cpu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor on the CPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO3.cuda">
-<code class="descname">cuda</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.cuda">
+<code class="sig-name descname">cuda</code><span class="sig-paren">(</span><em class="sig-param">device=None</em>, <em class="sig-param">non_blocking=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor on the GPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO3.from_numpy">
-<code class="descname">from_numpy</code><span class="sig-paren">(</span><em>other</em>, <em>pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.from_numpy" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.from_numpy">
+<em class="property">classmethod </em><code class="sig-name descname">from_numpy</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.from_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a torch-based copy of a numpy-based rotation.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO3.is_cuda">
-<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.is_cuda">
+<code class="sig-name descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.is_cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensor is a CUDA tensor</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO3.is_pinned">
-<code class="descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.is_pinned" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.is_pinned">
+<code class="sig-name descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.is_pinned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensor resides in pinned memory</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SO3.pin_memory">
-<code class="descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SO3.pin_memory" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.so3.SO3Matrix.pin_memory">
+<code class="sig-name descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.so3.SO3Matrix.pin_memory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.</p>
 <p>See: <a class="reference external" href="http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned">http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned</a></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="attribute">
 <dt id="liegroups.torch.SE3">
-<em class="property">class </em><code class="descclassname">liegroups.torch.</code><code class="descname">SE3</code><span class="sig-paren">(</span><em>rot</em>, <em>trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3" title="Permalink to this definition">¶</a></dt>
-<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SE3" title="liegroups.SE3"><code class="xref py py-mod docutils literal"><span class="pre">liegroups.SE3</span></code></a></p>
+<code class="sig-prename descclassname">liegroups.torch.</code><code class="sig-name descname">SE3</code><a class="headerlink" href="#liegroups.torch.SE3" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#liegroups.torch.se3.SE3Matrix" title="liegroups.torch.se3.SE3Matrix"><code class="xref py py-class docutils literal notranslate"><span class="pre">liegroups.torch.se3.SE3Matrix</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="liegroups.torch.se3.SE3Matrix">
+<em class="property">class </em><code class="sig-prename descclassname">liegroups.torch.se3.</code><code class="sig-name descname">SE3Matrix</code><span class="sig-paren">(</span><em class="sig-param">rot</em>, <em class="sig-param">trans</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>See <a class="reference internal" href="numpy.html#liegroups.SE3" title="liegroups.SE3"><code class="xref py py-mod docutils literal notranslate"><span class="pre">liegroups.SE3</span></code></a></p>
 <dl class="method">
-<dt id="liegroups.torch.SE3.cpu">
-<code class="descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.cpu" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.cpu">
+<code class="sig-name descname">cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.cpu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensors on the CPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE3.cuda">
-<code class="descname">cuda</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.cuda">
+<code class="sig-name descname">cuda</code><span class="sig-paren">(</span><em class="sig-param">device=None</em>, <em class="sig-param">non_blocking=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensors on the GPU.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE3.from_numpy">
-<code class="descname">from_numpy</code><span class="sig-paren">(</span><em>other</em>, <em>pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.from_numpy" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.from_numpy">
+<em class="property">classmethod </em><code class="sig-name descname">from_numpy</code><span class="sig-paren">(</span><em class="sig-param">other</em>, <em class="sig-param">pin_memory=False</em><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.from_numpy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a torch-based copy of a numpy-based transformation.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE3.is_cuda">
-<code class="descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.is_cuda" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.is_cuda">
+<code class="sig-name descname">is_cuda</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.is_cuda" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensors are CUDA tensors</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE3.is_pinned">
-<code class="descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.is_pinned" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.is_pinned">
+<code class="sig-name descname">is_pinned</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.is_pinned" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns true if the underlying tensors reside in pinned memory</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="liegroups.torch.SE3.pin_memory">
-<code class="descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.SE3.pin_memory" title="Permalink to this definition">¶</a></dt>
+<dt id="liegroups.torch.se3.SE3Matrix.pin_memory">
+<code class="sig-name descname">pin_memory</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#liegroups.torch.se3.SE3Matrix.pin_memory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.</p>
 <p>See: <a class="reference external" href="http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned">http://pytorch.org/docs/master/notes/cuda.html?highlight=pinned</a></p>
 </dd></dl>
@@ -335,16 +355,14 @@
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="numpy.html" class="btn btn-neutral" title="liegroups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="numpy.html" class="btn btn-neutral float-left" title="liegroups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -353,11 +371,11 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2016, Lee Clement.
+        &copy; Copyright 2019, Lee Clement
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -370,37 +388,15 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.0.0',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script>
+
+  
+  
+    
    
 
 </body>
