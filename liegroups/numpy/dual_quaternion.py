@@ -73,7 +73,7 @@ def dual_quat_inv(d, ordering='wxyz'):
     p = d[0:4]
     q = d[4:]
     p_inv = quat_inv(p, ordering)
-    return quat_mult(p_inv, dual_quat_identity(ordering) - quat_mult(q, p_inv, ordering), ordering)
+    return np.append(p_inv, quat_mult(p_inv, quat_mult(q, p_inv, ordering), ordering))
 
 
 if __name__ == '__main__':
