@@ -43,7 +43,7 @@ def trace(mat):
     if mat.dim() < 3:
         mat = mat.unsqueeze(dim=0)
     if mat.is_cuda:
-        tr =  (torch.cuda.torch.eye(mat.shape[1], dtype=mat.dtype) * mat).sum(dim=1).sum(dim=1)
+        tr =  (torch.eye(mat.shape[1], dtype=mat.dtype).cuda() * mat).sum(dim=1).sum(dim=1)
     # Element-wise multiply by identity and take the sum
     else:
         tr =  (torch.eye(mat.shape[1], dtype=mat.dtype) * mat).sum(dim=1).sum(dim=1)
