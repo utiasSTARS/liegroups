@@ -64,7 +64,46 @@ class SE2Matrix(_base.SEMatrixBase):
 
     @classmethod
     def left_jacobian(cls, xi):
-        raise NotImplementedError
+
+        x = xi[:, 0]  # translation part
+        y = xi[:, 2]  # translation part
+        theta = xi[:, 2]  # rotation part
+
+        cos_theta = torch.cos(theta)
+        sin_theta = torch.sin(theta)
+        theta_sq = theta * theta
+
+        small_angle_mask = utils.isclose(theta_sq, 0.)
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+
+        large_angle_mask = small_angle_mask.logical_not()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+
+        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof))
+
+        jac[small_angle_inds, 0, 0] = 1 - 1./6. * theta_sq[small_angle_inds]
+        jac[large_angle_inds, 0, 0] = sin_theta[large_angle_inds] / theta[large_angle_inds]
+
+        jac[small_angle_inds, 0, 1] = -(0.5 * theta[small_angle_inds] - 1./24. * theta[small_angle_inds] * theta_sq[small_angle_inds])
+        jac[large_angle_inds, 0, 1] = -(1 - cos_theta[large_angle_inds]) / theta[large_angle_inds]
+
+        jac[small_angle_inds, 0, 2] = y[small_angle_inds] / 2. + theta[small_angle_inds] * x[small_angle_inds] / 6.
+        jac[large_angle_inds, 0, 2] = ( y[large_angle_inds] + theta[large_angle_inds]*x[large_angle_inds] - y[large_angle_inds]*cos_theta[large_angle_inds] - x[large_angle_inds]*sin_theta[large_angle_inds])/theta_sq[large_angle_inds]
+
+        jac[small_angle_inds, 1, 0] = 0.5 * theta[small_angle_inds] - 1./24. * theta[small_angle_inds] * theta_sq[small_angle_inds]
+        jac[large_angle_inds, 1, 0] = (1 - cos_theta[large_angle_inds]) / theta[large_angle_inds]
+
+        jac[small_angle_inds, 1, 1] = 1 - 1./6. * theta_sq[small_angle_inds]
+        jac[large_angle_inds, 1, 1] = sin_theta[large_angle_inds] / theta[large_angle_inds]
+
+        jac[small_angle_inds, 1, 2] = -x[small_angle_inds] / 2. + theta[small_angle_inds] * y[small_angle_inds] / 6.
+        jac[large_angle_inds, 1, 2] = (-x[large_angle_inds] + theta[large_angle_inds]*y[large_angle_inds] + x[large_angle_inds]*cos_theta[large_angle_inds] - y[large_angle_inds]*sin_theta[large_angle_inds])/theta_sq[large_angle_inds]
+
+        jac[:, 2, 0] = 0
+        jac[:, 2, 1] = 0
+        jac[:, 2, 2] = 1
+
+        return jac
 
     def log(self):
         phi = self.rot.log()
