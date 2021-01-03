@@ -117,6 +117,8 @@ class SE2Matrix(_base.SEMatrixBase):
             jac[0][2] = ( y + theta*x - y*cos_theta - x*sin_theta)/theta_sq
             jac[1][2] = (-x + theta*y + x*cos_theta - y*sin_theta)/theta_sq
 
+        jac[2][2] = 1
+
         return jac
 
     def log(self):
