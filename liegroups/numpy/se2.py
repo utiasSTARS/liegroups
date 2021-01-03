@@ -76,7 +76,28 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
         """
-        raise NotImplementedError
+        se2 = cls.exp(xi)
+        theta = se2.rot.to_angle()
+        x = se2.trans[0]
+        y = se2.trans[1]
+
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        theta_sq = theta * theta
+
+        jac = np.zeros((cls.dof, cls.dof))
+
+        jac[0][0] = (sin_theta*theta)/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
+        jac[0][1] = -(theta*(cos_theta - 1))/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
+        jac[0][2] = (theta*(x - 2*cos_theta*x - theta*y + cos_theta**2*x + sin_theta**2*x + cos_theta*theta*y - sin_theta*theta*x))/(theta_sq*(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1))
+        jac[1][0] = (theta*(cos_theta - 1))/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
+        jac[1][1] = (sin_theta*theta)/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
+        jac[1][2] = (theta*(y - 2*cos_theta*y + theta*x + cos_theta**2*y + sin_theta**2*y - cos_theta*theta*x - sin_theta*theta*y))/(theta_sq*(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1))
+        jac[2][0] = 0
+        jac[2][1] = 0
+        jac[2][2] = 1
+
+        return jac
 
     @classmethod
     def left_jacobian(cls, xi):
