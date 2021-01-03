@@ -42,7 +42,7 @@ class SE2Matrix(_base.SEMatrixBase):
             \\end{bmatrix}
             \\in \\mathbb{R}^{3 \\times 3}
         """
-        rot_part = self.rot.as_matrix()
+        rot_part = self.rot.as_matrix
         trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
         return np.vstack([np.hstack([rot_part, trans_part]),
                           [0, 0, 1]])
@@ -85,7 +85,39 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}(\\boldsymbol{\\xi})
         """
-        raise NotImplementedError
+
+        # based on https://github.com/artivis/manif/blob/6f2c1cd3e050a2a232cc5f6c4fb0d33b74f08701/include/manif/impl/se2/SE2Tangent_base.h
+
+        se2 = cls.exp(xi)
+        theta = se2.rot.to_angle()
+        x = se2.trans[0]
+        y = se2.trans[1]
+
+        cos_theta = np.cos(theta)
+        sin_theta = np.sin(theta)
+        theta_sq = theta * theta
+
+        if theta_sq < 1e-15:
+            A = 1 - 1./6. * theta_sq
+            B = 0.5 * theta - 1./24. * theta * theta_sq
+        else:
+            A = sin_theta / theta
+            B = (1 - cos_theta) / theta
+
+        jac = np.zeros((cls.dof, cls.dof))
+        jac[0][0] = A
+        jac[0][1] = -B
+        jac[1][0] = B
+        jac[1][1] = A
+
+        if theta_sq < 1e-15:
+            jac[0][2] = y / 2. + theta * x / 6.
+            jac[1][2] = -x / 2. + theta * y / 6.
+        else:
+            jac[0][2] = ( y + theta*x - y*cos_theta - x*sin_theta)/theta_sq
+            jac[1][2] = (-x + theta*y + x*cos_theta - y*sin_theta)/theta_sq
+
+        return jac
 
     def log(self):
         """Logarithmic map for :math:`SE(2)`, which computes a tangent vector from a transformation:
