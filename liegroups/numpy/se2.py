@@ -42,7 +42,7 @@ class SE2Matrix(_base.SEMatrixBase):
             \\end{bmatrix}
             \\in \\mathbb{R}^{3 \\times 3}
         """
-        rot_part = self.rot.as_matrix
+        rot_part = self.rot.as_matrix()
         trans_part = np.array([self.trans[1], -self.trans[0]]).reshape((2, 1))
         return np.vstack([np.hstack([rot_part, trans_part]),
                           [0, 0, 1]])
