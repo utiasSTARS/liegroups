@@ -94,9 +94,6 @@ class SE2Matrix(_base.SEMatrixBase):
             jac[1][0] = (theta*(cos_theta - 1))/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
             jac[1][1] = (sin_theta*theta)/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
             jac[1][2] = (theta*(y - 2*cos_theta*y + theta*x + cos_theta**2*y + sin_theta**2*y - cos_theta*theta*x - sin_theta*theta*y))/(theta_sq*(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1))
-            jac[2][0] = 0
-            jac[2][1] = 0
-            jac[2][2] = 1
         else:
             jac[0][0] = -(96*(theta_sq - 6))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
             jac[0][1] = -(24*theta*(theta_sq - 12))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
@@ -104,9 +101,10 @@ class SE2Matrix(_base.SEMatrixBase):
             jac[1][0] = (24*theta*(theta_sq - 12))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
             jac[1][1] = -(96*(theta_sq - 6))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
             jac[1][2] = (4*(72*x - 12*theta_sq*x + 12*theta*y + 12*theta_sq*x - theta_sq*theta_sq*x + theta_sq*theta*y))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[2][0] = 0
-            jac[2][1] = 0
-            jac[2][2] = 1
+        
+        jac[2][0] = 0
+        jac[2][1] = 0
+        jac[2][2] = 1
 
         return jac
 
