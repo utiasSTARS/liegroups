@@ -82,7 +82,7 @@ class SE2Matrix(_base.SEMatrixBase):
         large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
-        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof))
+        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof)).to(xi.device)
 
         jac[small_angle_inds, 0, 0] = -(96*(theta_sq[small_angle_inds] - 6))/(theta_sq[small_angle_inds]**2*theta_sq[small_angle_inds] + 16*theta_sq[small_angle_inds]**2 - 24*theta_sq[small_angle_inds]*theta_sq[small_angle_inds] - 192*theta_sq[small_angle_inds] + 144*theta_sq[small_angle_inds] + 576)
         jac[small_angle_inds, 0, 1] = -(24*theta[small_angle_inds]*(theta_sq[small_angle_inds] - 12))/(theta_sq[small_angle_inds]**2*theta_sq[small_angle_inds] + 16*theta_sq[small_angle_inds]**2 - 24*theta_sq[small_angle_inds]*theta_sq[small_angle_inds] - 192*theta_sq[small_angle_inds] + 144*theta_sq[small_angle_inds] + 576)
@@ -128,7 +128,7 @@ class SE2Matrix(_base.SEMatrixBase):
         large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
 
-        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof))
+        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof)).to(xi.device)
 
         jac[small_angle_inds, 0, 0] = 1 - 1./6. * theta_sq[small_angle_inds]
         jac[small_angle_inds, 0, 1] = -(0.5 * theta[small_angle_inds] - 1./24. * theta[small_angle_inds] * theta_sq[small_angle_inds])
