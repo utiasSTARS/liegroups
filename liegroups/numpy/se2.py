@@ -76,10 +76,9 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
         """
-        se2 = cls.exp(xi)
-        theta = se2.rot.to_angle()
-        x = se2.trans[0]
-        y = se2.trans[1]
+        x = xi[0]  # translation part
+        y = xi[1]  # translation part
+        theta = xi[2]  # rotation part
 
         cos_theta = np.cos(theta)
         sin_theta = np.sin(theta)
@@ -118,10 +117,9 @@ class SE2Matrix(_base.SEMatrixBase):
 
         # based on https://github.com/artivis/manif/blob/6f2c1cd3e050a2a232cc5f6c4fb0d33b74f08701/include/manif/impl/se2/SE2Tangent_base.h
 
-        se2 = cls.exp(xi)
-        theta = se2.rot.to_angle()
-        x = se2.trans[0]
-        y = se2.trans[1]
+        x = xi[0]  # translation part
+        y = xi[1]  # translation part
+        theta = xi[2]  # rotation part
 
         cos_theta = np.cos(theta)
         sin_theta = np.sin(theta)
