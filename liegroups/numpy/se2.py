@@ -76,30 +76,29 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
         """
-        x = xi[0]  # translation part
-        y = xi[1]  # translation part
-        theta = xi[2]  # rotation part
+        rho = xi[0:2]  # translation part
+        phi = xi[2]  # rotation part
 
-        cos_theta = np.cos(theta)
-        sin_theta = np.sin(theta)
-        theta_sq = theta * theta
+        cos_phi = np.cos(phi)
+        sin_phi = np.sin(phi)
+        phi_sq = phi * phi
 
         jac = np.zeros((cls.dof, cls.dof))
 
-        if theta_sq > 1e-15:
-            jac[0][0] = (sin_theta*theta)/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
-            jac[0][1] = -(theta*(cos_theta - 1))/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
-            jac[0][2] = (theta*(x - 2*cos_theta*x - theta*y + cos_theta**2*x + sin_theta**2*x + cos_theta*theta*y - sin_theta*theta*x))/(theta_sq*(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1))
-            jac[1][0] = (theta*(cos_theta - 1))/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
-            jac[1][1] = (sin_theta*theta)/(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1)
-            jac[1][2] = (theta*(y - 2*cos_theta*y + theta*x + cos_theta**2*y + sin_theta**2*y - cos_theta*theta*x - sin_theta*theta*y))/(theta_sq*(cos_theta**2 - 2*cos_theta + sin_theta**2 + 1))
+        if phi_sq > 1e-15:
+            jac[0][0] = (sin_phi*phi)/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[0][1] = -(phi*(cos_phi - 1))/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[0][2] = (phi*(rho[0] - 2*cos_phi*rho[0] - phi*rho[1] + cos_phi**2*rho[0] + sin_phi**2*rho[0] + cos_phi*phi*rho[1] - sin_phi*phi*rho[0]))/(phi_sq*(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1))
+            jac[1][0] = (phi*(cos_phi - 1))/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[1][1] = (sin_phi*phi)/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[1][2] = (phi*(rho[1] - 2*cos_phi*rho[1] + phi*rho[0] + cos_phi**2*rho[1] + sin_phi**2*rho[1] - cos_phi*phi*rho[0] - sin_phi*phi*rho[1]))/(phi_sq*(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1))
         else:
-            jac[0][0] = -(96*(theta_sq - 6))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[0][1] = -(24*theta*(theta_sq - 12))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[0][2] = (4*(12*theta*x - 72*y + 12*theta_sq*y - 12*theta_sq*y + theta_sq*theta_sq*y + theta_sq*theta*x))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[1][0] = (24*theta*(theta_sq - 12))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[1][1] = -(96*(theta_sq - 6))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
-            jac[1][2] = (4*(72*x - 12*theta_sq*x + 12*theta*y + 12*theta_sq*x - theta_sq*theta_sq*x + theta_sq*theta*y))/(theta_sq**2*theta_sq + 16*theta_sq**2 - 24*theta_sq*theta_sq - 192*theta_sq + 144*theta_sq + 576)
+            jac[0][0] = -(96*(phi_sq - 6))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[0][1] = -(24*phi*(phi_sq - 12))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[0][2] = (4*(12*phi*rho[0] - 72*rho[1] + 12*phi_sq*rho[1] - 12*phi_sq*rho[1] + phi_sq*phi_sq*rho[1] + phi_sq*phi*rho[0]))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][0] = (24*phi*(phi_sq - 12))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][1] = -(96*(phi_sq - 6))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][2] = (4*(72*rho[0] - 12*phi_sq*rho[0] + 12*phi*rho[1] + 12*phi_sq*rho[0] - phi_sq*phi_sq*rho[0] + phi_sq*phi*rho[1]))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
         
         jac[2][0] = 0
         jac[2][1] = 0
@@ -117,20 +116,19 @@ class SE2Matrix(_base.SEMatrixBase):
 
         # based on https://github.com/artivis/manif/blob/6f2c1cd3e050a2a232cc5f6c4fb0d33b74f08701/include/manif/impl/se2/SE2Tangent_base.h
 
-        x = xi[0]  # translation part
-        y = xi[1]  # translation part
-        theta = xi[2]  # rotation part
+        rho = xi[0:2]  # translation part
+        phi = xi[2]  # rotation part
 
-        cos_theta = np.cos(theta)
-        sin_theta = np.sin(theta)
-        theta_sq = theta * theta
+        cos_phi = np.cos(phi)
+        sin_phi = np.sin(phi)
+        phi_sq = phi * phi
 
-        if theta_sq < 1e-15:
-            A = 1 - 1./6. * theta_sq
-            B = 0.5 * theta - 1./24. * theta * theta_sq
+        if phi_sq < 1e-15:
+            A = 1 - 1./6. * phi_sq
+            B = 0.5 * phi - 1./24. * phi * phi_sq
         else:
-            A = sin_theta / theta
-            B = (1 - cos_theta) / theta
+            A = sin_phi / phi
+            B = (1 - cos_phi) / phi
 
         jac = np.zeros((cls.dof, cls.dof))
         jac[0][0] = A
@@ -138,12 +136,12 @@ class SE2Matrix(_base.SEMatrixBase):
         jac[1][0] = B
         jac[1][1] = A
 
-        if theta_sq < 1e-15:
-            jac[0][2] = y / 2. + theta * x / 6.
-            jac[1][2] = -x / 2. + theta * y / 6.
+        if phi_sq < 1e-15:
+            jac[0][2] = rho[1] / 2. + phi * rho[0] / 6.
+            jac[1][2] = -rho[0] / 2. + phi * rho[1] / 6.
         else:
-            jac[0][2] = ( y + theta*x - y*cos_theta - x*sin_theta)/theta_sq
-            jac[1][2] = (-x + theta*y + x*cos_theta - y*sin_theta)/theta_sq
+            jac[0][2] = ( rho[1] + phi*rho[0] - rho[1]*cos_phi - rho[0]*sin_phi)/phi_sq
+            jac[1][2] = (-rho[0] + phi*rho[1] + rho[0]*cos_phi - rho[1]*sin_phi)/phi_sq
 
         jac[2][2] = 1
 
