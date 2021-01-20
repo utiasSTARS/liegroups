@@ -46,7 +46,7 @@ class SO2Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = torch.eye(cls.dim).expand(
@@ -55,7 +55,7 @@ class SO2Matrix(_base.SOMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
@@ -86,7 +86,7 @@ class SO2Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
             jac[small_angle_inds] = torch.eye(cls.dim).expand(
@@ -95,7 +95,7 @@ class SO2Matrix(_base.SOMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
