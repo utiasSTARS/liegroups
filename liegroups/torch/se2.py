@@ -60,11 +60,93 @@ class SE2Matrix(_base.SEMatrixBase):
 
     @classmethod
     def inv_left_jacobian(cls, xi):
-        raise NotImplementedError
+
+        if xi.dim() < 2:
+            xi = xi.unsqueeze(dim=0)
+
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
+        rho = xi[:, 0:2]  # translation part
+        phi = xi[:, 2]  # rotation part
+
+        cos_phi = torch.cos(phi)
+        sin_phi = torch.sin(phi)
+        phi_sq = phi * phi
+
+        small_angle_mask = utils.isclose(phi_sq, 0.)
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+
+        large_angle_mask = small_angle_mask.logical_not()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+
+        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof)).to(xi.device)
+
+        jac[small_angle_inds, 0, 0] = -(96*(phi_sq[small_angle_inds] - 6))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+        jac[small_angle_inds, 0, 1] = -(24*phi[small_angle_inds]*(phi_sq[small_angle_inds] - 12))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+        jac[small_angle_inds, 0, 2] = (4*(12*phi[small_angle_inds]*rho[small_angle_inds,0] - 72*rho[small_angle_inds,1] + 12*phi_sq[small_angle_inds]*rho[small_angle_inds,1] - 12*phi_sq[small_angle_inds]*rho[small_angle_inds,1] + phi_sq[small_angle_inds]*phi_sq[small_angle_inds]*rho[small_angle_inds,1] + phi_sq[small_angle_inds]*phi[small_angle_inds]*rho[small_angle_inds,0]))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+        jac[small_angle_inds, 1, 0] = (24*phi[small_angle_inds]*(phi_sq[small_angle_inds] - 12))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+        jac[small_angle_inds, 1, 1] = -(96*(phi_sq[small_angle_inds] - 6))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+        jac[small_angle_inds, 1, 2] = (4*(72*rho[small_angle_inds,0] - 12*phi_sq[small_angle_inds]*rho[small_angle_inds,0] + 12*phi[small_angle_inds]*rho[small_angle_inds,1] + 12*phi_sq[small_angle_inds]*rho[small_angle_inds,0] - phi_sq[small_angle_inds]*phi_sq[small_angle_inds]*rho[small_angle_inds,0] + phi_sq[small_angle_inds]*phi[small_angle_inds]*rho[small_angle_inds,1]))/(phi_sq[small_angle_inds]**2*phi_sq[small_angle_inds] + 16*phi_sq[small_angle_inds]**2 - 24*phi_sq[small_angle_inds]*phi_sq[small_angle_inds] - 192*phi_sq[small_angle_inds] + 144*phi_sq[small_angle_inds] + 576)
+
+        jac[large_angle_inds, 0, 0] = (sin_phi[large_angle_inds]*phi[large_angle_inds])/(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1)
+        jac[large_angle_inds, 0, 1] = -(phi[large_angle_inds]*(cos_phi[large_angle_inds] - 1))/(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1)
+        jac[large_angle_inds, 0, 2] = (phi[large_angle_inds]*(rho[large_angle_inds,0] - 2*cos_phi[large_angle_inds]*rho[large_angle_inds,0] - phi[large_angle_inds]*rho[large_angle_inds,1] + cos_phi[large_angle_inds]**2*rho[large_angle_inds,0] + sin_phi[large_angle_inds]**2*rho[large_angle_inds,0] + cos_phi[large_angle_inds]*phi[large_angle_inds]*rho[large_angle_inds,1] - sin_phi[large_angle_inds]*phi[large_angle_inds]*rho[large_angle_inds,0]))/(phi_sq[large_angle_inds]*(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1))
+        jac[large_angle_inds, 1, 0] = (phi[large_angle_inds]*(cos_phi[large_angle_inds] - 1))/(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1)
+        jac[large_angle_inds, 1, 1] = (sin_phi[large_angle_inds]*phi[large_angle_inds])/(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1)
+        jac[large_angle_inds, 1, 2] = (phi[large_angle_inds]*(rho[large_angle_inds,1] - 2*cos_phi[large_angle_inds]*rho[large_angle_inds,1] + phi[large_angle_inds]*rho[large_angle_inds,0] + cos_phi[large_angle_inds]**2*rho[large_angle_inds,1] + sin_phi[large_angle_inds]**2*rho[large_angle_inds,1] - cos_phi[large_angle_inds]*phi[large_angle_inds]*rho[large_angle_inds,0] - sin_phi[large_angle_inds]*phi[large_angle_inds]*rho[large_angle_inds,1]))/(phi_sq[large_angle_inds]*(cos_phi[large_angle_inds]**2 - 2*cos_phi[large_angle_inds] + sin_phi[large_angle_inds]**2 + 1))
+        
+        jac[:, 2, 0] = 0
+        jac[:, 2, 1] = 0
+        jac[:, 2, 2] = 1
+
+        return jac.squeeze_()
 
     @classmethod
     def left_jacobian(cls, xi):
-        raise NotImplementedError
+
+        if xi.dim() < 2:
+            xi = xi.unsqueeze(dim=0)
+
+        if xi.shape[1] != cls.dof:
+            raise ValueError(
+                "xi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
+
+        rho = xi[:, 0:2]  # translation part
+        phi = xi[:, 2]  # rotation part
+
+        cos_phi = torch.cos(phi)
+        sin_phi = torch.sin(phi)
+        phi_sq = phi * phi
+
+        small_angle_mask = utils.isclose(phi_sq, 0.)
+        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+
+        large_angle_mask = small_angle_mask.logical_not()
+        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+
+        jac = torch.zeros((xi.shape[0], cls.dof, cls.dof)).to(xi.device)
+
+        jac[small_angle_inds, 0, 0] = 1 - 1./6. * phi_sq[small_angle_inds]
+        jac[small_angle_inds, 0, 1] = -(0.5 * phi[small_angle_inds] - 1./24. * phi[small_angle_inds] * phi_sq[small_angle_inds])
+        jac[small_angle_inds, 0, 2] = rho[small_angle_inds,1] / 2. + phi[small_angle_inds] * rho[small_angle_inds,0] / 6.
+        jac[small_angle_inds, 1, 0] = 0.5 * phi[small_angle_inds] - 1./24. * phi[small_angle_inds] * phi_sq[small_angle_inds]
+        jac[small_angle_inds, 1, 1] = 1 - 1./6. * phi_sq[small_angle_inds]
+        jac[small_angle_inds, 1, 2] = -rho[small_angle_inds,0] / 2. + phi[small_angle_inds] * rho[small_angle_inds,1] / 6.
+
+        jac[large_angle_inds, 0, 0] = sin_phi[large_angle_inds] / phi[large_angle_inds]
+        jac[large_angle_inds, 0, 1] = -(1 - cos_phi[large_angle_inds]) / phi[large_angle_inds]
+        jac[large_angle_inds, 0, 2] = ( rho[large_angle_inds,1] + phi[large_angle_inds]*rho[large_angle_inds,0] - rho[large_angle_inds,1]*cos_phi[large_angle_inds] - rho[large_angle_inds,0]*sin_phi[large_angle_inds])/phi_sq[large_angle_inds]
+        jac[large_angle_inds, 1, 0] = (1 - cos_phi[large_angle_inds]) / phi[large_angle_inds]
+        jac[large_angle_inds, 1, 1] = sin_phi[large_angle_inds] / phi[large_angle_inds]
+        jac[large_angle_inds, 1, 2] = (-rho[large_angle_inds,0] + phi[large_angle_inds]*rho[large_angle_inds,1] + rho[large_angle_inds,0]*cos_phi[large_angle_inds] - rho[large_angle_inds,1]*sin_phi[large_angle_inds])/phi_sq[large_angle_inds]
+
+        jac[:, 2, 0] = 0
+        jac[:, 2, 1] = 0
+        jac[:, 2, 2] = 1
+
+        return jac.squeeze_()
 
     def log(self):
         phi = self.rot.log()

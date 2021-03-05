@@ -309,3 +309,25 @@ def test_adjoint_batch():
     T = SE2.exp(0.1 * torch.Tensor([[1, 2, 3],
                                     [4, 5, 6]]))
     assert T.adjoint().shape == (2, 3, 3)
+
+def test_left_jacobian():
+    xi1 = torch.Tensor([1, 2, 3])
+    assert utils.allclose(
+        torch.mm(SE2.left_jacobian(xi1), SE2.inv_left_jacobian(xi1)),
+        torch.eye(3)
+    )
+
+    xi2 = torch.Tensor([0, 0, 0])
+    assert utils.allclose(
+        torch.mm(SE2.left_jacobian(xi2), SE2.inv_left_jacobian(xi2)),
+        torch.eye(3)
+    )
+
+
+def test_left_jacobian_batch():
+    xis = torch.Tensor([[1, 2, 3],
+                        [0, 0, 0]])
+    assert utils.allclose(
+        SE2.left_jacobian(xis).bmm(SE2.inv_left_jacobian(xis)),
+        torch.eye(3).unsqueeze_(dim=0).expand(2, 3, 3)
+    )

@@ -112,11 +112,11 @@ class SOMatrixBase(_base.SOMatrixBase):
 
         # Determinants of each matrix in the batch should be 1
         det_check = utils.isclose(mat.__class__(
-            np.linalg.det(mat.detach().cpu().numpy())), 1.)
+            np.linalg.det(mat.detach().cpu().numpy())).to(mat.device), 1.)
 
         # The transpose of each matrix in the batch should be its inverse
         inv_check = utils.isclose(mat.transpose(2, 1).bmm(mat),
-                                  torch.eye(cls.dim, dtype=mat.dtype)).sum(dim=1).sum(dim=1) \
+                                  torch.eye(cls.dim, dtype=mat.dtype, device=mat.device)).sum(dim=1).sum(dim=1) \
             == cls.dim * cls.dim
 
         return shape_check & det_check & inv_check

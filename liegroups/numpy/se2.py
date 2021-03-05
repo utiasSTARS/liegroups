@@ -76,7 +76,35 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}^{-1}(\\boldsymbol{\\xi})
         """
-        raise NotImplementedError
+        rho = xi[0:2]  # translation part
+        phi = xi[2]  # rotation part
+
+        cos_phi = np.cos(phi)
+        sin_phi = np.sin(phi)
+        phi_sq = phi * phi
+
+        jac = np.zeros((cls.dof, cls.dof))
+
+        if phi_sq > 1e-15:
+            jac[0][0] = (sin_phi*phi)/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[0][1] = -(phi*(cos_phi - 1))/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[0][2] = (phi*(rho[0] - 2*cos_phi*rho[0] - phi*rho[1] + cos_phi**2*rho[0] + sin_phi**2*rho[0] + cos_phi*phi*rho[1] - sin_phi*phi*rho[0]))/(phi_sq*(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1))
+            jac[1][0] = (phi*(cos_phi - 1))/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[1][1] = (sin_phi*phi)/(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1)
+            jac[1][2] = (phi*(rho[1] - 2*cos_phi*rho[1] + phi*rho[0] + cos_phi**2*rho[1] + sin_phi**2*rho[1] - cos_phi*phi*rho[0] - sin_phi*phi*rho[1]))/(phi_sq*(cos_phi**2 - 2*cos_phi + sin_phi**2 + 1))
+        else:
+            jac[0][0] = -(96*(phi_sq - 6))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[0][1] = -(24*phi*(phi_sq - 12))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[0][2] = (4*(12*phi*rho[0] - 72*rho[1] + 12*phi_sq*rho[1] - 12*phi_sq*rho[1] + phi_sq*phi_sq*rho[1] + phi_sq*phi*rho[0]))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][0] = (24*phi*(phi_sq - 12))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][1] = -(96*(phi_sq - 6))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+            jac[1][2] = (4*(72*rho[0] - 12*phi_sq*rho[0] + 12*phi*rho[1] + 12*phi_sq*rho[0] - phi_sq*phi_sq*rho[0] + phi_sq*phi*rho[1]))/(phi_sq**2*phi_sq + 16*phi_sq**2 - 24*phi_sq*phi_sq - 192*phi_sq + 144*phi_sq + 576)
+        
+        jac[2][0] = 0
+        jac[2][1] = 0
+        jac[2][2] = 1
+
+        return jac
 
     @classmethod
     def left_jacobian(cls, xi):
@@ -85,7 +113,39 @@ class SE2Matrix(_base.SEMatrixBase):
         .. math::
             \\mathcal{J}(\\boldsymbol{\\xi})
         """
-        raise NotImplementedError
+
+        # based on https://github.com/artivis/manif/blob/6f2c1cd3e050a2a232cc5f6c4fb0d33b74f08701/include/manif/impl/se2/SE2Tangent_base.h
+
+        rho = xi[0:2]  # translation part
+        phi = xi[2]  # rotation part
+
+        cos_phi = np.cos(phi)
+        sin_phi = np.sin(phi)
+        phi_sq = phi * phi
+
+        if phi_sq < 1e-15:
+            A = 1 - 1./6. * phi_sq
+            B = 0.5 * phi - 1./24. * phi * phi_sq
+        else:
+            A = sin_phi / phi
+            B = (1 - cos_phi) / phi
+
+        jac = np.zeros((cls.dof, cls.dof))
+        jac[0][0] = A
+        jac[0][1] = -B
+        jac[1][0] = B
+        jac[1][1] = A
+
+        if phi_sq < 1e-15:
+            jac[0][2] = rho[1] / 2. + phi * rho[0] / 6.
+            jac[1][2] = -rho[0] / 2. + phi * rho[1] / 6.
+        else:
+            jac[0][2] = ( rho[1] + phi*rho[0] - rho[1]*cos_phi - rho[0]*sin_phi)/phi_sq
+            jac[1][2] = (-rho[0] + phi*rho[1] + rho[0]*cos_phi - rho[1]*sin_phi)/phi_sq
+
+        jac[2][2] = 1
+
+        return jac
 
     def log(self):
         """Logarithmic map for :math:`SE(2)`, which computes a tangent vector from a transformation:
