@@ -44,6 +44,6 @@ def trace(mat):
         mat = mat.unsqueeze(dim=0)
 
     # Element-wise multiply by identity and take the sum
-    tr =  (torch.eye(mat.shape[1], dtype=mat.dtype) * mat).sum(dim=1).sum(dim=1)
+    tr =  (torch.eye(mat.shape[1], dtype=mat.dtype, device=mat.device) * mat).sum(dim=1).sum(dim=1)
     
     return tr.view(mat.shape[0])
