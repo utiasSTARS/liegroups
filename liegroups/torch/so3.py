@@ -24,16 +24,22 @@ class SO3Matrix(_base.SOMatrixBase):
 
         mat = phi.new_empty(phi.shape[0], cls.dim, cls.dim)
         angle = phi.norm(p=2, dim=1)
+        cuda = mat.is_cuda
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
-            mat[small_angle_inds] = \
-                torch.eye(cls.dim, dtype=phi.dtype).expand_as(mat[small_angle_inds]) + \
-                cls.wedge(phi[small_angle_inds])
-
+            if cuda:
+                mat[small_angle_inds] = \
+                    torch.eye(cls.dim, dtype=phi.dtype).cuda().expand_as(mat[small_angle_inds]) + \
+                    cls.wedge(phi[small_angle_inds])
+            else:
+                mat[small_angle_inds] = \
+                    torch.eye(cls.dim, dtype=phi.dtype).expand_as(mat[small_angle_inds]) + \
+                    cls.wedge(phi[small_angle_inds])
+                    
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
@@ -46,9 +52,12 @@ class SO3Matrix(_base.SOMatrixBase):
                 dim=2).expand_as(mat[large_angle_inds])
             c = angle.cos().unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(mat[large_angle_inds])
-
-            A = c * torch.eye(cls.dim, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
-                mat[large_angle_inds])
+            if cuda:
+                A = c * torch.eye(cls.dim, dtype=phi.dtype).cuda().unsqueeze_(dim=0).expand_as(
+                    mat[large_angle_inds])
+            else:
+                A = c * torch.eye(cls.dim, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
+                    mat[large_angle_inds])
             B = (1. - c) * utils.outer(axis, axis)
             C = s * cls.wedge(axis)
 
@@ -123,7 +132,7 @@ class SO3Matrix(_base.SOMatrixBase):
         if phi.shape[1] != cls.dof:
             raise ValueError(
                 "phi must have shape ({},) or (N,{})".format(cls.dof, cls.dof))
-
+        cuda = phi.is_cuda
         jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
 
@@ -131,9 +140,14 @@ class SO3Matrix(_base.SOMatrixBase):
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = \
-                torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) - \
-                0.5 * cls.wedge(phi[small_angle_inds])
+            if cuda:
+                jac[small_angle_inds] = \
+                    torch.eye(cls.dof, dtype=phi.dtype).cuda().expand_as(jac[small_angle_inds]) - \
+                    0.5 * cls.wedge(phi[small_angle_inds])
+            else:
+                jac[small_angle_inds] = \
+                    torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) - \
+                    0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
@@ -151,10 +165,14 @@ class SO3Matrix(_base.SOMatrixBase):
                 dim=2).expand_as(jac[large_angle_inds])
             hacha.unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds])
-
-            A = hacha * \
-                torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(
-                    dim=0).expand_as(jac[large_angle_inds])
+            if cuda:
+                A = hacha * \
+                        torch.eye(cls.dof, dtype=phi.dtype).cuda().unsqueeze_(
+                        dim=0).expand_as(jac[large_angle_inds])
+            else:
+                A = hacha * \
+                        torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(
+                        dim=0).expand_as(jac[large_angle_inds])
             B = (1. - hacha) * utils.outer(axis, axis)
             C = -ha * cls.wedge(axis)
 
@@ -173,14 +191,20 @@ class SO3Matrix(_base.SOMatrixBase):
 
         jac = phi.new_empty(phi.shape[0], cls.dof, cls.dof)
         angle = phi.norm(p=2, dim=1)
+        cuda = phi.is_cuda
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = \
-                torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) + \
-                0.5 * cls.wedge(phi[small_angle_inds])
+            if cuda:
+                jac[small_angle_inds] = \
+                    torch.eye(cls.dof, dtype=phi.dtype).cuda().expand_as(jac[small_angle_inds]) + \
+                    0.5 * cls.wedge(phi[small_angle_inds])
+            else:
+                jac[small_angle_inds] = \
+                    torch.eye(cls.dof, dtype=phi.dtype).expand_as(jac[small_angle_inds]) + \
+                    0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
@@ -192,11 +216,16 @@ class SO3Matrix(_base.SOMatrixBase):
                 angle.unsqueeze(dim=1).expand(len(angle), cls.dof)
             s = angle.sin()
             c = angle.cos()
-
-            A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
-                dim=2).expand_as(jac[large_angle_inds]) * \
-                torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
-                jac[large_angle_inds])
+            if cuda:
+                A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+                    dim=2).expand_as(jac[large_angle_inds]) * \
+                    torch.eye(cls.dof, dtype=phi.dtype).cuda().unsqueeze_(dim=0).expand_as(
+                    jac[large_angle_inds])
+            else:
+                A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+                    dim=2).expand_as(jac[large_angle_inds]) * \
+                    torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
+                    jac[large_angle_inds])
             B = (1. - s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
                 utils.outer(axis, axis)
@@ -213,7 +242,7 @@ class SO3Matrix(_base.SOMatrixBase):
             mat = self.mat.unsqueeze(dim=0)
         else:
             mat = self.mat
-
+        cuda = mat.is_cuda
         phi = mat.new_empty(mat.shape[0], self.dof)
 
         # The cosine of the rotation angle is related to the utils.trace of C
@@ -226,9 +255,14 @@ class SO3Matrix(_base.SOMatrixBase):
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
-            phi[small_angle_inds, :] = \
-                self.vee(mat[small_angle_inds] -
-                         torch.eye(self.dim, dtype=mat.dtype).expand_as(mat[small_angle_inds]))
+            if cuda:
+                phi[small_angle_inds, :] = \
+                    self.vee(mat[small_angle_inds] -
+                    torch.eye(self.dim, dtype=mat.dtype).cuda().expand_as(mat[small_angle_inds]))
+            else:
+                phi[small_angle_inds, :] = \
+                    self.vee(mat[small_angle_inds] -
+                    torch.eye(self.dim, dtype=mat.dtype).expand_as(mat[small_angle_inds])) 
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
