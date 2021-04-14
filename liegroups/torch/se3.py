@@ -152,7 +152,7 @@ class SE3Matrix(_base.SEMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
 
             # Create an identity matrix with a tensor type that matches the input
@@ -165,7 +165,7 @@ class SE3Matrix(_base.SEMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             so3_inv_jac = cls.RotationType.inv_left_jacobian(
@@ -203,7 +203,7 @@ class SE3Matrix(_base.SEMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
             # Create an identity matrix with a tensor type that matches the input
             I = phi.new_empty(cls.dof, cls.dof)
@@ -215,7 +215,7 @@ class SE3Matrix(_base.SEMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             so3_jac = cls.RotationType.left_jacobian(phi[large_angle_inds])

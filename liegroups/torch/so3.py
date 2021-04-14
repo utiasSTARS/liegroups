@@ -28,7 +28,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
             if cuda:
@@ -42,7 +42,7 @@ class SO3Matrix(_base.SOMatrixBase):
                     
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -138,7 +138,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
             if cuda:
                 jac[small_angle_inds] = \
@@ -151,7 +151,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -195,7 +195,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(small_angle_inds) > 0:
             if cuda:
                 jac[small_angle_inds] = \
@@ -208,7 +208,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -252,8 +252,8 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(angle, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
-        
+        small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
+
         if len(small_angle_inds) > 0:
             if cuda:
                 phi[small_angle_inds, :] = \
@@ -266,7 +266,7 @@ class SO3Matrix(_base.SOMatrixBase):
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = angle[large_angle_inds]
@@ -347,7 +347,7 @@ class SO3Matrix(_base.SOMatrixBase):
             cond1_mask = near_zero_mask & \
                 (R[:, 0, 0] > R[:, 1, 1]).squeeze_() & \
                 (R[:, 0, 0] > R[:, 2, 2]).squeeze_()
-            cond1_inds = cond1_mask.nonzero().squeeze_(dim=1)
+            cond1_inds = cond1_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
             if len(cond1_inds) > 0:
                 R_cond1 = R[cond1_inds]
@@ -359,7 +359,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 qz[cond1_inds] = (R_cond1[:, 0, 2] + R_cond1[:, 2, 0]) / d
 
             cond2_mask = near_zero_mask & (R[:, 1, 1] > R[:, 2, 2]).squeeze_()
-            cond2_inds = cond2_mask.nonzero().squeeze_(dim=1)
+            cond2_inds = cond2_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
             if len(cond2_inds) > 0:
                 R_cond2 = R[cond2_inds]
@@ -371,7 +371,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 qz[cond2_inds] = (R_cond2[:, 2, 1] + R_cond2[:, 1, 2]) / d
 
             cond3_mask = near_zero_mask & cond1_mask.logical_not() & cond2_mask.logical_not()
-            cond3_inds = cond3_mask.nonzero().squeeze_(dim=1)
+            cond3_inds = cond3_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
             if len(cond3_inds) > 0:
                 R_cond3 = R[cond3_inds]
@@ -384,7 +384,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 qz[cond3_inds] = 0.25 * d
 
         far_zero_mask = near_zero_mask.logical_not()
-        far_zero_inds = far_zero_mask.nonzero().squeeze_(dim=1)
+        far_zero_inds = far_zero_mask.nonzero(as_tuple=False).squeeze_(dim=1)
         if len(far_zero_inds) > 0:
             R_fz = R[far_zero_inds]
             d = 4. * qw[far_zero_inds]
@@ -422,13 +422,13 @@ class SO3Matrix(_base.SOMatrixBase):
         roll = pitch.new_empty(pitch.shape)
 
         near_pi_over_two_mask = utils.isclose(pitch, np.pi / 2.)
-        near_pi_over_two_inds = near_pi_over_two_mask.nonzero().squeeze_(dim=1)
+        near_pi_over_two_inds = near_pi_over_two_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         near_neg_pi_over_two_mask = utils.isclose(pitch, -np.pi / 2.)
-        near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero().squeeze_(dim=1)
+        near_neg_pi_over_two_inds = near_neg_pi_over_two_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         remainder_inds = (near_pi_over_two_mask |
-                          near_neg_pi_over_two_mask).logical_not().nonzero().squeeze_(dim=1)
+                          near_neg_pi_over_two_mask).logical_not().nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(near_pi_over_two_inds) > 0:
             yaw[near_pi_over_two_inds] = 0.
