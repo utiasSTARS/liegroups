@@ -68,12 +68,12 @@ class SO3Matrix(_base.SOMatrixBase):
         if not utils.allclose(quat.norm(p=2, dim=1), 1.):
             raise ValueError("Quaternions must be unit length")
 
-        if ordering is 'xyzw':
+        if ordering == 'xyzw':
             qx = quat[:, 0]
             qy = quat[:, 1]
             qz = quat[:, 2]
             qw = quat[:, 3]
-        elif ordering is 'wxyz':
+        elif ordering == 'wxyz':
             qw = quat[:, 0]
             qx = quat[:, 1]
             qy = quat[:, 2]
@@ -359,12 +359,12 @@ class SO3Matrix(_base.SOMatrixBase):
             qz[far_zero_inds] = (R_fz[:, 1, 0] - R_fz[:, 0, 1]) / d
 
         # Check ordering last
-        if ordering is 'xyzw':
+        if ordering == 'xyzw':
             quat = torch.cat([qx.unsqueeze_(dim=1),
                               qy.unsqueeze_(dim=1),
                               qz.unsqueeze_(dim=1),
                               qw.unsqueeze_(dim=1)], dim=1).squeeze_()
-        elif ordering is 'wxyz':
+        elif ordering == 'wxyz':
             quat = torch.cat([qw.unsqueeze_(dim=1),
                               qx.unsqueeze_(dim=1),
                               qy.unsqueeze_(dim=1),
