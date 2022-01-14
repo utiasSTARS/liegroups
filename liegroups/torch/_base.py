@@ -41,7 +41,8 @@ class SOMatrixBase(_base.SOMatrixBase):
                     mat.shape[0], other.shape[0]))
 
             if other.shape[2] == self.dim:
-                return torch.bmm(mat, other.transpose(2, 1)).transpose_(2, 1).squeeze_()
+                # return torch.bmm(mat, other.transpose(2, 1)).transpose_(2, 1).squeeze_()
+                return torch.bmm(mat, other.transpose(2, 1)).transpose(2, 1).squeeze()
             else:
                 raise ValueError(
                     "Vector or vector-batch must have shape ({},), (N,{}), or ({},N,{})".format(self.dim, self.dim, mat.shape[0], self.dim))
@@ -112,11 +113,11 @@ class SOMatrixBase(_base.SOMatrixBase):
 
         # Determinants of each matrix in the batch should be 1
         det_check = utils.isclose(mat.__class__(
-            np.linalg.det(mat.detach().cpu().numpy())), 1.)
+            np.linalg.det(mat.detach().cpu().numpy())), 1.).to(device=mat.device)
 
         # The transpose of each matrix in the batch should be its inverse
         inv_check = utils.isclose(mat.transpose(2, 1).bmm(mat),
-                                  torch.eye(cls.dim, dtype=mat.dtype)).sum(dim=1).sum(dim=1) \
+                                  torch.eye(cls.dim, dtype=mat.dtype, device=mat.device)).sum(dim=1).sum(dim=1) \
             == cls.dim * cls.dim
 
         return shape_check & det_check & inv_check
@@ -156,7 +157,8 @@ class SOMatrixBase(_base.SOMatrixBase):
 
             for batch_ind in inds:
                 # Slicing is a copy operation?
-                self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
+                # self.mat[batch_ind] = self._normalize_one(self.mat[batch_ind])
+                self._normalize_one(self.mat[batch_ind])
 
     def pin_memory(self):
         """Return a copy with the underlying tensor in pinned (page-locked) memory. Makes host-to-GPU copies faster.
@@ -173,7 +175,7 @@ class SEMatrixBase(_base.SEMatrixBase):
         super(SEMatrixBase, self).__init__(rot, trans)
 
     def as_matrix(self):
-        R = self.rot.as_matrix()
+        R = self.rot.as_matrix().to(device=self.trans.device)
         if R.dim() < 3:
             R = R.unsqueeze(dim=0)
 
@@ -317,7 +319,7 @@ class SEMatrixBase(_base.SEMatrixBase):
         else:
             mat = torch.eye(cls.dim).expand(batch_size, cls.dim, cls.dim)
 
-        return cls.from_matrix(mat.squeeze_())
+        return cls.from_matrix(mat.squeeze())
 
     def inv(self):
         if self.trans.dim() == 2:

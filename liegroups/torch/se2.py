@@ -50,11 +50,11 @@ class SE2Matrix(_base.SEMatrixBase):
         rot_jac = cls.RotationType.left_jacobian(phi)
 
         if rot_jac.dim() < 3:
-            rot_jac.unsqueeze_(dim=0)
+            rot_jac = rot_jac.unsqueeze(dim=0)
         if rho.dim() < 3:
-            rho.unsqueeze_(dim=2)
+            rho = rho.unsqueeze(dim=2)
 
-        trans = torch.bmm(rot_jac, rho).squeeze_()
+        trans = torch.bmm(rot_jac, rho).squeeze()
 
         return cls(rot, trans)
 
@@ -75,20 +75,23 @@ class SE2Matrix(_base.SEMatrixBase):
         else:
             trans = self.trans
 
+        # if phi.dim() < 1:
+        #     phi.unsqueeze_(dim=0)
+        # phi.unsqueeze_(dim=1)  # because phi is 1-dimensional for SE2
+
         if phi.dim() < 1:
-            phi.unsqueeze_(dim=0)
-        phi.unsqueeze_(dim=1)  # because phi is 1-dimensional for SE2
+            phi = phi.unsqueeze(dim=0)
+        phi = phi.unsqueeze(dim=1)  # because phi is 1-dimensional for SE2
 
         if inv_rot_jac.dim() < 3:
-            inv_rot_jac.unsqueeze_(dim=0)
+            inv_rot_jac = inv_rot_jac.unsqueeze(dim=0)
         if trans.dim() < 3:
             trans = trans.unsqueeze(dim=2)
 
-        rho = torch.bmm(inv_rot_jac, trans).squeeze_()
+        rho = torch.bmm(inv_rot_jac, trans).squeeze()
         if rho.dim() < 2:
-            rho.unsqueeze_(dim=0)
-
-        return torch.cat([rho, phi], dim=1).squeeze_()
+            rho = rho.unsqueeze(dim=0)
+        return torch.cat([rho, phi], dim=1).squeeze()
 
     @classmethod
     def odot(cls, p, directional=False):

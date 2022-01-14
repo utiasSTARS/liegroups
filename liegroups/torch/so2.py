@@ -19,17 +19,17 @@ class SO2Matrix(_base.SOMatrixBase):
     def exp(cls, phi):
         if phi.dim() < 1:
             phi = phi.unsqueeze(dim=0)
-
         s = phi.sin()
         c = phi.cos()
 
-        mat = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        # mat = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        mat = phi.new_empty(phi.shape[0], cls.dim, cls.dim)
         mat[:, 0, 0] = c
         mat[:, 0, 1] = -s
         mat[:, 1, 0] = s
         mat[:, 1, 1] = c
 
-        return cls(mat.squeeze_())
+        return cls(mat.squeeze())
 
     @classmethod
     def from_angle(cls, angle_in_radians):
@@ -42,39 +42,45 @@ class SO2Matrix(_base.SOMatrixBase):
         if phi.dim() < 1:
             phi = phi.unsqueeze(dim=0)
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        # jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.new_empty(phi.shape[0], cls.dim, cls.dim)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero().squeeze(dim=1)
 
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
+            jac[small_angle_inds] = torch.eye(cls.dim, device=phi.device).expand(
                 len(small_angle_inds), cls.dim, cls.dim) \
                 - 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero().squeeze(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
             ha = 0.5 * angle       # half angle
             hacha = ha / ha.tan()  # half angle * cot(half angle)
 
-            ha.unsqueeze_(dim=1).unsqueeze_(
+            # ha.unsqueeze_(dim=1).unsqueeze_(
+            #     dim=2).expand_as(jac[large_angle_inds])
+            # hacha.unsqueeze_(dim=1).unsqueeze_(
+            #     dim=2).expand_as(jac[large_angle_inds])
+
+            ha = ha.unsqueeze(dim=1).unsqueeze(
                 dim=2).expand_as(jac[large_angle_inds])
-            hacha.unsqueeze_(dim=1).unsqueeze_(
+            hacha = hacha.unsqueeze(dim=1).unsqueeze(
                 dim=2).expand_as(jac[large_angle_inds])
 
             A = hacha * \
-                torch.eye(cls.dim).unsqueeze_(
+                torch.eye(cls.dim, device=phi.device).unsqueeze(
                     dim=0).expand_as(jac[large_angle_inds])
-            B = -ha * cls.wedge(phi.__class__([1.]))
+            B = -ha * cls.wedge(phi.__class__([1.])).to(device=phi.device)
 
             jac[large_angle_inds] = A + B
 
-        return jac.squeeze_()
+        return jac.squeeze()
 
     @classmethod
     def left_jacobian(cls, phi):
@@ -82,33 +88,46 @@ class SO2Matrix(_base.SOMatrixBase):
         if phi.dim() < 1:
             phi = phi.unsqueeze(dim=0)
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        # jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.new_empty(phi.shape[0], cls.dim, cls.dim)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
-        small_angle_inds = small_angle_mask.nonzero().squeeze_(dim=1)
+        small_angle_inds = small_angle_mask.nonzero().squeeze(dim=1)
 
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
-                len(small_angle_inds), cls.dim, cls.dim) \
+            eye = torch.eye(cls.dof, dtype=phi.dtype, device=phi.device)
+            jac[small_angle_inds] = eye.expand_as(
+                jac[small_angle_inds]) \
                 + 0.5 * cls.wedge(phi[small_angle_inds])
+            # jac[small_angle_inds] = torch.eye(cls.dim).expand(
+            #     len(small_angle_inds), cls.dim, cls.dim) \
+            #     + 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
-        large_angle_inds = large_angle_mask.nonzero().squeeze_(dim=1)
+        large_angle_inds = large_angle_mask.nonzero().squeeze(dim=1)
 
         if len(large_angle_inds) > 0:
             angle = phi[large_angle_inds]
             s = angle.sin()
             c = angle.cos()
 
-            A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+            eye = torch.eye(cls.dim, dtype=phi.dtype, device=phi.device)
+            A = (s / angle).unsqueeze_(dim=1).unsqueeze(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+                eye.unsqueeze(dim=0).expand_as(
                 jac[large_angle_inds])
-            B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
+            B = ((1. - c) / angle).unsqueeze(dim=1).unsqueeze(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                cls.wedge(phi.__class__([1.]))
+                cls.wedge(phi.__class__([1.])).to(device=phi.device)
+            # B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
+            #     dim=2).expand_as(jac[large_angle_inds]) * \
+            #     cls.wedge(phi.__class__([1.]))
+            # A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+            #     dim=2).expand_as(jac[large_angle_inds]) * \
+            #     torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+            #     jac[large_angle_inds])
 
             jac[large_angle_inds] = A + B
 
@@ -123,7 +142,7 @@ class SO2Matrix(_base.SOMatrixBase):
         s = mat[:, 1, 0]
         c = mat[:, 0, 0]
 
-        return torch.atan2(s, c).squeeze_()
+        return torch.atan2(s, c).squeeze()
 
     def to_angle(self):
         """Recover the rotation angle in rad from the rotation matrix."""
@@ -154,4 +173,4 @@ class SO2Matrix(_base.SOMatrixBase):
         Phi = phi.new_zeros(phi.shape[0], cls.dim, cls.dim)
         Phi[:, 0, 1] = -phi[:, 0]
         Phi[:, 1, 0] = phi[:, 0]
-        return Phi.squeeze_()
+        return Phi.squeeze()
