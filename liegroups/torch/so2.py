@@ -29,7 +29,7 @@ class SO2Matrix(_base.SOMatrixBase):
         mat[:, 1, 0] = s
         mat[:, 1, 1] = c
 
-        return cls(mat.squeeze())
+        return cls(mat.squeeze_())
 
     @classmethod
     def from_angle(cls, angle_in_radians):
@@ -96,13 +96,13 @@ class SO2Matrix(_base.SOMatrixBase):
         small_angle_inds = small_angle_mask.nonzero().squeeze(dim=1)
 
         if len(small_angle_inds) > 0:
-            eye = torch.eye(cls.dof, dtype=phi.dtype, device=phi.device)
-            jac[small_angle_inds] = eye.expand_as(
-                jac[small_angle_inds]) \
-                + 0.5 * cls.wedge(phi[small_angle_inds])
-            # jac[small_angle_inds] = torch.eye(cls.dim).expand(
-            #     len(small_angle_inds), cls.dim, cls.dim) \
+            # eye = torch.eye(cls.dof, dtype=phi.dtype, device=phi.device)
+            # jac[small_angle_inds] = eye.expand_as(
+            #     jac[small_angle_inds]) \
             #     + 0.5 * cls.wedge(phi[small_angle_inds])
+            jac[small_angle_inds] = torch.eye(cls.dim, device=phi.device).expand(
+                len(small_angle_inds), cls.dim, cls.dim) \
+                + 0.5 * cls.wedge(phi[small_angle_inds])
 
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
@@ -113,21 +113,21 @@ class SO2Matrix(_base.SOMatrixBase):
             s = angle.sin()
             c = angle.cos()
 
-            eye = torch.eye(cls.dim, dtype=phi.dtype, device=phi.device)
-            A = (s / angle).unsqueeze_(dim=1).unsqueeze(
-                dim=2).expand_as(jac[large_angle_inds]) * \
-                eye.unsqueeze(dim=0).expand_as(
-                jac[large_angle_inds])
-            B = ((1. - c) / angle).unsqueeze(dim=1).unsqueeze(
+            # eye = torch.eye(cls.dim, dtype=phi.dtype, device=phi.device)
+            # A = (s / angle).unsqueeze_(dim=1).unsqueeze(
+            #     dim=2).expand_as(jac[large_angle_inds]) * \
+            #     eye.unsqueeze(dim=0).expand_as(
+            #     jac[large_angle_inds])
+            # B = ((1. - c) / angle).unsqueeze(dim=1).unsqueeze(
+            #     dim=2).expand_as(jac[large_angle_inds]) * \
+            #     cls.wedge(phi.__class__([1.])).to(device=phi.device)
+            B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
                 cls.wedge(phi.__class__([1.])).to(device=phi.device)
-            # B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
-            #     dim=2).expand_as(jac[large_angle_inds]) * \
-            #     cls.wedge(phi.__class__([1.]))
-            # A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
-            #     dim=2).expand_as(jac[large_angle_inds]) * \
-            #     torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
-            #     jac[large_angle_inds])
+            A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
+                dim=2).expand_as(jac[large_angle_inds]) * \
+                torch.eye(cls.dim, device=phi.device).unsqueeze_(dim=0).expand_as(
+                jac[large_angle_inds])
 
             jac[large_angle_inds] = A + B
 
@@ -157,7 +157,7 @@ class SO2Matrix(_base.SOMatrixBase):
             raise ValueError(
                 "Phi must have shape ({},{}) or (N,{},{})".format(cls.dim, cls.dim, cls.dim, cls.dim))
 
-        return Phi[:, 1, 0].squeeze_()
+        return Phi[:, 1, 0].squeeze()
 
     @classmethod
     def wedge(cls, phi):
