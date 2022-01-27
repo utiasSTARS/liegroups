@@ -102,7 +102,7 @@ class SOMatrixBase(_base.SOMatrixBase):
 
         # Check the shape
         if mat.is_cuda:
-            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False).to(device=mat.device)
         else:
             shape_check = torch.BoolTensor(mat.shape[0]).fill_(False)
 
@@ -348,7 +348,7 @@ class SEMatrixBase(_base.SEMatrixBase):
 
         # Check the shape
         if mat.is_cuda:
-            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False)
+            shape_check = torch.cuda.BoolTensor(mat.shape[0]).fill_(False).to(device=mat.device)
         else:
             shape_check = torch.BoolTensor(mat.shape[0]).fill_(False)
 
@@ -366,7 +366,6 @@ class SEMatrixBase(_base.SEMatrixBase):
         # Check that the rotation part is valid
         rot_check = cls.RotationType.is_valid_matrix(
             mat[:, 0:cls.dim - 1, 0:cls.dim - 1])
-
         return shape_check & bottom_check & rot_check
 
     def normalize(self, inds=None):
