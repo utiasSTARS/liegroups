@@ -39,7 +39,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 mat[small_angle_inds] = \
                     torch.eye(cls.dim, dtype=phi.dtype).expand_as(mat[small_angle_inds]) + \
                     cls.wedge(phi[small_angle_inds])
-                    
+
         # Otherwise...
         large_angle_mask = small_angle_mask.logical_not()
         large_angle_inds = large_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
@@ -52,12 +52,14 @@ class SO3Matrix(_base.SOMatrixBase):
                 dim=2).expand_as(mat[large_angle_inds])
             c = angle.cos().unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(mat[large_angle_inds])
+
             if cuda:
                 A = c * torch.eye(cls.dim, dtype=phi.dtype).cuda().unsqueeze_(dim=0).expand_as(
                     mat[large_angle_inds])
             else:
                 A = c * torch.eye(cls.dim, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
                     mat[large_angle_inds])
+
             B = (1. - c) * utils.outer(axis, axis)
             C = s * cls.wedge(axis)
 
@@ -165,6 +167,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 dim=2).expand_as(jac[large_angle_inds])
             hacha.unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds])
+
             if cuda:
                 A = hacha * \
                         torch.eye(cls.dof, dtype=phi.dtype).cuda().unsqueeze_(
@@ -173,6 +176,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 A = hacha * \
                         torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(
                         dim=0).expand_as(jac[large_angle_inds])
+
             B = (1. - hacha) * utils.outer(axis, axis)
             C = -ha * cls.wedge(axis)
 
@@ -216,6 +220,7 @@ class SO3Matrix(_base.SOMatrixBase):
                 angle.unsqueeze(dim=1).expand(len(angle), cls.dof)
             s = angle.sin()
             c = angle.cos()
+
             if cuda:
                 A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
                     dim=2).expand_as(jac[large_angle_inds]) * \
@@ -226,6 +231,7 @@ class SO3Matrix(_base.SOMatrixBase):
                     dim=2).expand_as(jac[large_angle_inds]) * \
                     torch.eye(cls.dof, dtype=phi.dtype).unsqueeze_(dim=0).expand_as(
                     jac[large_angle_inds])
+
             B = (1. - s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
                 utils.outer(axis, axis)
