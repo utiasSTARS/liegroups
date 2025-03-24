@@ -55,7 +55,7 @@ class SOMatrixBase(_base.SOMatrixBase):
             result = cls(mat)
 
             if normalize:
-                result.normalize(inds=mat_is_valid.logical_not().nonzero())
+                result.normalize(inds=mat_is_valid.logical_not().nonzero(as_tuple=False))
 
             return result
         else:
@@ -292,7 +292,7 @@ class SEMatrixBase(_base.SEMatrixBase):
             result = cls(cls.RotationType(rot), trans)
 
             if normalize:
-                result.normalize(inds=mat_is_valid.logical_not().nonzero())
+                result.normalize(inds=mat_is_valid.logical_not().nonzero(as_tuple=False))
 
             return result
         else:
