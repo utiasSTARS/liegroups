@@ -103,3 +103,16 @@ def test_transform_vectorized():
     assert np.allclose(Tpt2, Tpts12[1])
     assert np.allclose(Tpt3, Tpts34[0])
     assert np.allclose(Tpt4, Tpts34[1])
+
+def test_left_jacobian():
+    xi1 = [1, 2, 3]
+    assert np.allclose(
+        SE2.left_jacobian(xi1).dot(SE2.inv_left_jacobian(xi1)),
+        np.identity(3)
+    )
+
+    xi2 = [0, 0, 0]
+    assert np.allclose(
+        SE2.left_jacobian(xi2).dot(SE2.inv_left_jacobian(xi2)),
+        np.identity(3)
+    )

@@ -42,14 +42,14 @@ class SO2Matrix(_base.SOMatrixBase):
         if phi.dim() < 1:
             phi = phi.unsqueeze(dim=0)
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim).to(phi.device)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
+            jac[small_angle_inds] = torch.eye(cls.dim).to(phi.device).expand(
                 len(small_angle_inds), cls.dim, cls.dim) \
                 - 0.5 * cls.wedge(phi[small_angle_inds])
 
@@ -68,9 +68,9 @@ class SO2Matrix(_base.SOMatrixBase):
                 dim=2).expand_as(jac[large_angle_inds])
 
             A = hacha * \
-                torch.eye(cls.dim).unsqueeze_(
+                torch.eye(cls.dim).to(phi.device).unsqueeze_(
                     dim=0).expand_as(jac[large_angle_inds])
-            B = -ha * cls.wedge(phi.__class__([1.]))
+            B = -ha * cls.wedge(phi.__class__([1.]).to(phi.device))
 
             jac[large_angle_inds] = A + B
 
@@ -82,14 +82,14 @@ class SO2Matrix(_base.SOMatrixBase):
         if phi.dim() < 1:
             phi = phi.unsqueeze(dim=0)
 
-        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim)
+        jac = phi.__class__(phi.shape[0], cls.dim, cls.dim).to(phi.device)
 
         # Near phi==0, use first order Taylor expansion
         small_angle_mask = utils.isclose(phi, 0.)
         small_angle_inds = small_angle_mask.nonzero(as_tuple=False).squeeze_(dim=1)
 
         if len(small_angle_inds) > 0:
-            jac[small_angle_inds] = torch.eye(cls.dim).expand(
+            jac[small_angle_inds] = torch.eye(cls.dim).to(phi.device).expand(
                 len(small_angle_inds), cls.dim, cls.dim) \
                 + 0.5 * cls.wedge(phi[small_angle_inds])
 
@@ -104,11 +104,11 @@ class SO2Matrix(_base.SOMatrixBase):
 
             A = (s / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                torch.eye(cls.dim).unsqueeze_(dim=0).expand_as(
+                torch.eye(cls.dim).to(phi.device).unsqueeze_(dim=0).expand_as(
                 jac[large_angle_inds])
-            B = ((1. - c) / angle).unsqueeze_(dim=1).unsqueeze_(
+            B = ((1.0 - c) / angle).unsqueeze_(dim=1).unsqueeze_(
                 dim=2).expand_as(jac[large_angle_inds]) * \
-                cls.wedge(phi.__class__([1.]))
+                cls.wedge(phi.__class__([1.]).to(phi.device))
 
             jac[large_angle_inds] = A + B
 
