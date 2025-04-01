@@ -1,6 +1,8 @@
 # liegroups
 Python implementation of SO2, SE2, SO3, and SE3 matrix Lie groups using numpy or PyTorch.
 
+Note that this package is no longer actively mantained and has been superseded by [[PyMLG]](https://github.com/decargroup/pymlg).
+
 [[Documentation]](docs/build/html/index.html)
 
 ## Installation
