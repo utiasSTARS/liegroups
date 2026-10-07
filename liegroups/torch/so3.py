@@ -443,17 +443,17 @@ class SO3Matrix(_base.SOMatrixBase):
                 mat[near_pi_over_two_inds, 1, 1])
 
         if len(near_neg_pi_over_two_inds) > 0:
-            yaw[near_pi_over_two_inds] = 0.
-            roll[near_pi_over_two_inds] = -torch.atan2(
-                mat[near_pi_over_two_inds, 0, 1],
-                mat[near_pi_over_two_inds, 1, 1])
+            yaw[near_neg_pi_over_two_inds] = 0.
+            roll[near_neg_pi_over_two_inds] = -torch.atan2(
+                mat[near_neg_pi_over_two_inds, 0, 1],
+                mat[near_neg_pi_over_two_inds, 1, 1])
 
         if len(remainder_inds) > 0:
             sec_pitch = 1. / pitch[remainder_inds].cos()
             remainder_mats = mat[remainder_inds]
-            yaw = torch.atan2(remainder_mats[:, 1, 0] * sec_pitch,
+            yaw[remainder_inds] = torch.atan2(remainder_mats[:, 1, 0] * sec_pitch,
                               remainder_mats[:, 0, 0] * sec_pitch)
-            roll = torch.atan2(remainder_mats[:, 2, 1] * sec_pitch,
+            roll[remainder_inds] = torch.atan2(remainder_mats[:, 2, 1] * sec_pitch,
                                remainder_mats[:, 2, 2] * sec_pitch)
 
         return torch.cat([roll.unsqueeze_(dim=1),
